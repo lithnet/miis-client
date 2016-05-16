@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E1019082-5D16-4C81-815A-8FA0652BEE99}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lithnet.Miiserver.Client</RootNamespace>
+    <AssemblyName>Lithnet.Miiserver.Client</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>Lithnet.Miiserver.Client.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>Lithnet.Miiserver.Client.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PropertySheetBase">
+      <HintPath>C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\UIShell\PropertySheetBase.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Management.Instrumentation" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyProvider.cs" />
+    <Compile Include="Enums\MVSearchFilterOperator.cs" />
+    <Compile Include="Enums\RunStepType.cs" />
+    <Compile Include="MiiserverException.cs" />
+    <Compile Include="MAExecutionException.cs" />
+    <Compile Include="Models\ManagementAgent\MAImportFlowSet.cs" />
+    <Compile Include="Models\ManagementAgent\ExportFlowSet.cs" />
+    <Compile Include="Models\ManagementAgent\ExportFlow.cs" />
+    <Compile Include="Models\ManagementAgent\MAImportFlow.cs" />
+    <Compile Include="Models\ManagementAgent\ProjectionClassMapping.cs" />
+    <Compile Include="Models\ManagementAgent\JoinProfile.cs" />
+    <Compile Include="Models\ManagementAgent\JoinCriterion.cs" />
+    <Compile Include="Models\ManagementAgent\ManagementAgentBase.cs" />
+    <Compile Include="Models\ManagementAgent\PasswordSyncSettings.cs" />
+    <Compile Include="Models\Metaverse\DsmlObjectClass.cs" />
+    <Compile Include="Models\Metaverse\DsmlAttribute.cs" />
+    <Compile Include="Models\Metaverse\ImportFlowSet.cs" />
+    <Compile Include="Models\Metaverse\ImportFlowGroup.cs" />
+    <Compile Include="Models\Metaverse\ImportFlow.cs" />
+    <Compile Include="Models\Metaverse\MVDeletionRule.cs" />
+    <Compile Include="Models\Metaverse\MVConfiguration.cs" />
+    <Compile Include="Models\Metaverse\DsmlSchema.cs" />
+    <Compile Include="Models\Metaverse\MVQuery.cs" />
+    <Compile Include="Models\Metaverse\MVAttributeQuery.cs" />
+    <Compile Include="Models\MVObject\MVObjectCollection.cs" />
+    <Compile Include="Models\MVObject\MVObject.cs" />
+    <Compile Include="Models\NodeCache.cs" />
+    <Compile Include="Models\CSObject\CSObjectBase.cs" />
+    <Compile Include="Models\ManagementAgent\CSObjectEnumerator.cs" />
+    <Compile Include="Models\CSObject\CSObject.cs" />
+    <Compile Include="Enums\MAData.cs" />
+    <Compile Include="Enums\MAPartitionData.cs" />
+    <Compile Include="Enums\MARunData.cs" />
+    <Compile Include="Enums\MVData.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Models\ManagementAgent\ManagementAgent.cs" />
+    <Compile Include="Models\RunHistory\RunSummary.cs" />
+    <Compile Include="Models\SyncPreview\ConnectorRename.cs" />
+    <Compile Include="Models\SyncPreview\FilterConditionResult.cs" />
+    <Compile Include="Models\ManagementAgent\FilterConditions.cs" />
+    <Compile Include="Models\ManagementAgent\FilterSet.cs" />
+    <Compile Include="Models\SyncPreview\FlowRuleSyncRule.cs" />
+    <Compile Include="Models\SyncPreview\JoinRuleResult.cs" />
+    <Compile Include="Models\SyncPreview\JoinCriterionResult.cs" />
+    <Compile Include="Models\SyncPreview\MVRecall.cs" />
+    <Compile Include="Models\SyncPreview\JoinCriteriaResult.cs" />
+    <Compile Include="Models\SyncPreview\RepopulationOperation.cs" />
+    <Compile Include="Models\SyncPreview\RecallImportFlow.cs" />
+    <Compile Include="Models\SyncPreview\MVDeletion.cs" />
+    <Compile Include="Models\SyncPreview\ConnectorDeprovision.cs" />
+    <Compile Include="Models\SyncPreview\ConnectorAdd.cs" />
+    <Compile Include="Models\SyncPreview\ProvisioningResult.cs" />
+    <Compile Include="Models\SyncPreview\FilterRules.cs" />
+    <Compile Include="Models\SyncPreview\CSExport.cs" />
+    <Compile Include="Models\SyncPreview\ExportChange.cs" />
+    <Compile Include="Models\SyncPreview\ExportFlowResult.cs" />
+    <Compile Include="Models\SyncPreview\ExportFlowRules.cs" />
+    <Compile Include="Models\SyncPreview\Error.cs" />
+    <Compile Include="Models\SyncPreview\FilterSetResult.cs" />
+    <Compile Include="Models\SyncPreview\FilterConditionsResult.cs" />
+    <Compile Include="Models\ManagementAgent\FilterCondition.cs" />
+    <Compile Include="Models\SyncPreview\ImportFlowRules.cs" />
+    <Compile Include="Models\SyncPreview\ImportFlowResult.cs" />
+    <Compile Include="Models\SyncPreview\SyncPreview.cs" />
+    <Compile Include="ModuleInitializer.cs" />
+    <Compile Include="Models\CSObject\AttributeChange.cs" />
+    <Compile Include="Models\CSObject\AttributeValueChange.cs" />
+    <Compile Include="Enums\FlowRuleType.cs" />
+    <Compile Include="Models\SyncPreview\FlowRule.cs" />
+    <Compile Include="Models\CSObject\CSMVLink.cs" />
+    <Compile Include="SyncServer.cs" />
+    <Compile Include="MiiserverConfig.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TooManyResultsException.cs" />
+    <Compile Include="Models\CSObject\CSEntryBase.cs" />
+    <Compile Include="Models\RunHistory\MAConnectionIncident.cs" />
+    <Compile Include="Models\ManagementAgent\MAStatistics.cs" />
+    <Compile Include="Models\MVObject\MVEntry.cs" />
+    <Compile Include="Models\MVObject\MVReferenceAttribute.cs" />
+    <Compile Include="Models\MVObject\MVReferenceValue.cs" />
+    <Compile Include="Models\MVObject\MVAttribute.cs" />
+    <Compile Include="Models\MVObject\MVAttributeValue.cs" />
+    <Compile Include="Models\ManagementAgent\CSObjectSearchResultBatch.cs" />
+    <Compile Include="Models\CSObject\DNValue.cs" />
+    <Compile Include="Enums\ConnectorState.cs" />
+    <Compile Include="Enums\CSObjectParts.cs" />
+    <Compile Include="Models\RunHistory\ExtensionErrorInfo.cs" />
+    <Compile Include="Models\CSObject\Attribute.cs" />
+    <Compile Include="Models\CSObject\AttributeValue.cs" />
+    <Compile Include="Models\CSObject\DNAttribute.cs" />
+    <Compile Include="Models\CSObject\Delta.cs" />
+    <Compile Include="Models\CSObject\MVLink.cs" />
+    <Compile Include="Models\RunHistory\MAConnection.cs" />
+    <Compile Include="Models\RunHistory\CDError.cs" />
+    <Compile Include="Models\RunHistory\MAObjectCDError.cs" />
+    <Compile Include="Models\RunHistory\MAObjectError.cs" />
+    <Compile Include="Models\RunHistory\MADiscoveryCounters.cs" />
+    <Compile Include="Models\RunHistory\ImportError.cs" />
+    <Compile Include="Models\RunHistory\ExportChangeNotReimportedError.cs" />
+    <Compile Include="Models\CSObject\Hologram.cs" />
+    <Compile Include="Models\RunHistory\ExportError.cs" />
+    <Compile Include="Models\RunHistory\ExportCDError.cs" />
+    <Compile Include="Models\RunHistory\MVRetryError.cs" />
+    <Compile Include="Models\RunHistory\OutboundFlowCounters.cs" />
+    <Compile Include="Models\RunHistory\InboundFlowCounters.cs" />
+    <Compile Include="Models\RunHistory\ExportCounters.cs" />
+    <Compile Include="Models\ManagementAgent\RunConfiguration.cs" />
+    <Compile Include="Models\ManagementAgent\RunStep.cs" />
+    <Compile Include="Models\RunHistory\StagingCounters.cs" />
+    <Compile Include="Models\RunHistory\SynchronizationErrors.cs" />
+    <Compile Include="Models\SyncPreview\FlowRuleAdvanced.cs" />
+    <Compile Include="Models\SyncPreview\FlowRuleDNComponent.cs" />
+    <Compile Include="Models\SyncPreview\FlowRuleDirect.cs" />
+    <Compile Include="Models\RunHistory\RulesErrorInfoContext.cs" />
+    <Compile Include="Models\RunHistory\RunDetails.cs" />
+    <Compile Include="Models\RunHistory\AlgorithmStep.cs" />
+    <Compile Include="Models\CSObject\EncodedValue.cs" />
+    <Compile Include="Models\CSObject\AttributeFlow.cs" />
+    <Compile Include="Models\SyncPreview\FlowRuleConstant.cs" />
+    <Compile Include="Models\RunHistory\StepDetails.cs" />
+    <Compile Include="Enums\DeltaOperationType.cs" />
+    <Compile Include="Enums\AttributeType.cs" />
+    <Compile Include="Enums\AttributeOperation.cs" />
+    <Compile Include="Enums\AttributeValueOperation.cs" />
+    <Compile Include="Enums\ExtensionCallSite.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Docs\mms-specifications.pdf" />
+    <None Include="Lithnet.Miiserver.Client.ruleset" />
+    <None Include="packages.config" />
+    <None Include="Package\Lithnet.Miiserver.Client.nuspec" />
+    <None Include="Docs\RunHistory.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>d:\NuGet\NuGet.exe pack $(ProjectPath)</PostBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\Fody.1.29.2\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.2\build\dotnet\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Fody.1.29.2\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.1.29.2\build\dotnet\Fody.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,750 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- GUID with leading { and trailing }-->
+  <xs:simpleType name="guidType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(\{([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\})"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- DN -->
+  <xs:simpleType name="dnType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="(.*=.*,){0,}.*=.*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- domain\username-->
+  <xs:simpleType name="security-idType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value=".*\\.*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- x/y -->
+  <xs:simpleType name="progressType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]*/[0-9]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- yyyy-mm-dd hh:mm:ss.fff -->
+  <xs:simpleType name="dateTimeNoT">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([0-9]){4}-([0-9]){2}-([0-9]){2} ([0-9]){2}:([0-9]){2}:([0-9]){2}.([0-9]){1,3}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- step result types -->
+  <xs:complexType name="stepResultType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="progress" type="progressType" use="optional" />
+        <xs:attribute name="file" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- connection results -->
+  <xs:simpleType name="connectionResultType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="success"/>
+      <xs:enumeration value="failed-connection"/>
+      <xs:enumeration value="dropped-connection"/>
+      <xs:enumeration value="failed-authentication"/>
+      <xs:enumeration value="failed-search"/>
+      <xs:enumeration value="warning-no-watermark"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!--algorithm step type -->
+  <xs:complexType  name="algorithmStepType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="ma-id" type="guidType" use="optional" />
+        <xs:attribute name="dn" type="dnType" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- algorithm step type restricted -->
+  <xs:complexType name="algorithmStepRestrictedType">
+    <xs:simpleContent>
+      <xs:restriction base="algorithmStepType">
+        <xs:enumeration value="staging"/>
+        <xs:enumeration value="connector-filter"/>
+        <xs:enumeration value="join"/>
+        <xs:enumeration value="projection"/>
+        <xs:enumeration value="import-flow"/>
+        <xs:enumeration value="provisioning"/>
+        <xs:enumeration value="validate-connector-filter"/>
+        <xs:enumeration value="deprovisioning"/>
+        <xs:enumeration value="export-flow"/>
+        <xs:enumeration value="mv-deletion"/>
+        <xs:enumeration value="recall"/>
+        <xs:enumeration value="mv-object-type-change"/>
+      </xs:restriction>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Anchor - test or binary -->
+  <xs:complexType name="anchorType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="encoding" type="xs:string" use="optional" fixed="base64" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- Binary anchor -->
+  <xs:complexType name="binaryAnchorType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="encoding" type="xs:string" use="optional" fixed="base64" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- DN Attribute Type -->
+  <xs:complexType name="dnAttributeType">
+    <xs:sequence>
+      <xs:element name="dn-value" minOccurs="1" maxOccurs="unbounded"  >
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="dn" type="dnType"  minOccurs="1" maxOccurs="1" />
+            <xs:element name="anchor" type ="binaryAnchorType" minOccurs="1" maxOccurs="1" />
+          </xs:sequence>
+          <xs:attribute name="operation" use="required">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="add"/>
+                <xs:enumeration value="delete"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="operation" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="add"/>
+          <xs:enumeration value="replace"/>
+          <xs:enumeration value="update"/>
+          <xs:enumeration value="delete"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="multivalued" type="xs:boolean" use="required" />
+  </xs:complexType>
+
+  <!-- Attribute type -->
+  <xs:complexType name="attributeType">
+    <xs:sequence>
+      <xs:element name="value" minOccurs="1" maxOccurs="unbounded"  >
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="operation" use="required">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:enumeration value="add"/>
+                    <xs:enumeration value="update"/>
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:attribute>
+              <xs:attribute name="encoding" type="xs:string" use="optional" fixed="base64" />
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="operation" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="add"/>
+          <xs:enumeration value="replace"/>
+          <xs:enumeration value="update"/>
+          <xs:enumeration value="delete"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="type" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="binary"/>
+          <xs:enumeration value="string"/>
+          <xs:enumeration value="integer"/>
+          <xs:enumeration value="boolean"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="multivalued" type="xs:boolean" use="required" />
+  </xs:complexType>
+
+  <!-- error types for import and MV retry errors -->
+  <xs:simpleType name="importAndMVRetryErrorType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="extension-dll-exception"/>
+      <xs:enumeration value="extension-dll-crash"/>
+      <xs:enumeration value="extension-dll-timeout"/>
+      <xs:enumeration value="extension-projection-object-type-not-set"/>
+      <xs:enumeration value="extension-projection-invalid-object-type"/>
+      <xs:enumeration value="extension-join-resolution-invalid-object-type"/>
+      <xs:enumeration value="extension-join-resolution-index-out-of-bounds"/>
+      <xs:enumeration value="extension-provisioning-call-limit-reached"/>
+      <xs:enumeration value="extension-deprovisioning-invalid-result"/>
+      <xs:enumeration value="extension-entry-point-not-implemented"/>
+      <xs:enumeration value="extension-unexpected-attribute-value"/>
+      <xs:enumeration value="flow-multi-values-to-single-value"/>
+      <xs:enumeration value="cs-attribute-type-mismatch"/>
+      <xs:enumeration value="join-object-id-must-be-single-valued"/>
+      <xs:enumeration value="dn-index-out-of-bounds"/>
+      <xs:enumeration value="connector-filter-rule-violation"/>
+      <xs:enumeration value="unsupported-container-delete"/>
+      <xs:enumeration value="ambiguous-import-flow-from-multiple-connectors"/>
+      <xs:enumeration value="ambiguous-export-flow-to-single-valued-attribute"/>
+      <xs:enumeration value="cannot-parse-dn-component"/>
+      <xs:enumeration value="cannot-parse-object-id"/>
+      <xs:enumeration value="unexported-container-rename"/>
+      <xs:enumeration value="unique-index-violation"/>
+      <xs:enumeration value="mv-constraint-violation"/>
+      <xs:enumeration value="locking-error-needs-retry"/>
+      <xs:enumeration value="unexpected-error"/>
+      <xs:enumeration value="exported-change-not-reimported"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!--extension callsites -->
+  <xs:simpleType name="extensionCallsiteType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="initialize"/>
+      <xs:enumeration value="connector-filter"/>
+      <xs:enumeration value="join-mapping"/>
+      <xs:enumeration value="join-resolution"/>
+      <xs:enumeration value="projection"/>
+      <xs:enumeration value="import-flow"/>
+      <xs:enumeration value="export-flow"/>
+      <xs:enumeration value="provisioning"/>
+      <xs:enumeration value="mv-deletion"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- extension error info type -->
+  <xs:complexType name="extensionErrorInfoType">
+    <xs:sequence>
+      <xs:element name="extension-name" type="xs:string" minOccurs="1" maxOccurs="1"  />
+      <xs:element name="extension-callsite" type="extensionCallsiteType" minOccurs="1" maxOccurs="1"  />
+      <xs:element name="extension-context" type="xs:string" minOccurs="1" maxOccurs="1"  />
+      <xs:element name="call-stack" type="xs:string" minOccurs="1" maxOccurs="1"  />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- direct-mapping type -->
+  <xs:complexType  name="directMappingType" >
+    <xs:sequence>
+      <xs:element name="src-attribute" minOccurs="1" maxOccurs="1" >
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="intrinsic" type="xs:boolean" use="optional" />
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- scripted-mapping type -->
+  <xs:complexType  name="scriptedMappingType" >
+    <xs:sequence>
+      <xs:element name="src-attribute" minOccurs="1" maxOccurs="unbounded" >
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="intrinsic" type="xs:boolean" use="optional" />
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="script-context" type="xs:string" minOccurs="1" maxOccurs="1"  />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!--constant-mapping type-->
+  <xs:complexType  name="constantMappingType" >
+    <xs:sequence>
+      <xs:element name="constant-value" type="xs:string" minOccurs="1" maxOccurs="1"  />
+    </xs:sequence>
+  </xs:complexType>
+  <!-- dn-part-mapping type -->
+  <xs:complexType  name="dnPartMappingType" >
+    <xs:sequence>
+      <xs:element name="dn-part" type="xs:unsignedByte" minOccurs="1" maxOccurs="1"  />
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- rules error info type -->
+  <xs:complexType name="rulesErrorInfoType">
+    <xs:sequence>
+      <xs:element name="context" minOccurs="1" maxOccurs="1" >
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="attribute-mapping" minOccurs="1" maxOccurs="1">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:choice>
+                    <xs:element name="direct-mapping" type="directMappingType"  minOccurs="1" maxOccurs="1" />
+                    <xs:element name="scripted-mapping" type="scriptedMappingType" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="constant-mapping" type="constantMappingType" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="dn-part-mapping" type="dnPartMappingType" minOccurs="1" maxOccurs="1" />
+                  </xs:choice>
+                </xs:sequence>
+                <xs:attribute name="dest-attr" type="xs:string" use="required" />
+                <xs:attribute name="context-id" type="xs:string" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="ma-id" type="guidType" use="required" />
+          <xs:attribute name="ma-name" type="xs:string" use="required" />
+          <xs:attribute name="cs-object-id" type="guidType" use="required" />
+          <xs:attribute name="dn" type="dnType" use="required" />
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- counter with detail false -->
+  <xs:complexType name="counterDetailFalseType">
+    <xs:simpleContent>
+      <xs:extension base="xs:unsignedInt">
+        <xs:attribute name="detail" type="xs:string" use="required" fixed="false"  />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- counter with detail true -->
+  <xs:complexType name="counterDetailTrueType">
+    <xs:simpleContent>
+      <xs:extension base="xs:unsignedInt">
+        <xs:attribute name="detail" type="xs:string" use="required" fixed="true"  />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <!-- history type -->
+  <xs:complexType name="run-historyType">
+    <xs:sequence>
+      <xs:element name="run-details" minOccurs="1" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ma-id" type="guidType" minOccurs="1" maxOccurs="1" />
+            <xs:element name="ma-name" type="xs:string" minOccurs="1" maxOccurs="1" />
+            <xs:element name="run-number" type="xs:unsignedShort" minOccurs="1" maxOccurs="1" />
+            <xs:element name="run-profile-name" type="xs:string" minOccurs="1" maxOccurs="1" />
+            <xs:element name="security-id" type="security-idType" minOccurs="1" maxOccurs="1" />
+            <xs:element name="step-details" minOccurs="1" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="start-date" type="dateTimeNoT" minOccurs="1" maxOccurs="1"  />
+                  <xs:element name="end-date" type="dateTimeNoT" minOccurs="1" maxOccurs="1"  />
+                  <!-- add enum -->
+                  <xs:element name="step-result">
+                    <xs:complexType>
+                      <xs:simpleContent>
+                        <xs:restriction base="stepResultType">
+                          <xs:enumeration value="completed-discovery-errors"/>
+                          <xs:enumeration value="completed-export-errors"/>
+                          <xs:enumeration value="completed-no-objects"/>
+                          <xs:enumeration value="completed-sync-errors"/>
+                          <xs:enumeration value="completed-transient-objects"/>
+                          <xs:enumeration value="completed-warnings"/>
+                          <xs:enumeration value="completing-obsoletion"/>
+                          <xs:enumeration value="completing-referential-updates"/>
+                          <xs:enumeration value="in-progress"/>
+                          <xs:enumeration value="no-start-bad-ma-configuration"/>
+                          <xs:enumeration value="no-start-change-log-not-enabled"/>
+                          <xs:enumeration value="no-start-connection"/>
+                          <xs:enumeration value="no-start-credentials"/>
+                          <xs:enumeration value="no-start-database-permission"/>
+                          <xs:enumeration value="no-start-database-schema-mismatch"/>
+                          <xs:enumeration value="no-start-database-table"/>
+                          <xs:enumeration value="no-start-delta-step-type-not-configured"/>
+                          <xs:enumeration value="no-start-file-access-denied"/>
+                          <xs:enumeration value="no-start-file-code-page"/>
+                          <xs:enumeration value="no-start-file-contains-incorrect-step-type"/>
+                          <xs:enumeration value="no-start-file-not-found"/>
+                          <xs:enumeration value="no-start-file-open"/>
+                          <xs:enumeration value="no-start-file-sharing-violation"/>
+                          <xs:enumeration value="no-start-full-import-required"/>
+                          <xs:enumeration value="no-start-header-row-mismatch"/>
+                          <xs:enumeration value="no-start-ma"/>
+                          <xs:enumeration value="no-start-ma-working-directory"/>
+                          <xs:enumeration value="no-start-no-domain-controller"/>
+                          <xs:enumeration value="no-start-no-partition-delete"/>
+                          <xs:enumeration value="no-start-partition-not-configured"/>
+                          <xs:enumeration value="no-start-partition-rename"/>
+                          <xs:enumeration value="no-start-server"/>
+                          <xs:enumeration value="no-start-no-steps-in-profile"/>
+                          <xs:enumeration value="stopped-bad-ma-configuration"/>
+                          <xs:enumeration value="stopped-change-log-out-of-order"/>
+                          <xs:enumeration value="stopped-code-page-conversion"/>
+                          <xs:enumeration value="stopped-connectivity"/>
+                          <xs:enumeration value="stopped-database-connection-lost"/>
+                          <xs:enumeration value="stopped-database-disk-full"/>
+                          <xs:enumeration value="stopped-deadlocked"/>
+                          <xs:enumeration value="stopped-disk-full"/>
+                          <xs:enumeration value="stopped-error-limit"/>
+                          <xs:enumeration value="stopped-export-write"/>
+                          <xs:enumeration value="stopped-extension-dll-access"/>
+                          <xs:enumeration value="stopped-extension-dll-ambiguous"/>
+                          <xs:enumeration value="stopped-extension-dll-exception"/>
+                          <xs:enumeration value="stopped-extension-dll-file-not-found"/>
+                          <xs:enumeration value="stopped-extension-dll-instantiation"/>
+                          <xs:enumeration value="stopped-extension-dll-invalid-assembly"/>
+                          <xs:enumeration value="stopped-extension-dll-load"/>
+                          <xs:enumeration value="stopped-extension-dll-missing-dependency"/>
+                          <xs:enumeration value="stopped-extension-dll-no-implementation"/>
+                          <xs:enumeration value="stopped-extension-dll-not-configured-for-ma"/>
+                          <xs:enumeration value="stopped-extension-dll-not-configured-for-mv"/>
+                          <xs:enumeration value="stopped-extension-dll-updated-version"/>
+                          <xs:enumeration value="stopped-file-embedded-nulls"/>
+                          <xs:enumeration value="stopped-file-error"/>
+                          <xs:enumeration value="stopped-import-read"/>
+                          <xs:enumeration value="stopped-ma"/>
+                          <xs:enumeration value="stopped-object-limit"/>
+                          <xs:enumeration value="stopped-out-of-memory"/>
+                          <xs:enumeration value="stopped-parsing-errors"/>
+                          <xs:enumeration value="stopped-server"/>
+                          <xs:enumeration value="stopped-service-shutdown"/>
+                          <xs:enumeration value="stopped-user-termination-from-extension"/>
+                          <xs:enumeration value="stopped-user-termination-from-wmi-or-ui"/>
+                          <xs:enumeration value="success"/>
+                        </xs:restriction>
+                      </xs:simpleContent>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="step-description" type="xs:anyType" minOccurs="1" maxOccurs="1"  />
+                  <xs:element name="current-export-step-counter" type="xs:unsignedInt" minOccurs="1" maxOccurs="1"  />
+                  <xs:element name="last-successful-export-step-counter" type="xs:unsignedInt" minOccurs="1" maxOccurs="1"  />
+                  <xs:element name="ma-connection" minOccurs="1" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="connection-result" type="connectionResultType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="server" type="xs:string" minOccurs="0" maxOccurs="1"  />
+                        <xs:element name="connection-log" minOccurs="0" maxOccurs="1" >
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element name="incident" minOccurs="1" maxOccurs="1" >
+                                <xs:complexType>
+                                  <xs:sequence>
+                                    <xs:element name="connection-result" type="connectionResultType" minOccurs="1" maxOccurs="1"  />
+                                    <xs:element name="date" type="dateTimeNoT" minOccurs="1" maxOccurs="1"  />
+                                    <xs:element name="server" type="xs:string" minOccurs="1" maxOccurs="1"  />
+                                    <xs:element name="cd-error" minOccurs="0" maxOccurs="1" >
+                                      <xs:complexType>
+                                        <xs:sequence>
+                                          <xs:element name="error-code" type="xs:string" minOccurs="1" maxOccurs="1"  />
+                                          <xs:element name="error-literal" type="xs:string" minOccurs="1" maxOccurs="1"  />
+                                        </xs:sequence>
+                                      </xs:complexType>
+                                    </xs:element>
+                                  </xs:sequence>
+                                </xs:complexType>
+                              </xs:element>
+                            </xs:sequence>
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="ma-discovery-errors" minOccurs="1" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="ma-object-error" minOccurs="0" maxOccurs="unbounded" >
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element name="error-type" minOccurs="1" maxOccurs="1">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="missing-change-type"/>
+                                    <xs:enumeration value="invalid-change-type"/>
+                                    <xs:enumeration value="multi-valued-change-type"/>
+                                    <xs:enumeration value="need-full-object"/>
+                                    <xs:enumeration value="missing-dn"/>
+                                    <xs:enumeration value="dn-not-ldap-conformant"/>
+                                    <xs:enumeration value="invalid-dn"/>
+                                    <xs:enumeration value="missing-anchor-component"/>
+                                    <xs:enumeration value="multi-valued-anchor-component"/>
+                                    <xs:enumeration value="anchor-too-long"/>
+                                    <xs:enumeration value="duplicate-object"/>
+                                    <xs:enumeration value="missing-object-class"/>
+                                    <xs:enumeration value="missing-object-type"/>
+                                    <xs:enumeration value="unmappable-object-type"/>
+                                    <xs:enumeration value="parse-error"/>
+                                    <xs:enumeration value="read-error"/>
+                                    <xs:enumeration value="staging-error"/>
+                                    <xs:enumeration value="invalid-reference-value"/>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:element>
+                              <xs:element name="entry-number" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"  />
+                              <xs:element name="line-number" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"  />
+                              <xs:element name="column-number" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"  />
+                              <xs:element name="dn" type="dnType" minOccurs="0" maxOccurs="1"  />
+                              <xs:element name="anchor" type ="anchorType" minOccurs="0" maxOccurs="1" />
+                              <xs:element name="attribute-name" type="xs:string" minOccurs="0" maxOccurs="1"  />
+                              <xs:element name="cd-error" minOccurs="0" maxOccurs="1" >
+                                <xs:complexType>
+                                  <xs:sequence>
+                                    <xs:element name="error-code" type="xs:string" minOccurs="1" maxOccurs="1"  />
+                                    <xs:element name="error-literal" type="xs:string" minOccurs="1" maxOccurs="1"  />
+                                    <xs:element name="server-error-detail" type="xs:string" minOccurs="0" maxOccurs="1"  />
+                                    <xs:element name="value" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+                                  </xs:sequence>
+                                </xs:complexType>
+                              </xs:element>
+                            </xs:sequence>
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="ma-discovery-counters" minOccurs="1" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="filtered-deletions" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"   />
+                        <xs:element name="filtered-objects" type="xs:unsignedInt" minOccurs="0" maxOccurs="1"   />
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="synchronization-errors" minOccurs="1" maxOccurs="1"  >
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="import-error" minOccurs="0" maxOccurs="unbounded"  >
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element name="first-occurred" type="dateTimeNoT" minOccurs="1" maxOccurs="1"   />
+                              <xs:element name="retry-count" type="xs:unsignedByte" minOccurs="1" maxOccurs="1"   />
+                              <xs:element name="date-occurred" type="dateTimeNoT" minOccurs="1" maxOccurs="1"   />
+                              <xs:element name="error-type" type="importAndMVRetryErrorType" minOccurs="1" maxOccurs="1" />
+                              <xs:element name="algorithm-step" type ="algorithmStepRestrictedType" minOccurs="1" maxOccurs="1" />
+                              <xs:element name="change-not-reimported" minOccurs="0" maxOccurs="1"  >
+                                <xs:complexType>
+                                  <xs:sequence>
+                                    <xs:element name="delta" minOccurs="1" maxOccurs="1"  >
+                                      <xs:complexType>
+                                        <xs:sequence>
+                                          <xs:element name="anchor" type ="binaryAnchorType" minOccurs="0" maxOccurs="1"  />
+                                          <xs:element name="dn-attr" type ="dnAttributeType" minOccurs="0" maxOccurs="unbounded"  />
+                                          <xs:element name="attr" type ="attributeType" minOccurs="0" maxOccurs="unbounded" />
+                                        </xs:sequence>
+                                        <xs:attribute name="operation" use="required">
+                                          <xs:simpleType>
+                                            <xs:restriction base="xs:string">
+                                              <xs:enumeration value="add"/>
+                                              <xs:enumeration value="replace"/>
+                                              <xs:enumeration value="update"/>
+                                              <xs:enumeration value="delete"/>
+                                              <xs:enumeration value="obsolete"/>
+                                              <xs:enumeration value="delete-add"/>
+                                            </xs:restriction>
+                                          </xs:simpleType>
+                                        </xs:attribute>
+                                        <xs:attribute name="dn" type="dnType" use="required" />
+                                      </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="entry" minOccurs="1" maxOccurs="1" >
+                                      <xs:complexType>
+                                        <xs:sequence>
+                                          <xs:element name="anchor" type ="binaryAnchorType" minOccurs="1" maxOccurs="1" />
+                                          <xs:element name="parent-anchor" type ="binaryAnchorType" minOccurs="1" maxOccurs="1" />
+                                          <xs:element name="primary-[-MA] &lt;String&gt;" type="xs:string" minOccurs="1" maxOccurs="1"  />
+                                          <xs:element name="[-MA] &lt;String&gt;">
+                                            <xs:complexType>
+                                              <xs:sequence>
+                                                <xs:element  minOccurs="1" maxOccurs="unbounded" name="oc-value" type="xs:string" />
+                                              </xs:sequence>
+                                            </xs:complexType>
+                                          </xs:element>
+                                          <xs:element name="dn-attr" type ="dnAttributeType" minOccurs="0" maxOccurs="unbounded" />
+                                          <xs:element name="attr" type ="attributeType" minOccurs="0" maxOccurs="unbounded" />
+                                        </xs:sequence>
+                                        <xs:attribute name="dn" type="dnType" use="required" />
+                                      </xs:complexType>
+                                    </xs:element>
+                                  </xs:sequence>
+                                </xs:complexType>
+                              </xs:element>
+                              <xs:element name="extension-error-info" type="extensionErrorInfoType" minOccurs="0" maxOccurs="1" />
+                              <xs:element name="rules-error-info" type ="rulesErrorInfoType" minOccurs="0" maxOccurs="1" />
+                            </xs:sequence>
+                            <xs:attribute name="cs-guid" type="xs:string" use="required" />
+                            <xs:attribute name="dn" type="xs:string" use="required" />
+                          </xs:complexType>
+                        </xs:element>
+                        <xs:element name="export-error" minOccurs="0" maxOccurs="unbounded" >
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element name="date-occurred" type="dateTimeNoT" minOccurs="1" maxOccurs="1"  />
+                              <xs:element name="first-occurred" type="dateTimeNoT" minOccurs="1" maxOccurs="1"  />
+                              <xs:element name="retry-count" type="xs:unsignedByte" minOccurs="1" maxOccurs="1"  />
+                              <xs:element name="error-type" minOccurs="1" maxOccurs="1">
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="ambiguous-update"/>
+                                    <xs:enumeration value="anchor-too-long"/>
+                                    <xs:enumeration value="cd-error"/>
+                                    <xs:enumeration value="cd-existing-object"/>
+                                    <xs:enumeration value="cd-missing-object"/>
+                                    <xs:enumeration value="certifier-ou-not-configured"/>
+                                    <xs:enumeration value="code-page-conversion"/>
+                                    <xs:enumeration value="constraint-violation"/>
+                                    <xs:enumeration value="dn-attributes-failure"/>
+                                    <xs:enumeration value="duplicate-anchor"/>
+                                    <xs:enumeration value="encryption-not-enabled"/>
+                                    <xs:enumeration value="insufficient-columns"/>
+                                    <xs:enumeration value="insufficient-field-width"/>
+                                    <xs:enumeration value="invalid-attribute-value"/>
+                                    <xs:enumeration value="invalid-dn"/>
+                                    <xs:enumeration value="invalid-provisioning-attribute-value"/>
+                                    <xs:enumeration value="kerberos-no-logon-server"/>
+                                    <xs:enumeration value="kerberos-time-skew"/>
+                                    <xs:enumeration value="locking-error-needs-retry"/>
+                                    <xs:enumeration value="missing-anchor-component"/>
+                                    <xs:enumeration value="missing-provisioning-attribute"/>
+                                    <xs:enumeration value="modify-naming-attribute"/>
+                                    <xs:enumeration value="multi-valued-anchor-component"/>
+                                    <xs:enumeration value="no-export-to-this-object-type"/>
+                                    <xs:enumeration value="non-existent-parent"/>
+                                    <xs:enumeration value="password-policy-violation"/>
+                                    <xs:enumeration value="password-set-disallowed"/>
+                                    <xs:enumeration value="permission-issue"/>
+                                    <xs:enumeration value="provision-to-secondary-nab"/>
+                                    <xs:enumeration value="rename-to-existing-dn"/>
+                                    <xs:enumeration value="schema-violation"/>
+                                    <xs:enumeration value="syntax-violation"/>
+                                    <xs:enumeration value="temporary-certifier-file-creation-failure"/>
+                                    <xs:enumeration value="unexpected-provisioning-attribute"/>
+                                    <xs:enumeration value="unexpected-error"/>
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:element>
+                              <xs:element name="cd-error" minOccurs="0" maxOccurs="1" >
+                                <xs:complexType>
+                                  <xs:sequence>
+                                    <xs:element name="error-code" type="xs:string" minOccurs="1" maxOccurs="1"  />
+                                    <xs:element name="error-literal" type="xs:string" minOccurs="1" maxOccurs="1"  />
+                                    <xs:element name="server-error-detail" type="xs:string" minOccurs="0" maxOccurs="1"  />
+                                  </xs:sequence>
+                                </xs:complexType>
+                              </xs:element>
+                            </xs:sequence>
+                            <xs:attribute name="cs-guid" type="guidType" use="required" />
+                            <xs:attribute name="dn" type="dnType" use="required" />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="mv-retry-errors" minOccurs="1" maxOccurs="1" >
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="retry-error" minOccurs="0" maxOccurs="unbounded" >
+                          <xs:complexType>
+                            <xs:sequence>
+                              <xs:element name="date-occurred" type="dateTimeNoT"  minOccurs="1" maxOccurs="1" />
+                              <xs:element name="error-type" type="importAndMVRetryErrorType" minOccurs="1" maxOccurs="1" />
+                              <xs:element name="algorithm-step" type="algorithmStepRestrictedType" minOccurs="1" maxOccurs="1" />
+                              <xs:element name="extension-error-info" type ="extensionErrorInfoType" minOccurs="0" maxOccurs="1" />
+                              <xs:element name="rules-error-info" type ="rulesErrorInfoType" minOccurs="0" maxOccurs="1" />
+                            </xs:sequence>
+                            <xs:attribute name="displayName" type="xs:string" use="required" />
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="outbound-flow-counters" minOccurs="0" maxOccurs="unbounded" >
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="provisioned-add-no-flow" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="provisioned-add-flow" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="provisioned-rename-no-flow" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="provisioned-rename-flow" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="provisioned-disconnect" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="connector-flow" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="connector-no-flow" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="provisioned-delete-add-no-flow" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                        <xs:element name="provisioned-delete-add-flow" type="counterDetailTrueType" minOccurs="0" maxOccurs="1" />
+                      </xs:sequence>
+                      <xs:attribute name="ma" type="xs:string" use="required" />
+                      <xs:attribute name="ma-id" type="guidType" use="required" />
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="staging-counters" minOccurs="1" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="stage-no-change" type="counterDetailFalseType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="stage-add" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="stage-update" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="stage-rename" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="stage-delete" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="stage-delete-add" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="stage-failure" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="inbound-flow-counters" minOccurs="1" maxOccurs="unbounded">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="disconnector-filtered" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="disconnector-joined-no-flow" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="disconnector-joined-flow" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="disconnector-joined-remove-mv" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="disconnector-projected-no-flow" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="disconnector-projected-flow" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="disconnector-projected-remove-mv" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="disconnector-remains" type="counterDetailFalseType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="connector-filtered-remove-mv" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="connector-filtered-leave-mv" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="connector-flow" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="connector-flow-remove-mv" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="connector-no-flow" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="connector-delete-remove-mv" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="connector-delete-leave-mv" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="connector-delete-add-processed" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="flow-failure" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                  <xs:element name="export-counters" minOccurs="1" maxOccurs="1">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="export-add" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="export-update" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="export-rename" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="export-delete" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="export-delete-add" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                        <xs:element name="export-failure" type="counterDetailTrueType" minOccurs="1" maxOccurs="1" />
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:attribute name="step-number" type="xs:unsignedShort" use="required" />
+                <xs:attribute name="step-id" type="guidType" use="required" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- instance of history-type -->
+  <xs:element name="run-history" type ="run-historyType" />
+</xs:schema>
+
