@@ -8,8 +8,28 @@ using System.Xml.Serialization;
 
 namespace Lithnet.Miiserver.Client
 {
+    using System.Runtime.InteropServices;
+    using System.Security;
+
     public static class Extensions
     {
+        public static string ConvertToUnsecureString(this SecureString securePassword)
+        {
+            if (securePassword == null)
+                throw new ArgumentNullException(nameof(securePassword));
+
+            IntPtr unmanagedString = IntPtr.Zero;
+            try
+            {
+                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(securePassword);
+                return Marshal.PtrToStringUni(unmanagedString);
+            }
+            finally
+            {
+                Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
+            }
+        }
+
         public static string ToMmsDateString(this DateTime date)
         {
             return date.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fff");

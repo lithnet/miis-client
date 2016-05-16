@@ -97,8 +97,58 @@ namespace Lithnet.Miiserver.Client
         {
             string date = clearBeforeDate.ToMmsDateString();
 
+            ManagementObject mo = SyncServer.GetServerManagementObject();
+
+            string result = mo.InvokeMethod("ClearRuns", new object[] { date }) as string;
+
+            if (result == "access-denied")
+            {
+                throw new UnauthorizedAccessException();
+            }
+            else if (result != "success")
+            {
+                throw new MiiserverException($"The operation returned {result}");
+            }
+        }
+
+        public static void ClearPasswordHistory(DateTime clearBeforeDate)
+        {
+            string date = clearBeforeDate.ToMmsDateString();
+
+            ManagementObject mo = SyncServer.GetServerManagementObject();
+
+            string result = mo.InvokeMethod("ClearPasswordHistory", new object[] { date }) as string;
+
+            if (result == "access-denied")
+            {
+                throw new UnauthorizedAccessException();
+            }
+            else if (result != "success")
+            {
+                throw new MiiserverException($"The operation returned {result}");
+            }
+        }
+
+        public static void ClearPasswordQueue()
+        {
+            ManagementObject mo = SyncServer.GetServerManagementObject();
+
+            string result = mo.InvokeMethod("ClearPasswordQueue", new object[] { }) as string;
+
+            if (result == "access-denied")
+            {
+                throw new UnauthorizedAccessException();
+            }
+            else if (result != "success")
+            {
+                throw new MiiserverException($"The operation returned {result}");
+            }
+        }
+
+        private static ManagementObject GetServerManagementObject()
+        {
             ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_Server"));
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope, query);
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.scope, query);
             ManagementObjectCollection moc = searcher.Get();
 
             if (moc.Count == 0)
@@ -107,8 +157,7 @@ namespace Lithnet.Miiserver.Client
             }
 
             ManagementObject mo = moc.OfType<ManagementObject>().First();
-
-            mo.InvokeMethod("ClearRuns", new object[] { date });
+            return mo;
         }
 
         public static IEnumerable<RunSummary> GetRunSummary()
