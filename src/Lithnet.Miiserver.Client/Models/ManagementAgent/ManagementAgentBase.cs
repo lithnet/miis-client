@@ -274,6 +274,11 @@ namespace Lithnet.Miiserver.Client
 
             XmlNode n1 = SyncServer.GetImportAttributeFlows();
 
+            if (n1 == null)
+            {
+                return sets.AsReadOnly();
+            }
+
             foreach (XmlNode n2 in n1.SelectNodes("import-flow-set"))
             {
                 List<MAImportFlow> importFlows = new List<MAImportFlow>();

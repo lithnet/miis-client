@@ -11,9 +11,12 @@ using System.Diagnostics;
 using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 using System.Runtime.InteropServices;
 using System.Xml;
+using Lithnet.Miiserver.Client;
 
 namespace Lithnet.Miiserver.Client
 {
+    using Microsoft.DirectoryServices.MetadirectoryServices.UI.PropertySheetBase;
+
     public static class SyncServer
     {
         internal static ManagementScope scope = new ManagementScope(@"\\.\ROOT\MicrosoftIdentityIntegrationServer");
@@ -178,23 +181,24 @@ namespace Lithnet.Miiserver.Client
 
         public static RunDetails GetRunDetail(Guid maid, int runNumber)
         {
-            string query = string.Format("<execution-history-req ma=\"{0}\"><run-number>{1}</run-number></execution-history-req>", maid.ToMmsGuid(), runNumber);
+            string query = $"<execution-history-req ma=\"{maid.ToMmsGuid()}\"><run-number>{runNumber}</run-number></execution-history-req>";
             string result = ws.GetExecutionHistory(query);
 
-            if (result != null)
-            {
-                return RunDetails.GetRunDetails(result).FirstOrDefault();
-            }
-            else
-            {
-                return null;
-            }
+            return result != null ? RunDetails.GetRunDetails(result).FirstOrDefault() : null;
         }
 
         public static void ClearRunHistory(DateTime clearBeforeDate, string filename)
         {
             SyncServer.SaveRunHistory(clearBeforeDate, filename);
             SyncServer.ClearRunHistory(clearBeforeDate);
+        }
+
+        public static bool IsAdmin()
+        {
+            string result = ws.GetRole();
+            int role = Convert.ToInt32(result);
+
+            return (1 & role) == 1;
         }
 
         public static void SaveRunHistory(string filename)
@@ -308,7 +312,7 @@ namespace Lithnet.Miiserver.Client
             XmlDocument d = new XmlDocument();
             d.LoadXml(SyncServer.GetImportFlows());
 
-            return d.SelectSingleNode("/mv-data/import-attribute-flow");
+            return d.SelectSingleNode("mv-data/import-attribute-flow");
         }
 
         private static string GetImportFlows()
