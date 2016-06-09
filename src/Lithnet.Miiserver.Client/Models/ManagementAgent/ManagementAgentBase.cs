@@ -16,7 +16,7 @@ namespace Lithnet.Miiserver.Client
     {
         protected static MMSWebService ws = new MMSWebService();
 
-        protected ManagementObject wmiobject;
+        //protected ManagementObject wmiobject;
 
         private IReadOnlyList<MAImportFlowSet> importFlows;
 
@@ -25,7 +25,7 @@ namespace Lithnet.Miiserver.Client
 
         {
             this.ID = id;
-            this.wmiobject = ManagementAgent.GetManagementAgentWmiObject(this.ID);
+            //this.wmiobject = ManagementAgent.GetManagementAgentWmiObject(this.ID);
             this.Refresh();
         }
 
@@ -310,39 +310,37 @@ namespace Lithnet.Miiserver.Client
         {
             try
             {
-                return this.wmiobject.InvokeMethod(method, arguments);
+                using (ManagementObject wmiObject = ManagementAgentBase.GetManagementAgentWmiObject(this.ID))
+                {
+                    return wmiObject.InvokeMethod(method, arguments);
+                }
             }
             catch (COMException ex)
             {
-                if (ex.ErrorCode == -2147417848) //0x80010108 RPC_E_DISCONNECTED
-                {
-                    this.wmiobject = ManagementAgentBase.GetManagementAgentWmiObject(this.ID);
-                    return this.wmiobject.InvokeMethod(method, arguments);
-                }
-                else
-                {
-                    throw new MiiserverException(SyncServer.TranslateCOMException(ex), ex);
-                }
+                throw new MiiserverException(SyncServer.TranslateCOMException(ex), ex);
             }
         }
 
         private static ManagementObject GetManagementAgentWmiObject(Guid id)
         {
             ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_ManagementAgent where Guid='{0}'", id.ToMmsGuid()));
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.scope, query);
-            ManagementObjectCollection results = searcher.Get();
 
-            if (results.Count == 0)
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.scope, query))
             {
-                return null;
-            }
-            else if (results.Count > 1)
-            {
-                throw new TooManyResultsException();
-            }
-            else
-            {
-                return results.OfType<ManagementObject>().First();
+                ManagementObjectCollection results = searcher.Get();
+
+                if (results.Count == 0)
+                {
+                    throw new MiiserverException($"The specified management agent ({id}) was not found");
+                }
+                else if (results.Count > 1)
+                {
+                    throw new TooManyResultsException();
+                }
+                else
+                {
+                    return results.OfType<ManagementObject>().First();
+                }
             }
         }
 
