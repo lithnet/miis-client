@@ -201,6 +201,8 @@ namespace Lithnet.Miiserver.Client
                 if (disposing)
                 {
                     this.cachedProperties = null;
+                    this.node = null;
+                    this.nsmanager = null;
                 }
 
                 disposedValue = true;

@@ -16,7 +16,7 @@ using Lithnet.Miiserver.Client;
 namespace Lithnet.Miiserver.Client
 {
     using Microsoft.DirectoryServices.MetadirectoryServices.UI.PropertySheetBase;
-
+    using System.Threading.Tasks;
     public static class SyncServer
     {
         internal static ManagementScope scope = new ManagementScope(@"\\.\ROOT\MicrosoftIdentityIntegrationServer");
@@ -252,6 +252,20 @@ namespace Lithnet.Miiserver.Client
             SyncServer.PSSession.AddCommand("Set-ProvisioningRulesExtension");
             SyncServer.PSSession.AddParameter("Value", enabled.ToString());
             SyncServer.PSSession.Invoke();
+        }
+
+        public static bool Ping()
+        {
+            Task t = Task.Run(() => ws.GetMAList());
+
+            if (t.Wait(5000))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public static void ExportMetaverseConfiguration(string path)

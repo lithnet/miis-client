@@ -139,9 +139,16 @@ namespace Lithnet.Miiserver.Client
             ws.SuppressRunStepWarning(this.ID.ToMmsGuid());
         }
 
-        public void ExecuteRunProfile(string name)
+        public string ExecuteRunProfile(string name)
         {
-            this.ExecuteRunProfile(name, false);
+            string result = this.InvokeWmi("Execute", new object[] { name }) as string;
+
+            if (result != "success" && !result.StartsWith("completed-"))
+            {
+                throw new MAExecutionException(result);
+            }
+
+            return result;
         }
 
         public string ExecuteRunProfile(string name, bool resumeLastRun)
@@ -168,9 +175,57 @@ namespace Lithnet.Miiserver.Client
             return t;
         }
 
+        public Task<string> ExecuteRunProfileAsync(string name)
+        {
+            Task<string> t = new Task<string>(() =>
+            {
+                return this.ExecuteRunProfile(name);
+            });
+
+            t.Start();
+
+            return t;
+        }
+
         public string ExecuteRunProfile(string name, bool resumeLastRun, CancellationToken waitCancellationToken)
         {
             Task<string> t = this.ExecuteRunProfileAsync(name, resumeLastRun);
+            try
+            {
+                t.Wait(waitCancellationToken);
+            }
+            catch (AggregateException e)
+            {
+                if (e.InnerExceptions.Count == 1)
+                {
+                    throw e.InnerExceptions.First();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            if (t.IsCanceled)
+            {
+                return "cancelled";
+            }
+            else
+            {
+                if (t.IsFaulted)
+                {
+                    throw t.Exception.InnerExceptions.First();
+                }
+                else
+                {
+                    return t.Result;
+                }
+            }
+        }
+
+        public string ExecuteRunProfile(string name, CancellationToken waitCancellationToken)
+        {
+            Task<string> t = this.ExecuteRunProfileAsync(name);
             try
             {
                 t.Wait(waitCancellationToken);

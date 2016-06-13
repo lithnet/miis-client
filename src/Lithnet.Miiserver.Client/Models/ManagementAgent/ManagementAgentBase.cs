@@ -321,25 +321,60 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
+        public string ExecuteRunProfileNative(string runProfileName)
+        {
+            return ws.RunMA(this.ID.ToMmsGuid(), this.GetRunConfiguration(runProfileName), false);
+        }
+
+        protected string GetRunConfiguration(string runProfileName)
+        {
+            XmlNode madata = ManagementAgentBase.GetMaData(this.ID,
+                MAData.MA_PARTITION_DATA |
+                MAData.MA_RUN_DATA,
+                MAPartitionData.BFPARTITION_SELECTED |
+                MAPartitionData.BFPARTITION_CUSTOM_DATA |
+                MAPartitionData.BFPARTITION_ID |
+                MAPartitionData.BFPARTITION_NAME |
+                MAPartitionData.BFPARTITION_ALLOWED_OPERATIONS,
+                MARunData.BFRUNDATA_NAME |
+                MARunData.BFRUNDATA_ID |
+                MARunData.BFRUNDATA_VERSION |
+                MARunData.BFRUNDATA_RUNCONFIGURATION);
+
+
+            XmlNode node = madata.SelectSingleNode(string.Format("/ma-data/ma-run-data/run-configuration[name='{0}']", runProfileName));
+
+
+            if (node == null)
+            {
+                throw new InvalidOperationException("No such run profile " + runProfileName);
+            }
+
+
+            return node.OuterXml;
+        }
+
+
         private static ManagementObject GetManagementAgentWmiObject(Guid id)
         {
             ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_ManagementAgent where Guid='{0}'", id.ToMmsGuid()));
 
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.scope, query))
             {
-                ManagementObjectCollection results = searcher.Get();
-
-                if (results.Count == 0)
+                using (ManagementObjectCollection results = searcher.Get())
                 {
-                    throw new MiiserverException($"The specified management agent ({id}) was not found");
-                }
-                else if (results.Count > 1)
-                {
-                    throw new TooManyResultsException();
-                }
-                else
-                {
-                    return results.OfType<ManagementObject>().First();
+                    if (results.Count == 0)
+                    {
+                        throw new MiiserverException($"The specified management agent ({id}) was not found");
+                    }
+                    else if (results.Count > 1)
+                    {
+                        throw new TooManyResultsException();
+                    }
+                    else
+                    {
+                        return results.OfType<ManagementObject>().First();
+                    }
                 }
             }
         }
