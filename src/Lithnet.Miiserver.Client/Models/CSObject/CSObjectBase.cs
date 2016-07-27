@@ -304,7 +304,7 @@ namespace Lithnet.Miiserver.Client
         {
             get
             {
-                return this.GetObject<Delta>("unapplied-export");
+                return this.GetObject<Delta>("unapplied-export/delta");
             }
         }
 
@@ -312,7 +312,7 @@ namespace Lithnet.Miiserver.Client
         {
             get
             {
-                return this.GetObject<Delta>("escrowed-export");
+                return this.GetObject<Delta>("escrowed-export/delta");
             }
         }
 
@@ -320,7 +320,7 @@ namespace Lithnet.Miiserver.Client
         {
             get
             {
-                return this.GetObject<Delta>("unconfirmed-export");
+                return this.GetObject<Delta>("unconfirmed-export/delta");
             }
         }
 
@@ -328,7 +328,7 @@ namespace Lithnet.Miiserver.Client
         {
             get
             {
-                return this.GetObject<Delta>("pending-import");
+                return this.GetObject<Delta>("pending-import/delta");
             }
         }
 
