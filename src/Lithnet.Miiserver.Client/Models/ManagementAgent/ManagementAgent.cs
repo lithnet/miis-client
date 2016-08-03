@@ -136,7 +136,7 @@ namespace Lithnet.Miiserver.Client
 
         public void SuppressFullSyncWarning()
         {
-            ws.SuppressRunStepWarning(this.ID.ToMmsGuid());
+            this.InvokeWmi("SuppressFullSyncWarning");
         }
 
         public string ExecuteRunProfile(string name)
