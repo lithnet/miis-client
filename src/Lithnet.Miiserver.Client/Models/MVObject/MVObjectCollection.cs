@@ -13,7 +13,7 @@ namespace Lithnet.Miiserver.Client
         internal MVObjectCollection(XmlDocument node)
             :base(node)
         {
-            this.MVObjects = this.GetReadOnlyObjectList<MVObject>("/mv-objects/mv-object");
+            this.MVObjects = this.GetReadOnlyObjectList<MVObject>("/results/mv-objects/mv-object");
         }
 
         private IReadOnlyList<MVObject> MVObjects { get; set; }

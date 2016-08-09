@@ -52,6 +52,9 @@ namespace Lithnet.Miiserver.Client
                 throw new InvalidOperationException("Either an object type or attribute queries must be provided");
             }
 
+            StringBuilder resultSet = new StringBuilder();
+            resultSet.AppendLine("<results>");
+
             string results = ws.SearchMV(query.GetXml());
 
             if (string.IsNullOrEmpty(results))
@@ -59,8 +62,11 @@ namespace Lithnet.Miiserver.Client
                 return new MVObjectCollection(new XmlDocument());
             }
 
+            resultSet.AppendLine(results);
+            resultSet.AppendLine("</results>");
+
             XmlDocument d = new XmlDocument();
-            d.LoadXml(results);
+            d.LoadXml(resultSet.ToString());
 
             return new MVObjectCollection(d);
         }
