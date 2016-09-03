@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Xml;
 
-    public class MVReferenceAttribute : NodeCache
+    public class MVReferenceAttribute : XmlObjectBase
     {
         internal MVReferenceAttribute(XmlNode node)
             : base(node)

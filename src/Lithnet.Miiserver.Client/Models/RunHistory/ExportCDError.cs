@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class ExportCDError : NodeCache
+    public class ExportCDError : XmlObjectBase
     {
         internal ExportCDError(XmlNode node)
             :base(node)

@@ -2,7 +2,7 @@
 {
     using System.Xml;
 
-    public class ExportCounters : NodeCache
+    public class ExportCounters : XmlObjectBase
     {
         internal ExportCounters(XmlNode node)
             : base(node)

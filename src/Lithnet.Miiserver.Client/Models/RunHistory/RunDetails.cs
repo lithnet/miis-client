@@ -6,7 +6,7 @@
     using System.Xml;
     using System.IO;
 
-    public class RunDetails : NodeCache
+    public class RunDetails : XmlObjectBase
     {
         internal RunDetails(XmlNode node)
             : base(node)

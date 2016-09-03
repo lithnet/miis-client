@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class InboundFlowCounters : NodeCache
+    public class InboundFlowCounters : XmlObjectBase
     {
         internal InboundFlowCounters(XmlNode node)
             :base(node)

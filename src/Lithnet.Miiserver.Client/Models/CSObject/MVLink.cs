@@ -8,7 +8,7 @@
     using System.Diagnostics;
     using System.Xml.Serialization;
 
-    public class MVLink : NodeCache
+    public class MVLink : XmlObjectBase
     {
         internal MVLink(XmlNode node)
             : base(node)

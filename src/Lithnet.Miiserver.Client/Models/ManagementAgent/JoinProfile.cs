@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class JoinProfile : NodeCache
+    public class JoinProfile : XmlObjectBase
     {
         internal JoinProfile(XmlNode node)
             : base(node)

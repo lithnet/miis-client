@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class MVObject : NodeCache
+    public class MVObject : XmlObjectBase
     {
         internal MVObject(XmlNode node)
             :base(node)

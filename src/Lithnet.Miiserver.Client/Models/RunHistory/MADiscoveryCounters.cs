@@ -2,7 +2,7 @@
 {
     using System.Xml;
 
-    public partial class MADiscoveryCounters : NodeCache
+    public partial class MADiscoveryCounters : XmlObjectBase
     {
         internal MADiscoveryCounters(XmlNode node)
             :base(node)

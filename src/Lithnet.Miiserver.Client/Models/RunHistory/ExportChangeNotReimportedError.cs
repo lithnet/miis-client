@@ -2,7 +2,7 @@
 {
     using System.Xml;
 
-    public class ExportChangeNotReimportedError : NodeCache
+    public class ExportChangeNotReimportedError : XmlObjectBase
     {
         internal ExportChangeNotReimportedError (XmlNode node)
             :base(node)

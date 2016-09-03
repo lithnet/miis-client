@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Xml;
 
-    public class MAConnection : NodeCache
+    public class MAConnection : XmlObjectBase
     {
         internal MAConnection(XmlNode node)
             : base(node)

@@ -3,7 +3,7 @@
     using System;
     using System.Xml;
 
-    public class ImportError : NodeCache
+    public class ImportError : XmlObjectBase
     {
         internal ImportError(XmlNode node)
             : base(node)

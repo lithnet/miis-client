@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Xml;
 
-    public partial class CDError : NodeCache
+    public partial class CDError : XmlObjectBase
     {
         internal CDError(XmlNode node)
             :base(node)

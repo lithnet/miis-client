@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class MVDeletionRule : NodeCache
+    public class MVDeletionRule : XmlObjectBase
     {
         internal MVDeletionRule(XmlNode node)
             :base (node)

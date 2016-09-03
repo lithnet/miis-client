@@ -2,7 +2,7 @@
 {
     using System.Xml;
 
-    public abstract class FlowRule : NodeCache
+    public abstract class FlowRule : XmlObjectBase
     {
         internal FlowRule(XmlNode node)
             : base(node)

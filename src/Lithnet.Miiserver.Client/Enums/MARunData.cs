@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Lithnet.Miiserver.Client
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal enum MARunData : uint
     {
         BFRUNDATA_ID = 1,
@@ -16,6 +14,7 @@ namespace Lithnet.Miiserver.Client
         BFRUNDATA_MODIFICATION_TIME = 0x40,
         BFRUNDATA_HR = 0x80,
         BFRUNDATA_INVALIDPARTITION = 0x100,
-        BFRUNDATA_ALLBITS = (((((((BFRUNDATA_ID | BFRUNDATA_NAME) | BFRUNDATA_MA) | BFRUNDATA_RUNCONFIGURATION) | BFRUNDATA_VERSION) | BFRUNDATA_CREATION_TIME) | BFRUNDATA_MODIFICATION_TIME) | BFRUNDATA_HR) | BFRUNDATA_INVALIDPARTITION
+        BFRUNDATA_ALLBITS = BFRUNDATA_ID | BFRUNDATA_NAME | BFRUNDATA_MA | BFRUNDATA_RUNCONFIGURATION | BFRUNDATA_VERSION | 
+            BFRUNDATA_CREATION_TIME | BFRUNDATA_MODIFICATION_TIME | BFRUNDATA_HR | BFRUNDATA_INVALIDPARTITION
     }
 }

@@ -3,7 +3,7 @@
     using System;
     using System.Xml;
 
-    public class RulesErrorInfoContext : NodeCache
+    public class RulesErrorInfoContext : XmlObjectBase
     {
         internal RulesErrorInfoContext(XmlNode node)
             : base(node)

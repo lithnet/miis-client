@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class ImportFlowGroup : NodeCache
+    public class ImportFlowGroup : XmlObjectBase
     {
         internal ImportFlowGroup(XmlNode node)
             : base(node)

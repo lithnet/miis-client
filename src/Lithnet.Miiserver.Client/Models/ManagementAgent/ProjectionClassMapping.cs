@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class ProjectionClassMapping : NodeCache
+    public class ProjectionClassMapping : XmlObjectBase
     {
         internal ProjectionClassMapping(XmlNode node)
             : base(node)

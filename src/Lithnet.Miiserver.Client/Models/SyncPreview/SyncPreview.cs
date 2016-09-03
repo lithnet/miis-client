@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class SyncPreview : NodeCache
+    public class SyncPreview : XmlObjectBase
     {
         internal SyncPreview(XmlNode node)
             :base (node)

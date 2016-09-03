@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Xml;
 
-    public class StepDetails : NodeCache
+    public class StepDetails : XmlObjectBase
     {
         internal StepDetails(XmlNode node)
             : base(node)

@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class FilterSetResult : NodeCache
+    public class FilterSetResult : XmlObjectBase
     {
         internal FilterSetResult(XmlNode node)
             : base(node)

@@ -9,7 +9,7 @@ namespace Lithnet.Miiserver.Client
 {
     [Serializable]
     //batch
-    public class CSObjectSearchResultBatch : NodeCache
+    public class CSObjectSearchResultBatch : XmlObjectBase
     {
         internal CSObjectSearchResultBatch(XmlNode node)
             :base(node)

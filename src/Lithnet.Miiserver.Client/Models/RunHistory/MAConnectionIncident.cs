@@ -3,7 +3,7 @@
     using System;
     using System.Xml;
 
-    public class MAConnectionIncident : NodeCache
+    public class MAConnectionIncident : XmlObjectBase
     {
         internal MAConnectionIncident(XmlNode node)
             :base(node)

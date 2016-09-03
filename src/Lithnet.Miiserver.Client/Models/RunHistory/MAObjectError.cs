@@ -5,7 +5,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class MAObjectError : NodeCache
+    public class MAObjectError : XmlObjectBase
     {
         internal MAObjectError(XmlNode node)
             : base(node)

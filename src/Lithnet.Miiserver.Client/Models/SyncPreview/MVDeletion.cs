@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class MVDeletion : NodeCache
+    public class MVDeletion : XmlObjectBase
     {
         internal MVDeletion(XmlNode node)
             : base(node)

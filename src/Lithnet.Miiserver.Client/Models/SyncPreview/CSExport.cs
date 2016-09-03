@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class CSExport : NodeCache
+    public class CSExport : XmlObjectBase
     {
         internal CSExport(XmlNode node)
             : base(node)

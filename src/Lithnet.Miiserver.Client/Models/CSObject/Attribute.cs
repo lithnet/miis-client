@@ -1,31 +1,26 @@
 ﻿namespace Lithnet.Miiserver.Client
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Xml;
-    using System.Xml.Serialization;
-    using System.Diagnostics;
-    using System.Collections.ObjectModel;
 
-    public class Attribute : NodeCache
+    /// <summary>
+    /// Represents an attribute and its value collection
+    /// </summary>
+    public class Attribute : XmlObjectBase
     {
         private IReadOnlyList<object> values;
-
+       
         internal Attribute(XmlNode node)
             : base(node)
         {
         }
 
-        private IReadOnlyList<AttributeValue> ValuesInternal
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<AttributeValue>("value", this.Type);
-            }
-        }
+        private IReadOnlyList<AttributeValue> ValuesInternal => this.GetReadOnlyObjectList<AttributeValue>("value", this.Type);
 
+        /// <summary>
+        /// Gets the list of values for the attribute
+        /// </summary>
         public IReadOnlyList<object> Values
         {
             get
@@ -39,33 +34,26 @@
             }
         }
 
-        public string Name
-        {
-            get
-            {
-                return this.GetValue<string>("@name");
-            }
-        }
+        /// <summary>
+        /// Gets the name of the attribute
+        /// </summary>
+        public string Name => this.GetValue<string>("@name");
 
-        public AttributeType Type
-        {
-            get
-            {
-                return this.GetValue<AttributeType>("@type");
-            }
-        }
+        /// <summary>
+        /// Gets the type of the attribute
+        /// </summary>
+        public AttributeType Type => this.GetValue<AttributeType>("@type");
 
-        public bool Multivalued
-        {
-            get
-            {
-                return this.GetValue<bool>("@multivalued");
-            }
-        }
+        /// <summary>
+        /// Gets a value that indicates if the attribute is multivalued or single-valued
+        /// </summary>
+        public bool Multivalued => this.GetValue<bool>("@multivalued");
 
+        /// <summary>Returns a string that represents the current object.</summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return string.Format("{0}:{1}", this.Name, this.Values.Select(t => t.ToString()).ToCommaSeparatedString());
+            return $"{this.Name}:{this.Values.Select(t => t.ToString()).ToCommaSeparatedString()}";
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class MVConfiguration : NodeCache
+    public class MVConfiguration : XmlObjectBase
     {
         internal MVConfiguration(XmlNode node)
             : base(node)

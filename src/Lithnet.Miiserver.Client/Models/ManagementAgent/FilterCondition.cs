@@ -3,7 +3,7 @@
     using System;
     using System.Xml;
 
-    public class FilterCondition : NodeCache
+    public class FilterCondition : XmlObjectBase
     {
         private object value;
 

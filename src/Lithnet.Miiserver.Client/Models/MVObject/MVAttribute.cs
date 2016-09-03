@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Xml;
 
-    public class MVAttribute : NodeCache
+    public class MVAttribute : XmlObjectBase
     {
         internal MVAttribute(XmlNode node)
             : base(node)

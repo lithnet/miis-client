@@ -5,13 +5,13 @@ using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 using System.Xml;
 using System.Reflection;
 using System.Xml.Serialization;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization.Formatters;
+using System.Security;
 
 namespace Lithnet.Miiserver.Client
 {
-    using System.Runtime.InteropServices;
-    using System.Security;
-
-    public static class Extensions
+    internal static class Extensions
     {
         public static string ConvertToUnsecureString(this SecureString securePassword)
         {
@@ -120,12 +120,7 @@ namespace Lithnet.Miiserver.Client
 
         public static string ReadInnerTextAsString(this XmlNode node)
         {
-            if (node == null)
-            {
-                return null;
-            }
-
-            return node.InnerText;
+            return node?.InnerText;
         }
 
         public static int ReadInnerTextAsInt(this XmlNode node)
@@ -137,11 +132,10 @@ namespace Lithnet.Miiserver.Client
 
             int result = 0;
 
-            if (Int32.TryParse(node.InnerText, out result))
+            if (int.TryParse(node.InnerText, out result))
             {
                 return result;
             }
-
 
             return result;
         }
@@ -212,7 +206,6 @@ namespace Lithnet.Miiserver.Client
 
             throw new ArgumentException(string.Format("The enum value {0} was not known", description));
         }
-
 
         public static bool ReadInnerTextAsBool(this XmlNode node)
         {
@@ -349,12 +342,12 @@ namespace Lithnet.Miiserver.Client
             return guid.ToString("B").ToUpper();
         }
 
-        internal static string GetMaData(this MMSWebService m, Guid maGuid, MAData madata, MAPartitionData partitionData, MARunData rundata)
+        public static string GetMaData(this MMSWebService m, Guid maGuid, MAData madata, MAPartitionData partitionData, MARunData rundata)
         {
             return m.GetMaData(maGuid.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
         }
 
-        internal static string GetMVData(this MMSWebService m, MVData mvdata)
+        public static string GetMVData(this MMSWebService m, MVData mvdata)
         {
             return m.GetMVData((uint)mvdata);
         }

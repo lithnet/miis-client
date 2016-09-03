@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class ExportFlowRules : NodeCache
+    public class ExportFlowRules : XmlObjectBase
     {
         public ExportFlowRules(XmlNode node)
         :base(node)

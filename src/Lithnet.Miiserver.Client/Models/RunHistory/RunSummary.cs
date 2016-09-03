@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Xml;
 
-    public class RunSummary : NodeCache
+    public class RunSummary : XmlObjectBase
     {
         internal RunSummary(XmlNode node)
             : base(node)

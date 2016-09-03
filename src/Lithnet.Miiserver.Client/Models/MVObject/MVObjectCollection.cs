@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class MVObjectCollection : NodeCache, IReadOnlyList<MVObject>
+    public class MVObjectCollection : XmlObjectBase, IReadOnlyList<MVObject>
     {
         internal MVObjectCollection(XmlDocument node)
             :base(node)

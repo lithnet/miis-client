@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class ConnectorDeprovision : NodeCache
+    public class ConnectorDeprovision : XmlObjectBase
     {
         internal ConnectorDeprovision(XmlNode node)
             : base(node)

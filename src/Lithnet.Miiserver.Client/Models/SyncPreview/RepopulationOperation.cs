@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class RepopulationOperation : NodeCache
+    public class RepopulationOperation : XmlObjectBase
     {
         internal RepopulationOperation(XmlNode node)
             :base(node)

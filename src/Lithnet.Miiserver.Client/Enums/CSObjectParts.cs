@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Lithnet.Miiserver.Client
 {
     [Flags]
-    public enum CSObjectParts : ulong
+    internal enum CSObjectParts : ulong
     {
         UnappliedExport = 0x1L,
         EscrowedExport = 0x2L,
@@ -64,6 +61,5 @@ namespace Lithnet.Miiserver.Client
         Anchor = 0x80000000000L,
 
         AllItems = 0xFFFFFFFFFFFFFFFF,
-
     }
 }

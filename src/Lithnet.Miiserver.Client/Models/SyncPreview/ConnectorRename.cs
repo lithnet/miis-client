@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class ConnectorRename: NodeCache
+    public class ConnectorRename: XmlObjectBase
     {
         internal ConnectorRename(XmlNode node)
             : base(node)

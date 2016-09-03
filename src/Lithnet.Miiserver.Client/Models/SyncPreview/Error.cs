@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class Error : NodeCache
+    public class Error : XmlObjectBase
     {
         internal Error(XmlNode node)
             : base(node)

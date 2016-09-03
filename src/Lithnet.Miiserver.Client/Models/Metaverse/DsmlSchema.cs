@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class DsmlSchema : NodeCache
+    public class DsmlSchema : XmlObjectBase
     {
         internal DsmlSchema(XmlNode node)
             :base (node)
@@ -35,7 +35,7 @@ namespace Lithnet.Miiserver.Client
         {
             XmlDocument d = new XmlDocument();
             d.LoadXml(xml);
-            return new DsmlSchema(d.SelectSingleNode("mv-data/schema/dsml:dsml", NodeCache.GetNSManager(d.NameTable)));
+            return new DsmlSchema(d.SelectSingleNode("mv-data/schema/dsml:dsml", XmlObjectBase.GetNSManager(d.NameTable)));
         }
     }
 }

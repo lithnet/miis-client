@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 namespace Lithnet.Miiserver.Client
 {
-    public class FilterRules : NodeCache
+    public class FilterRules : XmlObjectBase
     {
         internal FilterRules(XmlNode node)
             : base(node)

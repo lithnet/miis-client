@@ -2,7 +2,7 @@
 {
     using System.Xml;
 
-    public class RunStep : NodeCache
+    public class RunStep : XmlObjectBase
     {
         private RunStepType internalType = 0;
 

@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class ProvisioningResult : NodeCache
+    public class ProvisioningResult : XmlObjectBase
     {
         internal ProvisioningResult(XmlNode node)
             : base(node)

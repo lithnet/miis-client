@@ -36,7 +36,7 @@ namespace Lithnet.Miiserver.Client
 
             XmlDocument d = new XmlDocument();
             d.LoadXml(result);
-
+            
             return new MVObject(d.SelectSingleNode("/mv-objects/mv-object"));
         }
 

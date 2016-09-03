@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class DNAttribute : NodeCache
+    public class DNAttribute : XmlObjectBase
     {
         internal DNAttribute(XmlNode node)
             : base(node)

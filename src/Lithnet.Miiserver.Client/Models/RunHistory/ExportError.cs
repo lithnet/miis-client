@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class ExportError : NodeCache
+    public class ExportError : XmlObjectBase
     {
         internal ExportError(XmlNode node)
             : base(node)

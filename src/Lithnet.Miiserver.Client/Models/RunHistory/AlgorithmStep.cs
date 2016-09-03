@@ -3,7 +3,7 @@
     using System;
     using System.Xml;
 
-    public class AlgorithmStep : NodeCache
+    public class AlgorithmStep : XmlObjectBase
     {
         internal AlgorithmStep(XmlNode node)
             :base(node)

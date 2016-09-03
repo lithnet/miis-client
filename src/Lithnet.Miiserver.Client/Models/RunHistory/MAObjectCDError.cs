@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Xml;
 
-    public class MAObjectCDError : NodeCache
+    public class MAObjectCDError : XmlObjectBase
     {
         internal MAObjectCDError(XmlNode node)
         : base(node)

@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class DNValue : NodeCache
+    public class DNValue : XmlObjectBase
     {
         internal DNValue(XmlNode node)
             :base(node)

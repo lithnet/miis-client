@@ -3,7 +3,7 @@
     using System;
     using System.Xml;
 
-    public class MVReferenceValue  : NodeCache
+    public class MVReferenceValue  : XmlObjectBase
     {
         internal MVReferenceValue(XmlNode node)
             :base(node)

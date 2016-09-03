@@ -1,14 +1,11 @@
 ﻿namespace Lithnet.Miiserver.Client
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Xml;
-    using System.Xml.Serialization;
-    using System.Diagnostics;
-    using System.Collections.ObjectModel;
 
+    /// <summary>
+    /// Represents an attribute change and its value collection
+    /// </summary>
     public class AttributeChange : Attribute
     {
         internal AttributeChange(XmlNode node)
@@ -16,23 +13,22 @@
         {
         }
 
-        public AttributeOperation Operation
-        {
-            get
-            {
-                return this.GetValue<AttributeOperation>("@operation");
-            }
-        }
+        /// <summary>
+        /// Gets the type of operation performed on the object
+        /// </summary>
+        public AttributeOperation Operation => this.GetValue<AttributeOperation>("@operation");
 
+        /// <summary>Returns a string that represents the current object.</summary>
+        /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
             if (this.Operation == AttributeOperation.None)
             {
-                return string.Format("{0}:{1}", this.Name, this.Values.Select(t => t.ToString()).ToCommaSeparatedString());
+                return $"{this.Name}:{this.Values.Select(t => t.ToString()).ToCommaSeparatedString()}";
             }
             else
             {
-                return string.Format("{0}:{1}:{2}", this.Operation, this.Name, this.Values.Select(t => t.ToString()).ToCommaSeparatedString());
+                return $"{this.Operation}:{this.Name}:{this.Values.Select(t => t.ToString()).ToCommaSeparatedString()}";
             }
         }
     }

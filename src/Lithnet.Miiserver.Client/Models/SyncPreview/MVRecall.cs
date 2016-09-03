@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class MVRecall : NodeCache
+    public class MVRecall : XmlObjectBase
     {
         internal MVRecall(XmlNode node)
             : base(node)

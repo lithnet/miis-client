@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class ConnectorAdd : NodeCache
+    public class ConnectorAdd : XmlObjectBase
     {
         internal ConnectorAdd(XmlNode node)
             : base(node)

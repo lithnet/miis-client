@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class JoinRuleResult : NodeCache
+    public class JoinRuleResult : XmlObjectBase
     {
         internal JoinRuleResult(XmlNode node)
             : base(node)

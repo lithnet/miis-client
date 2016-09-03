@@ -1,13 +1,10 @@
 ﻿namespace Lithnet.Miiserver.Client
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml.Serialization;
-    using System.Diagnostics;
     using System.Xml;
 
+    /// <summary>
+    /// Represents a change to an attribute value
+    /// </summary>
     public class AttributeValueChange : AttributeValue
     {
         internal AttributeValueChange(XmlNode node, AttributeType type)
@@ -15,23 +12,24 @@
         {
         }
 
-        public AttributeValueOperation Operation
-        {
-            get
-            {
-                return this.GetValue<AttributeValueOperation>("@operation");
-            }
-        }
+        /// <summary>
+        /// Gets the type of change performed on the value
+        /// </summary>
+        public AttributeValueOperation Operation => this.GetValue<AttributeValueOperation>("@operation");
 
+        /// <summary>
+        /// Returns a string representation of the object
+        /// </summary>
+        /// <returns>A string representation of the object</returns>
         public override string ToString()
         {
             if (this.Operation == AttributeValueOperation.None)
             {
-                return string.Format("{0}", this.ValueString);
+                return $"{this.ValueString}";
             }
             else
             {
-                return string.Format("{0}: {1}", this.Operation, this.ValueString);
+                return $"{this.Operation}: {this.ValueString}";
             }
         }
     }

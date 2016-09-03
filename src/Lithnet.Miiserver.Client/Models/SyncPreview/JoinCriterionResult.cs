@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class JoinCriterionResult : NodeCache
+    public class JoinCriterionResult : XmlObjectBase
     {
         internal JoinCriterionResult(XmlNode node)
             : base(node)

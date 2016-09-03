@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class PasswordSyncSettings : NodeCache
+    public class PasswordSyncSettings : XmlObjectBase
     {
         internal PasswordSyncSettings(XmlNode node)
             : base(node)

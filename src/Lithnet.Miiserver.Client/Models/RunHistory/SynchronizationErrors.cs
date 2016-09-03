@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public partial class SynchronizationErrors : NodeCache
+    public partial class SynchronizationErrors : XmlObjectBase
     {
         internal SynchronizationErrors(XmlNode node)
             : base(node)

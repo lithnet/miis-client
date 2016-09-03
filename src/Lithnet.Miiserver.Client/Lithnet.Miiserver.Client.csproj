@@ -25,6 +25,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>Lithnet.Miiserver.Client.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>bin\Debug\Lithnet.Miiserver.Client.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -82,7 +83,7 @@
     <Compile Include="Models\Metaverse\MVAttributeQuery.cs" />
     <Compile Include="Models\MVObject\MVObjectCollection.cs" />
     <Compile Include="Models\MVObject\MVObject.cs" />
-    <Compile Include="Models\NodeCache.cs" />
+    <Compile Include="Models\XmlObjectBase.cs" />
     <Compile Include="Models\CSObject\CSObjectBase.cs" />
     <Compile Include="Models\ManagementAgent\CSObjectEnumerator.cs" />
     <Compile Include="Models\CSObject\CSObject.cs" />
@@ -180,7 +181,6 @@
     <Compile Include="Enums\AttributeType.cs" />
     <Compile Include="Enums\AttributeOperation.cs" />
     <Compile Include="Enums\AttributeValueOperation.cs" />
-    <Compile Include="Enums\ExtensionCallSite.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Docs\mms-specifications.pdf" />

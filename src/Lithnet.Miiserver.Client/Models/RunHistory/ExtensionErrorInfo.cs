@@ -9,7 +9,7 @@
 
     [Serializable]
     [DebuggerStepThroughAttribute]
-    public class ExtensionErrorInfo : NodeCache
+    public class ExtensionErrorInfo : XmlObjectBase
     {
         internal ExtensionErrorInfo(XmlNode node)
             :base(node)
@@ -24,11 +24,11 @@
             }
         }
 
-        public ExtensionCallSite ExtensionCallSite
+        public string ExtensionCallSite
         {
             get
             {
-                return this.GetValue<ExtensionCallSite>("extension-callsite");
+                return this.GetValue<string>("extension-callsite");
             }
         }
 

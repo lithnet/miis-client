@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class MAStatistics : NodeCache
+    public class MAStatistics : XmlObjectBase
     {
         internal MAStatistics(XmlNode node)
             :base(node)

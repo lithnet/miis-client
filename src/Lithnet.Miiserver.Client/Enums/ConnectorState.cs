@@ -1,21 +1,30 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 
+namespace Lithnet.Miiserver.Client
+{
+    /// <summary>
+    /// Defines the connected state of a connector object
+    /// </summary>
     [Serializable]
-    [XmlTypeAttribute(AnonymousType = true)]
+    [XmlType(AnonymousType = true)]
     public enum ConnectorState
     {
+        /// <summary>
+        /// A normal connector or disconnector
+        /// </summary>
         [XmlEnum("normal")]
         Normal = 0,
 
+        /// <summary>
+        /// An explicit connector or disconnector
+        /// </summary>
         [XmlEnum("explicit")]
         Explicit = 1,
 
+        /// <summary>
+        /// A filtered disconnector
+        /// </summary>
         [XmlEnum("stay")]
         Filtered = 2
     }

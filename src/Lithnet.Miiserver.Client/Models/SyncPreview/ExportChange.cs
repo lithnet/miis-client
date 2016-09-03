@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class ExportChange : NodeCache
+    public class ExportChange : XmlObjectBase
     {
         internal ExportChange(XmlNode node)
             : base(node)

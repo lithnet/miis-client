@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class MVRetryError :NodeCache
+    public class MVRetryError :XmlObjectBase
     {
         internal MVRetryError(XmlNode node)
             :base(node)

@@ -8,7 +8,7 @@
     using System.Diagnostics;
     using System.Xml;
 
-    public class RunConfiguration : NodeCache
+    public class RunConfiguration : XmlObjectBase
     {
         internal RunConfiguration(XmlNode node)
             : base(node)

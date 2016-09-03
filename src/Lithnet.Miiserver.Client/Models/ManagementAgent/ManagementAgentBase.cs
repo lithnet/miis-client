@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 
 namespace Lithnet.Miiserver.Client
 {
-    public abstract class ManagementAgentBase : NodeCache
+    public abstract class ManagementAgentBase : XmlObjectBase
     {
         protected static MMSWebService ws = new MMSWebService();
 

@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class EncodedValue : NodeCache
+    public class EncodedValue : XmlObjectBase
     {
         internal EncodedValue(XmlNode node)
             : base(node)

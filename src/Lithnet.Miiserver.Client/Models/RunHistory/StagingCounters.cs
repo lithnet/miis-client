@@ -7,7 +7,7 @@
     using System.Xml;
     using System.Diagnostics;
 
-    public class StagingCounters : NodeCache
+    public class StagingCounters : XmlObjectBase
     {
         internal StagingCounters(XmlNode node)
             : base(node)

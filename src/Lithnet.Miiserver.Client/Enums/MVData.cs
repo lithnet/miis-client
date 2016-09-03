@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Lithnet.Miiserver.Client
 {
     [Flags]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal enum MVData
     {
         MV_VERSION = 1,
@@ -17,6 +16,7 @@ namespace Lithnet.Miiserver.Client
         MV_FORMATVERSION = 0x40,
         MV_PASSWORDCHANGEHISTORYSIZE = 0x80,
         MV_PASSWORDSYNC = 0x100,
-        MV_ALL = MV_VERSION | MV_SCHEMA | MV_IMPORT_ATTR_FLOW | MV_PROVISIONING | MV_DELETE | MV_EXTENSION | MV_FORMATVERSION | MV_PASSWORDCHANGEHISTORYSIZE | MV_PASSWORDSYNC
+        MV_ALL = MV_VERSION | MV_SCHEMA | MV_IMPORT_ATTR_FLOW | MV_PROVISIONING | MV_DELETE | MV_EXTENSION |
+            MV_FORMATVERSION | MV_PASSWORDCHANGEHISTORYSIZE | MV_PASSWORDSYNC
     }
 }

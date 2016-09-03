@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class DsmlObjectClass : NodeCache
+    public class DsmlObjectClass : XmlObjectBase
     {
         internal DsmlObjectClass(XmlNode node, IReadOnlyDictionary<string, DsmlAttribute> allAttributes)
             : base(node)

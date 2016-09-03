@@ -3,7 +3,7 @@
     using System;
     using System.Xml;
 
-    public class OutboundFlowCounters : NodeCache
+    public class OutboundFlowCounters : XmlObjectBase
     {
         internal OutboundFlowCounters(XmlNode node)
             :base(node)

@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Xml;
 
-    public class DsmlAttribute : NodeCache
+    public class DsmlAttribute : XmlObjectBase
     {
         private const string dsmlAttributeTypeBinary = "1.3.6.1.4.1.1466.115.121.1.5";
         private const string dsmlAttributeTypeBoolean = "1.3.6.1.4.1.1466.115.121.1.7";

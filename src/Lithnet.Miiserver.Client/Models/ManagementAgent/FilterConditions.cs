@@ -4,7 +4,7 @@
     using System.Xml;
     using System.Collections.Generic;
 
-    public class FilterConditions : NodeCache
+    public class FilterConditions : XmlObjectBase
     {
         internal FilterConditions(XmlNode node)
             : base(node)
