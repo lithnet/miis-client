@@ -41,28 +41,28 @@ namespace Lithnet.Miiserver.Client
 
         private void SetFlowRule()
         {
-            XmlNode n1 = node.SelectSingleNode("constant-mapping");
+            XmlNode n1 = this.XmlNode.SelectSingleNode("constant-mapping");
             if (n1 != null)
             {
                 this.FlowRule = new FlowRuleConstant(n1);
                 return;
             }
 
-            n1 = node.SelectSingleNode("direct-mapping");
+            n1 = this.XmlNode.SelectSingleNode("direct-mapping");
             if (n1 != null)
             {
                 this.FlowRule = new FlowRuleDirect(n1);
                 return;
             }
 
-            n1 = node.SelectSingleNode("dn-part-mapping");
+            n1 = this.XmlNode.SelectSingleNode("dn-part-mapping");
             if (n1 != null)
             {
                 this.FlowRule = new FlowRuleDNComponent(n1);
                 return;
             }
 
-            n1 = node.SelectSingleNode("scripted-mapping");
+            n1 = this.XmlNode.SelectSingleNode("scripted-mapping");
             if (n1 != null)
             {
                 this.FlowRule = new FlowRuleAdvanced(n1);
@@ -73,11 +73,3 @@ namespace Lithnet.Miiserver.Client
         public FlowRule FlowRule { get; private set; }
     }
 }
-
-/*
- <import-flow src-ma="{5A4F1F37-94C7-489E-80FC-A11EE901BB53}" cd-object-type="shadowOrgUnitGroup" id="{60680A37-B0E8-49E3-A931-84955D1D7BCF}">
-          <direct-mapping>
-            <src-attribute>monashObjectID</src-attribute>
-          </direct-mapping>
-</import-flow>
-*/

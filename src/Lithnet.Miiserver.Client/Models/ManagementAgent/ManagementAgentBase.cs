@@ -260,7 +260,7 @@ namespace Lithnet.Miiserver.Client
 
         public XmlNode GetPrivateData()
         {
-            return this.node.SelectSingleNode("private-configuration");
+            return this.XmlNode.SelectSingleNode("private-configuration");
         }
 
         private XmlNode GetMaData()
@@ -393,7 +393,7 @@ namespace Lithnet.Miiserver.Client
 
         public void Refresh()
         {
-            this.node = this.GetMaData();
+            this.Reload(this.GetMaData());
             this.importFlows = null;
             this.ClearCache();
         }

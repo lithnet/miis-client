@@ -18,7 +18,7 @@ namespace Lithnet.Miiserver.Client
 
         private bool disposedValue = false;
 
-        private XmlNamespaceManager nsmanager;
+        protected internal XmlNamespaceManager nsmanager;
 
         private Dictionary<string, object> cachedProperties = new Dictionary<string, object>();
 

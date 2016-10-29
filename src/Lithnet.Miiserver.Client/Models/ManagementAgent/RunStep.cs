@@ -242,7 +242,7 @@
         {
             get
             {
-                return this.node.SelectSingleNode("custom-data")?.InnerXml;
+                return this.XmlNode.SelectSingleNode("custom-data")?.InnerXml;
             }
         }
 
@@ -253,7 +253,7 @@
 
         private void ResolveType()
         {
-            string stepType = this.node.SelectSingleNode("step-type/@type")?.InnerText;
+            string stepType = this.XmlNode.SelectSingleNode("step-type/@type")?.InnerText;
 
             switch (stepType)
             {
@@ -286,7 +286,7 @@
         {
             this.internalType = RunStepType.FullImportFullSynchronization;
 
-            foreach (XmlNode n2 in this.node.SelectNodes("step-type/import-subtype"))
+            foreach (XmlNode n2 in this.XmlNode.SelectNodes("step-type/import-subtype"))
             {
                 if (n2.InnerText == "to-file")
                 {
@@ -298,7 +298,7 @@
 
         private void ResolveExportType()
         {
-            foreach (XmlNode n2 in this.node.SelectNodes("step-type/export-subtype"))
+            foreach (XmlNode n2 in this.XmlNode.SelectNodes("step-type/export-subtype"))
             {
                 if (n2.InnerText == "to-file")
                 {
@@ -322,7 +322,7 @@
 
         private void ResolveSyncType()
         {
-            string subtype = this.node.SelectSingleNode("step-type/apply-rules-subtype")?.InnerText;
+            string subtype = this.XmlNode.SelectSingleNode("step-type/apply-rules-subtype")?.InnerText;
 
             if (subtype == "reevaluate-flow-connectors")
             {
@@ -337,7 +337,7 @@
         private void ResolveFullImportType()
         {
             bool toCS = false;
-            foreach (XmlNode n2 in this.node.SelectNodes("step-type/import-subtype"))
+            foreach (XmlNode n2 in this.XmlNode.SelectNodes("step-type/import-subtype"))
             {
                 if (n2.InnerText == "to-cs")
                 {
@@ -373,7 +373,7 @@
         private void ResolveDeltaImportType()
         {
             bool toCS = false;
-            foreach (XmlNode n2 in this.node.SelectNodes("step-type/import-subtype"))
+            foreach (XmlNode n2 in this.XmlNode.SelectNodes("step-type/import-subtype"))
             {
                 if (n2.InnerText == "to-cs")
                 {

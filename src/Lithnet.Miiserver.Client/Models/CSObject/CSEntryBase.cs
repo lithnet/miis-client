@@ -1,4 +1,6 @@
-﻿namespace Lithnet.Miiserver.Client
+﻿using System;
+
+namespace Lithnet.Miiserver.Client
 {
     using System.Collections.Generic;
     using System.Xml;
@@ -26,7 +28,7 @@
         /// <summary>
         /// Gets the DN attribute for this object
         /// </summary>
-        public IReadOnlyList<DNAttribute> DNAttributes => this.GetReadOnlyObjectList<DNAttribute>("dn-attr");
+        public IReadOnlyDictionary<string, DNAttribute> DNAttributes => this.GetReadOnlyObjectDictionary<string, DNAttribute>("dn-attr", (t) => t.Name, StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Gets the DN of this object
