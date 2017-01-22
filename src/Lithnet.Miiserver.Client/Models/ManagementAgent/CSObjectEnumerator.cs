@@ -20,11 +20,17 @@ namespace Lithnet.Miiserver.Client
 
         private bool exporting;
 
-        internal CSObjectEnumerator(MMSWebService ws, string token, bool exporting)
+        private CSObjectParts csParts;
+
+        private uint entryParts;
+
+        internal CSObjectEnumerator(MMSWebService ws, string token, bool exporting, CSObjectParts csParts, uint entryParts)
         {
             this.token = token;
             this.webService = ws;
             this.exporting = exporting;
+            this.csParts = csParts;
+            this.entryParts = entryParts;
 
             if (token == null)
             {
@@ -158,11 +164,11 @@ namespace Lithnet.Miiserver.Client
 
             if (exporting)
             {
-                response = this.webService.ExportConnectorSpaceGetNext(this.token, (ulong)CSObjectParts.AllItems, 0xFFFFFFFF, 10);
+                response = this.webService.ExportConnectorSpaceGetNext(this.token, (ulong)this.csParts, this.entryParts, 10);
             }
             else
             {
-                response = this.webService.GetCSResults(this.token, 10, (ulong)CSObjectParts.AllItems, 0xFFFFFFFF, 0, null);
+                response = this.webService.GetCSResults(this.token, 10, (ulong)this.csParts, this.entryParts, 0, null);
             }
 
             XmlDocument d = new XmlDocument();

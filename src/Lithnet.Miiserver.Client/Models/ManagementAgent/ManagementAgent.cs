@@ -14,7 +14,7 @@ namespace Lithnet.Miiserver.Client
     public class ManagementAgent : ManagementAgentBase
     {
         protected ManagementAgent(XmlNode node, Guid id)
-            :base (node, id)
+            : base(node, id)
         {
         }
 
@@ -171,7 +171,7 @@ namespace Lithnet.Miiserver.Client
             });
 
             t.Start();
-            
+
             return t;
         }
 
@@ -282,7 +282,8 @@ namespace Lithnet.Miiserver.Client
             string search = string.Format("<searching><id>{0}</id></searching>", id.ToMmsGuid());
             return this.GetSingleCSObject(search);
         }
-        public CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes)
+
+        internal CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes, CSObjectParts csParts, uint entryParts)
         {
             if (!(getAdds | getUpdates | getDeletes))
             {
@@ -294,10 +295,21 @@ namespace Lithnet.Miiserver.Client
                 getUpdates.ToString().ToLower(),
                 getDeletes.ToString().ToLower());
 
-            return this.ExportConnectorSpace(searchText);
+            return this.ExportConnectorSpace(searchText, csParts, entryParts);
+        }
+
+        public CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes)
+        {
+            return this.GetPendingImports(getAdds, getUpdates, getDeletes, CSObjectParts.AllItems, 0xffffffff);
+
         }
 
         public CSObjectEnumerator GetPendingExports(bool getAdds, bool getUpdates, bool getDeletes)
+        {
+            return this.GetPendingExports(getAdds, getUpdates, getDeletes, CSObjectParts.AllItems, 0xffffffff);
+        }
+
+        internal CSObjectEnumerator GetPendingExports(bool getAdds, bool getUpdates, bool getDeletes, CSObjectParts csParts, uint entryParts)
         {
             if (!(getAdds | getUpdates | getDeletes))
             {
@@ -309,8 +321,11 @@ namespace Lithnet.Miiserver.Client
                 getUpdates.ToString().ToLower(),
                 getDeletes.ToString().ToLower());
 
-            return this.ExportConnectorSpace(searchText);
+            return this.ExportConnectorSpace(searchText, csParts, entryParts);
         }
+
+
+
         public CSObjectEnumerator GetImportErrors()
         {
             string searchText = "<criteria><import-error>true</import-error></criteria>";
@@ -390,7 +405,7 @@ namespace Lithnet.Miiserver.Client
 
         public bool HasPendingExports()
         {
-            using (CSObjectEnumerator e = this.GetPendingExports(true, true, true))
+            using (CSObjectEnumerator e = this.GetPendingExports(true, true, true, 0, 0))
             {
                 return e.BatchCount > 0;
             }
@@ -398,7 +413,7 @@ namespace Lithnet.Miiserver.Client
 
         public bool HasPendingImports()
         {
-            using (CSObjectEnumerator e = this.GetPendingImports(true, true, true))
+            using (CSObjectEnumerator e = this.GetPendingImports(true, true, true, 0, 0))
             {
                 return e.BatchCount > 0;
             }
@@ -508,10 +523,15 @@ namespace Lithnet.Miiserver.Client
             return d.SelectSingleNode("/");
         }
 
-        private CSObjectEnumerator ExportConnectorSpace(string critieria)
+        private CSObjectEnumerator ExportConnectorSpace(string critieria, CSObjectParts csParts, uint entryParts)
         {
             string token = ws.ExportConnectorSpace(this.Name, critieria, true);
-            return new CSObjectEnumerator(ws, token, true);
+            return new CSObjectEnumerator(ws, token, true, csParts, entryParts);
+        }
+
+        private CSObjectEnumerator ExportConnectorSpace(string critieria)
+        {
+            return this.ExportConnectorSpace(critieria, CSObjectParts.AllItems, 0xFFFFFFFF);
         }
 
         private CSObject GetSingleCSObject(string criteria)
@@ -535,8 +555,13 @@ namespace Lithnet.Miiserver.Client
 
         private CSObjectEnumerator ExecuteCSSearch(string criteria)
         {
+            return this.ExecuteCSSearch(criteria, CSObjectParts.AllItems, 0xFFFFFFFF);
+        }
+
+        private CSObjectEnumerator ExecuteCSSearch(string criteria, CSObjectParts csParts, uint entryParts)
+        {
             string token = ws.ExecuteCSSearch(this.ID.ToMmsGuid(), criteria);
-            return new CSObjectEnumerator(ws, token, false);
+            return new CSObjectEnumerator(ws, token, false, csParts, entryParts);
         }
 
         private static ManagementObject GetManagementAgentWmiObject(string id)
