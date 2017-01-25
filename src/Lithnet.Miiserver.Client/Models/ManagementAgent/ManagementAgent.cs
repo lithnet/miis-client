@@ -492,7 +492,7 @@ namespace Lithnet.Miiserver.Client
 
         public void ExportManagementAgent(string file, bool includeIAFs)
         {
-            this.ExportManagementAgent(includeIAFs, DateTime.Now.ToMmsDateString());
+            this.ExportManagementAgent(file, includeIAFs, DateTime.Now.ToMmsDateString());
         }
 
         internal void ExportManagementAgent(string file, bool includeIAFs, string timestamp)
