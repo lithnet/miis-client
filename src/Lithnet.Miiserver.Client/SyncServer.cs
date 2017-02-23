@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Management;
-using System.Management.Instrumentation;
-using System.Reflection;
 using System.IO;
 using System.Management.Automation;
 using System.Diagnostics;
 using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 using System.Runtime.InteropServices;
 using System.Xml;
-using Lithnet.Miiserver.Client;
-using Microsoft.DirectoryServices.MetadirectoryServices.UI.PropertySheetBase;
 using System.Threading.Tasks;
 
 namespace Lithnet.Miiserver.Client

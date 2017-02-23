@@ -1,12 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml;
-    using System.Diagnostics;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{    
     public class EncodedValue : XmlObjectBase
     {
         internal EncodedValue(XmlNode node)
@@ -16,13 +12,7 @@
             this.DecodeValue();
         }
 
-        private string Encoding
-        {
-            get
-            {
-                return this.GetValue<string>("@encoding");
-            }
-        }
+        private string Encoding => this.GetValue<string>("@encoding");
 
         public string ValueString { get; private set; }
 

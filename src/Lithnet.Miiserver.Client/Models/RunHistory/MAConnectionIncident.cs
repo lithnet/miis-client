@@ -1,8 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class MAConnectionIncident : XmlObjectBase
     {
         internal MAConnectionIncident(XmlNode node)
@@ -10,36 +10,12 @@
         {
         }
 
-        public string ConnectionResult
-        {
-            get
-            {
-                return this.GetValue<string>("connection-result");
-            }
-        }
+        public string ConnectionResult => this.GetValue<string>("connection-result");
 
-        public DateTime? Date
-        {
-            get
-            {
-                return this.GetValue<DateTime?>("date");
-            }
-        }
+        public DateTime? Date => this.GetValue<DateTime?>("date");
 
-        public string Server
-        {
-            get
-            {
-                return this.GetValue<string>("server");
-            }
-        }
+        public string Server => this.GetValue<string>("server");
 
-        public CDError CDError
-        {
-            get
-            {
-                return this.GetObject<CDError>("cd-error");
-            }
-        }
+        public CDError CDError => this.GetObject<CDError>("cd-error");
     }
 }

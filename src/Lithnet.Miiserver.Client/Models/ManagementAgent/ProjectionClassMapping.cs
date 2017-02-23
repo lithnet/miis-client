@@ -1,9 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class ProjectionClassMapping : XmlObjectBase
     {
         internal ProjectionClassMapping(XmlNode node)
@@ -11,37 +10,13 @@
         {
         }
 
-        public Guid ID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@id");
-            }
-        }
+        public Guid ID => this.GetValue<Guid>("@id");
 
-        public string Type
-        {
-            get
-            {
-                return this.GetValue<string>("@type");
-            }
-        }
+        public string Type => this.GetValue<string>("@type");
 
-        public string CDObjectType 
-        {
-            get
-            {
-                return this.GetValue<string>("@cd-object-type");
-            }
-        }
+        public string CDObjectType => this.GetValue<string>("@cd-object-type");
 
-        public string MVObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("mv-object-type");
-            }
-        }
+        public string MVObjectType => this.GetValue<string>("mv-object-type");
 
         public override string ToString()
         {

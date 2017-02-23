@@ -1,9 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
+using System.Collections.Generic;
 
+namespace Lithnet.Miiserver.Client
+{
     public class FilterSet : XmlObjectBase
     {
         internal FilterSet(XmlNode node)
@@ -11,38 +10,13 @@
         {
         }
 
-        public string CDObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("@cd-object-type");
-            }
-        }
+        public string CDObjectType => this.GetValue<string>("@cd-object-type");
 
-        public string Type
-        {
-            get
-            {
-                return this.GetValue<string>("@type");
-            }
-        }
+        public string Type => this.GetValue<string>("@type");
 
+        public bool ImportFilter => this.GetValue<string>("@import-filter") == "1";
 
-        public bool ImportFilter
-        {
-            get
-            {
-                return this.GetValue<string>("@import-filter") == "1";
-            }
-        }
-
-        public IReadOnlyList<FilterConditions> Conditions
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<FilterConditions>("filter-alternative");
-            }
-        }
+        public IReadOnlyList<FilterConditions> Conditions => this.GetReadOnlyObjectList<FilterConditions>("filter-alternative");
     }
 }
 

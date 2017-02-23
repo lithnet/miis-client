@@ -1,9 +1,9 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System;
+using System.Xml;
+using System.Collections.Generic;
 
+namespace Lithnet.Miiserver.Client
+{
     public class FlowRuleSyncRule : FlowRule
     {
         internal FlowRuleSyncRule(XmlNode node)
@@ -12,54 +12,17 @@
             this.Type = FlowRuleType.SyncRule;
         }
 
-        public IReadOnlyList<string> SourceAttributes
-        {
-            get
-            {
-                return this.GetReadOnlyValueList<string>("src-attribute");
-            }
-        }
+        public IReadOnlyList<string> SourceAttributes => this.GetReadOnlyValueList<string>("src-attribute");
 
-        public string MappingType
-        {
-            get
-            {
-                return this.GetValue<string>("@mapping-type");
-            }
-        }
+        public string MappingType => this.GetValue<string>("@mapping-type");
 
-        public Guid SyncRuleID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@sync-rule-id");
-            }
-        }
+        public Guid SyncRuleID => this.GetValue<Guid>("@sync-rule-id");
 
-        public Guid SyncRuleMappingID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@sync-rule-mapping-id");
-            }
-        }
+        public Guid SyncRuleMappingID => this.GetValue<Guid>("@sync-rule-mapping-id");
 
-        public bool InitialFlowOnly
-        {
-            get
-            {
-                return this.GetValue<bool>("@initial-flow-only");
-            }
-        }
+        public bool InitialFlowOnly => this.GetValue<bool>("@initial-flow-only");
 
-        public bool IsExistenceTest
-        {
-            get
-            {
-                return this.GetValue<bool>("@is-existence-test");
-            }
-        }
-        
+        public bool IsExistenceTest => this.GetValue<bool>("@is-existence-test");
     }
 }
 

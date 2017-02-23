@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
     public class MVAttributeQuery
     {
-        public MVAttributeQuery()
-        {
-        }
-
         public DsmlAttribute Attribute { get; set; }
 
         public object Value { get; set; }
@@ -41,29 +33,31 @@ namespace Lithnet.Miiserver.Client
             switch (this.Attribute.Type)
             {
                 case AttributeType.Binary:
-                    if (this.Value is byte[])
+                    byte[] bytes = this.Value as byte[];
+
+                    if (bytes != null)
                     {
-                        return Convert.ToBase64String((byte[])this.Value);
-                    }
-                    else if (this.Value is string)
-                    {
-                        return (string)this.Value;
-                    }
-                    else
-                    {
-                        throw new InvalidCastException("The specified value could not be converted to a binary type");
+                        return Convert.ToBase64String(bytes);
                     }
 
-                    
+                    string stringvalue = this.Value as string;
+
+                    if (stringvalue != null)
+                    {
+                        return stringvalue;
+                    }
+
+                    throw new InvalidCastException("The specified value could not be converted to a binary type");
+
                 case AttributeType.String:
                     return this.Value.ToString();
-                    
+
                 case AttributeType.Integer:
                     return "0x" + Convert.ToInt64(this.Value.ToString()).ToString("X");
 
                 case AttributeType.Boolean:
                     return Convert.ToBoolean(this.Value.ToString()).ToString().ToLowerInvariant();
-                    
+
                 case AttributeType.Reference:
                     return ((Guid)this.Value).ToMmsGuid();
 

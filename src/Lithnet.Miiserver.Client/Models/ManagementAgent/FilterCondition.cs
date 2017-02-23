@@ -1,8 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class FilterCondition : XmlObjectBase
     {
         private object value;
@@ -12,45 +12,15 @@
         {
         }
         
-        public string Attribute
-        {
-            get
-            {
-                return this.GetValue<string>("@cd-attribute");
-            }
-        }
+        public string Attribute => this.GetValue<string>("@cd-attribute");
 
-        public string Operator
-        {
-            get
-            {
-                return this.GetValue<string>("@operator");
-            }
-        }
+        public string Operator => this.GetValue<string>("@operator");
 
-        private string Radix
-        {
-            get
-            {
-                return this.GetValue<string>("value/@ui-radix");
-            }
-        }
+        private string Radix => this.GetValue<string>("value/@ui-radix");
 
-        private string Encoding
-        {
-            get
-            {
-                return this.GetValue<string>("value/@encoding");
-            }
-        }
+        private string Encoding => this.GetValue<string>("value/@encoding");
 
-        private string RawValue
-        {
-            get
-            {
-                return this.GetValue<string>("value");
-            }
-        }
+        private string RawValue => this.GetValue<string>("value");
 
         public object Value
         {
@@ -90,47 +60,23 @@
             }
         }
 
-        public string ValueString
-        {
-            get
-            {
-                return (string)this.Value;
-            }
-        }
+        public string ValueString => (string)this.Value;
 
-        public long ValueInteger
-        {
-            get
-            {
-                return (long)this.value;
-            }
-        }
+        public long ValueInteger => (long)this.value;
 
-        public bool ValueBoolean
-        {
-            get
-            {
-                return (bool)this.value;
-            }
-        }
+        public bool ValueBoolean => (bool)this.value;
 
-        public byte[] ValueBinary
-        {
-            get
-            {
-                return (byte[])this.value;
-            }
-        }
+        public byte[] ValueBinary => (byte[])this.value;
 
         public override string ToString()
         {
             if (this.Value == null)
             {
-                return string.Format("{0} {1}", this.Attribute, this.Operator);
+                return $"{this.Attribute} {this.Operator}";
             }
             else
             {
-                return string.Format("{0} {1} {2}", this.Attribute, this.Operator, this.RawValue);
+                return $"{this.Attribute} {this.Operator} {this.RawValue}";
             }
         }
     }

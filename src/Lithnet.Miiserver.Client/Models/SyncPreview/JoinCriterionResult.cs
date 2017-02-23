@@ -1,9 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
+using System.Collections.Generic;
 
+namespace Lithnet.Miiserver.Client
+{
     public class JoinCriterionResult : XmlObjectBase
     {
         internal JoinCriterionResult(XmlNode node)
@@ -11,53 +10,17 @@
         {
         }
 
-        public string Type
-        {
-            get
-            {
-                return this.GetValue<string>("@join-cri-type");
-            }
-        }
+        public string Type => this.GetValue<string>("@join-cri-type");
 
-        public string Status
-        {
-            get
-            {
-                return this.GetValue<string>("@status");
-            }
-        }
+        public string Status => this.GetValue<string>("@status");
 
-        public IReadOnlyList<MVObject> Matches
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<MVObject>("search-results/mv-object");
-            }
-        }
+        public IReadOnlyList<MVObject> Matches => this.GetReadOnlyObjectList<MVObject>("search-results/mv-object");
 
-        public IReadOnlyList<Attribute> SearchValues
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<Attribute>("search-values/entry/attr");
-            }
-        }
+        public IReadOnlyList<Attribute> SearchValues => this.GetReadOnlyObjectList<Attribute>("search-values/entry/attr");
 
-        public string ResolutionStatus
-        {
-            get
-            {
-                return this.GetValue<string>("resolution/@status");
-            }
-        }
+        public string ResolutionStatus => this.GetValue<string>("resolution/@status");
 
-        public JoinRuleResult JoinRules
-        {
-            get
-            {
-                return this.GetObject<JoinRuleResult>("search");
-            }
-        }
+        public JoinRuleResult JoinRules => this.GetObject<JoinRuleResult>("search");
 
         public override string ToString()
         {

@@ -1,12 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml;
-    using System.Diagnostics;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class MVRetryError :XmlObjectBase
     {
         internal MVRetryError(XmlNode node)
@@ -14,52 +10,16 @@
         {
         }
 
-        public DateTime DateOccurred
-        {
-            get
-            {
-                return this.GetValue<DateTime>("date-occurred");
-            }
-        }
+        public DateTime DateOccurred => this.GetValue<DateTime>("date-occurred");
 
-        public string ErrorType
-        {
-            get
-            {
-                return this.GetValue<string>("error-type");
-            }
-        }
+        public string ErrorType => this.GetValue<string>("error-type");
 
-        public AlgorithmStep AlgorithmStep
-        {
-            get
-            {
-                return this.GetObject<AlgorithmStep>("algorithm-step");
-            }
-        }
+        public AlgorithmStep AlgorithmStep => this.GetObject<AlgorithmStep>("algorithm-step");
 
-        public ExtensionErrorInfo ExtensionErrorInfo
-        {
-            get
-            {
-                return this.GetObject<ExtensionErrorInfo>("extension-error-info");
-            }
-        }
+        public ExtensionErrorInfo ExtensionErrorInfo => this.GetObject<ExtensionErrorInfo>("extension-error-info");
 
-        public RulesErrorInfoContext RulesErrorInfo
-        {
-            get
-            {
-                return this.GetObject<RulesErrorInfoContext>("rules-error-info/context");
-            }
-        }
+        public RulesErrorInfoContext RulesErrorInfo => this.GetObject<RulesErrorInfoContext>("rules-error-info/context");
 
-        public string DisplayName
-        {
-            get
-            {
-                return this.GetValue<string>("@display-name");
-            }
-        }
+        public string DisplayName => this.GetValue<string>("@display-name");
     }
 }

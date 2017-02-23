@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -14,21 +11,9 @@ namespace Lithnet.Miiserver.Client
         {
         }
 
-        public string CDObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("@cd-object-type");
-            }
-        }
+        public string CDObjectType => this.GetValue<string>("@cd-object-type");
 
-        public string MVObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("@mv-object-type");
-            }
-        }
+        public string MVObjectType => this.GetValue<string>("@mv-object-type");
 
         public IReadOnlyDictionary<string, ExportFlow> ExportFlows
         {
@@ -40,7 +25,7 @@ namespace Lithnet.Miiserver.Client
 
         public override string ToString()
         {
-            return string.Format("{0} -> {1}", this.MVObjectType, this.CDObjectType);
+            return $"{this.MVObjectType} -> {this.CDObjectType}";
         }
     }
 }

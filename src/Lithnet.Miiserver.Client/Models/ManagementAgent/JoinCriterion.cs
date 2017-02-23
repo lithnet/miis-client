@@ -1,9 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class JoinCriterion : XmlObjectBase
     {
         internal JoinCriterion(XmlNode node)
@@ -11,37 +10,13 @@
         {
         }
 
-        public Guid ID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@id");
-            }
-        }
+        public Guid ID => this.GetValue<Guid>("@id");
 
-        public JoinRuleResult JoinRules
-        {
-            get
-            {
-                return this.GetObject<JoinRuleResult>("search");
-            }
-        }
+        public JoinRuleResult JoinRules => this.GetObject<JoinRuleResult>("search");
 
-        public string ResolutionType 
-        {
-            get
-            {
-                return this.GetValue<string>("resolution/@type");
-            }
-        }
+        public string ResolutionType => this.GetValue<string>("resolution/@type");
 
-        public string ResolutionScriptContext
-        {
-            get
-            {
-                return this.GetValue<string>("resolution/script-context");
-            }
-        }
+        public string ResolutionScriptContext => this.GetValue<string>("resolution/script-context");
     }
 }
 

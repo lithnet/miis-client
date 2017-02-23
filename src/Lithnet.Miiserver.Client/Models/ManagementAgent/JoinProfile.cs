@@ -1,9 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
+using System.Collections.Generic;
 
+namespace Lithnet.Miiserver.Client
+{
     public class JoinProfile : XmlObjectBase
     {
         internal JoinProfile(XmlNode node)
@@ -11,21 +10,9 @@
         {
         }
 
-        public string ObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("@cd-object-type");
-            }
-        }
+        public string ObjectType => this.GetValue<string>("@cd-object-type");
 
-        public IReadOnlyList<JoinCriterion> JoinCriteria
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<JoinCriterion>("join-criterion");
-            }
-        }
+        public IReadOnlyList<JoinCriterion> JoinCriteria => this.GetReadOnlyObjectList<JoinCriterion>("join-criterion");
     }
 }
 

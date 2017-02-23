@@ -1,8 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     /// <summary>
     /// Represents an attribute value
     /// </summary>

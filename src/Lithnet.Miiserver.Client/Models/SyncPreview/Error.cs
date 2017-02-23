@@ -1,9 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class Error : XmlObjectBase
     {
         internal Error(XmlNode node)
@@ -11,37 +9,13 @@
         {
         }
 
-        public string Code
-        {
-            get
-            {
-                return this.GetValue<string>("@code");
-            }
-        }
+        public string Code => this.GetValue<string>("@code");
 
-        public string Type
-        {
-            get
-            {
-                return this.GetValue<string>("@type");
-            }
-        }
+        public string Type => this.GetValue<string>("@type");
 
-        public string Diagnosis
-        {
-            get
-            {
-                return this.GetValue<string>("diagnosis");
-            }
-        }
+        public string Diagnosis => this.GetValue<string>("diagnosis");
 
-        public ExtensionErrorInfo ExtensionErrorInfo
-        {
-            get
-            {
-                return this.GetObject<ExtensionErrorInfo>("extension-error-info");
-            }
-        }
+        public ExtensionErrorInfo ExtensionErrorInfo => this.GetObject<ExtensionErrorInfo>("extension-error-info");
 
         public override string ToString()
         {

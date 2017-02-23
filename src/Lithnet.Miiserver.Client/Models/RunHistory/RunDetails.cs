@@ -1,11 +1,11 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Xml;
-    using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
+using System.IO;
 
+namespace Lithnet.Miiserver.Client
+{
     public class RunDetails : XmlObjectBase
     {
         internal RunDetails(XmlNode node)
@@ -16,24 +16,12 @@
         /// <summary>
         /// Gets the GUID of the management agent.
         /// </summary>
-        public Guid MAID
-        {
-            get
-            {
-                return this.GetValue<Guid>("ma-id");
-            }
-        }
+        public Guid MAID => this.GetValue<Guid>("ma-id");
 
         /// <summary>
         /// Gets the display name of the management agent
         /// </summary>
-        public string MAName
-        {
-            get
-            {
-                return this.GetValue<string>("ma-name");
-            }
-        }
+        public string MAName => this.GetValue<string>("ma-name");
 
         /// <summary>
         /// Gets the sequence number of the run, starting with 1
@@ -41,46 +29,22 @@
         /// <remarks>
         /// Only runs that call "Execute" are given run-numbers
         /// </remarks>
-        public int RunNumber
-        {
-            get
-            {
-                return this.GetValue<int>("run-number");
-            }
-        }
+        public int RunNumber => this.GetValue<int>("run-number");
 
         /// <summary>
         /// Gets the display name of the run profile that was used when the management agent was run.
         /// </summary>
-        public string RunProfileName
-        {
-            get
-            {
-                return this.GetValue<string>("run-profile-name");
-            }
-        }
+        public string RunProfileName => this.GetValue<string>("run-profile-name");
 
         /// <summary>
         /// Gets the "domain\account name" of the account that invokes the management agent run
         /// </summary>
-        public string SecurityID
-        {
-            get
-            {
-                return this.GetValue<string>("security-id");
-            }
-        }
+        public string SecurityID => this.GetValue<string>("security-id");
 
         /// <summary>
         /// Gets information about the steps of the management agent run
         /// </summary>
-        public IReadOnlyList<StepDetails> StepDetails
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<StepDetails>("step-details");
-            }
-        }
+        public IReadOnlyList<StepDetails> StepDetails => this.GetReadOnlyObjectList<StepDetails>("step-details");
 
         public DateTime? StartTime
         {
@@ -95,13 +59,7 @@
             }
         }
 
-        public DateTime? EndTime
-        {
-            get
-            {
-                return this.StepDetails?.FirstOrDefault()?.EndDate;
-            }
-        }
+        public DateTime? EndTime => this.StepDetails?.FirstOrDefault()?.EndDate;
 
         public string LastStepStatus
         {

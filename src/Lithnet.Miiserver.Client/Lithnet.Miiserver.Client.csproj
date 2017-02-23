@@ -134,7 +134,6 @@
     <Compile Include="Models\CSObject\CSEntryBase.cs" />
     <Compile Include="Models\RunHistory\MAConnectionIncident.cs" />
     <Compile Include="Models\ManagementAgent\MAStatistics.cs" />
-    <Compile Include="Models\MVObject\MVEntry.cs" />
     <Compile Include="Models\MVObject\MVReferenceAttribute.cs" />
     <Compile Include="Models\MVObject\MVReferenceValue.cs" />
     <Compile Include="Models\MVObject\MVAttribute.cs" />

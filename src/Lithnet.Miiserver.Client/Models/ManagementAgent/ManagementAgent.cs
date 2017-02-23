@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using System.Threading.Tasks;
-using System.Data;
-using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 using System.Xml;
 using System.Threading;
 
@@ -31,9 +29,9 @@ namespace Lithnet.Miiserver.Client
 
         public static IEnumerable<ManagementAgent> GetManagementAgents()
         {
-            ArrayList names = new ArrayList();
-            ArrayList ids = new ArrayList();
-            ws.GetMAGuidList(out ids, out names);
+            ArrayList names;
+            ArrayList ids;
+            ManagementAgentBase.WebService.GetMAGuidList(out ids, out names);
 
             foreach (string id in ids.OfType<string>())
             {
@@ -43,13 +41,13 @@ namespace Lithnet.Miiserver.Client
 
         public static Guid MANameToID(string name)
         {
-            ArrayList names = new ArrayList();
-            ArrayList ids = new ArrayList();
-            ws.GetMAGuidList(out ids, out names);
+            ArrayList names;
+            ArrayList ids;
+            ManagementAgentBase.WebService.GetMAGuidList(out ids, out names);
 
             if (names.Count != ids.Count)
             {
-                throw new ArgumentOutOfRangeException("The sync engine returned a mis-matched number of management agents in the name-to-id mapping data");
+                throw new ArgumentOutOfRangeException(nameof(ids), "The sync engine returned a mis-matched number of management agents in the name-to-id mapping data");
             }
 
             for (int i = 0; i < ids.Count; i++)
@@ -60,12 +58,12 @@ namespace Lithnet.Miiserver.Client
                 }
             }
 
-            throw new InvalidOperationException(string.Format("Management agent {0} was not found", name));
+            throw new InvalidOperationException($"Management agent {name} was not found");
         }
 
         public bool IsIdle()
         {
-            return ws.IsMAIdle(this.ID.ToMmsGuid());
+            return ManagementAgentBase.WebService.IsMAIdle(this.ID.ToMmsGuid());
         }
 
         public void Wait()
@@ -121,15 +119,13 @@ namespace Lithnet.Miiserver.Client
 
         public void Stop()
         {
-            ws.StopMA(this.ID.ToMmsGuid());
+            string result = ManagementAgentBase.WebService.StopMA(this.ID.ToMmsGuid());
+            SyncServer.ThrowExceptionOnReturnError(result);
         }
 
         public void StopAsync()
         {
-            Task t = new Task(() =>
-            {
-                this.Stop();
-            });
+            Task t = new Task(this.Stop);
 
             t.Start();
         }
@@ -165,10 +161,7 @@ namespace Lithnet.Miiserver.Client
 
         public Task<string> ExecuteRunProfileAsync(string name, bool resumeLastRun)
         {
-            Task<string> t = new Task<string>(() =>
-            {
-                return this.ExecuteRunProfile(name, resumeLastRun);
-            });
+            Task<string> t = new Task<string>(() => this.ExecuteRunProfile(name, resumeLastRun));
 
             t.Start();
 
@@ -177,10 +170,7 @@ namespace Lithnet.Miiserver.Client
 
         public Task<string> ExecuteRunProfileAsync(string name)
         {
-            Task<string> t = new Task<string>(() =>
-            {
-                return this.ExecuteRunProfile(name);
-            });
+            Task<string> t = new Task<string>(() => this.ExecuteRunProfile(name));
 
             t.Start();
 
@@ -261,25 +251,25 @@ namespace Lithnet.Miiserver.Client
 
         public CSObject GetCSObject(string dn)
         {
-            string search = string.Format("<searching><dn recursive=\"false\">{0}</dn></searching>", dn);
+            string search = $"<searching><dn recursive=\"false\">{dn}</dn></searching>";
             return this.GetSingleCSObject(search);
         }
 
         public CSObjectEnumerator GetCSObjects(string dn, bool searchSubTree)
         {
-            string search = string.Format("<searching><dn recursive=\"{0}\">{1}</dn></searching>", searchSubTree.ToString().ToLower(), dn);
+            string search = $"<searching><dn recursive=\"{searchSubTree.ToString().ToLower()}\">{dn}</dn></searching>";
             return this.ExecuteCSSearch(search);
         }
 
         public CSObjectEnumerator GetCSObjects(string rdn)
         {
-            string search = string.Format("<searching><rdn>{0}</rdn></searching>", rdn);
+            string search = $"<searching><rdn>{rdn}</rdn></searching>";
             return this.ExecuteCSSearch(search);
         }
 
         public CSObject GetCSObject(Guid id)
         {
-            string search = string.Format("<searching><id>{0}</id></searching>", id.ToMmsGuid());
+            string search = $"<searching><id>{id.ToMmsGuid()}</id></searching>";
             return this.GetSingleCSObject(search);
         }
 
@@ -290,10 +280,7 @@ namespace Lithnet.Miiserver.Client
                 throw new ArgumentException("At least one change type must be specified");
             }
 
-            string searchText = string.Format("<criteria><pending-import add=\"{0}\" modify=\"{1}\" delete=\"{2}\"></pending-import></criteria>",
-                getAdds.ToString().ToLower(),
-                getUpdates.ToString().ToLower(),
-                getDeletes.ToString().ToLower());
+            string searchText = $"<criteria><pending-import add=\"{getAdds.ToString().ToLower()}\" modify=\"{getUpdates.ToString().ToLower()}\" delete=\"{getDeletes.ToString().ToLower()}\"></pending-import></criteria>";
 
             return this.ExportConnectorSpace(searchText, csParts, entryParts);
         }
@@ -316,10 +303,7 @@ namespace Lithnet.Miiserver.Client
                 throw new ArgumentException("At least one change type must be specified");
             }
 
-            string searchText = string.Format("<criteria><pending-export add=\"{0}\" modify=\"{1}\" delete=\"{2}\"></pending-export></criteria>",
-                getAdds.ToString().ToLower(),
-                getUpdates.ToString().ToLower(),
-                getDeletes.ToString().ToLower());
+            string searchText = $"<criteria><pending-export add=\"{getAdds.ToString().ToLower()}\" modify=\"{getUpdates.ToString().ToLower()}\" delete=\"{getDeletes.ToString().ToLower()}\"></pending-export></criteria>";
 
             return this.ExportConnectorSpace(searchText, csParts, entryParts);
         }
@@ -362,7 +346,7 @@ namespace Lithnet.Miiserver.Client
                     throw new InvalidOperationException("Unknown connector type");
             }
 
-            string searchText = string.Format("<criteria><connector>false</connector><connector-state>{0}</connector-state></criteria>", type);
+            string searchText = $"<criteria><connector>false</connector><connector-state>{type}</connector-state></criteria>";
             return this.ExportConnectorSpace(searchText);
         }
 
@@ -385,7 +369,7 @@ namespace Lithnet.Miiserver.Client
                     throw new InvalidOperationException("Unsupported connector type");
             }
 
-            string searchText = string.Format("<criteria><connector>true</connector><connector-state>{0}</connector-state></criteria>", type);
+            string searchText = $"<criteria><connector>true</connector><connector-state>{type}</connector-state></criteria>";
             return this.ExportConnectorSpace(searchText);
         }
 
@@ -425,7 +409,8 @@ namespace Lithnet.Miiserver.Client
             int reload;
             uint returned;
 
-            string result = ws.GetExecSummary(ref ts, out reload, out returned);
+            string result = ManagementAgentBase.WebService.GetExecSummary(ref ts, out reload, out returned);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             return RunSummary.GetRunSummary(result, this.ID);
         }
@@ -437,8 +422,9 @@ namespace Lithnet.Miiserver.Client
 
         public RunDetails GetRunDetail(int runNumber)
         {
-            string query = string.Format("<execution-history-req ma=\"{0}\"><run-number>{1}</run-number></execution-history-req>", this.ID.ToMmsGuid(), runNumber);
-            string result = ws.GetExecutionHistory(query);
+            string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><run-number>{runNumber}</run-number></execution-history-req>";
+            string result = ManagementAgentBase.WebService.GetExecutionHistory(query);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             if (result != null)
             {
@@ -457,9 +443,10 @@ namespace Lithnet.Miiserver.Client
                 throw new ArgumentOutOfRangeException("count", "Run history count must be greater than zero");
             }
 
-            string query = string.Format("<execution-history-req ma=\"{0}\"><num-req>{1}</num-req></execution-history-req>", this.ID.ToMmsGuid(), count);
+            string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>{count}</num-req></execution-history-req>";
 
-            string result = ws.GetExecutionHistory(query);
+            string result = ManagementAgentBase.WebService.GetExecutionHistory(query);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             if (result != null)
             {
@@ -473,9 +460,10 @@ namespace Lithnet.Miiserver.Client
 
         public RunDetails GetLastRun()
         {
-            string query = string.Format("<execution-history-req ma=\"{0}\"><num-req>1</num-req></execution-history-req>", this.ID.ToMmsGuid());
+            string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>1</num-req></execution-history-req>";
 
-            string result = ws.GetExecutionHistory(query);
+            string result = ManagementAgentBase.WebService.GetExecutionHistory(query);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             if (result != null)
             {
@@ -490,9 +478,11 @@ namespace Lithnet.Miiserver.Client
             return this.Name;
         }
 
-        internal string ExportManagementAgent(bool includeIAFs, string timestamp)
+        internal string ExportManagementAgent(bool includeIafs, string timestamp)
         {
-            return ManagementAgent.ws.ExportManagementAgent(this.Name, true, includeIAFs, timestamp);
+            string result = ManagementAgent.WebService.ExportManagementAgent(this.Name, true, includeIafs, timestamp);
+            SyncServer.ThrowExceptionOnReturnError(result);
+            return result;
         }
 
         public string ExportManagementAgent()
@@ -518,15 +508,20 @@ namespace Lithnet.Miiserver.Client
 
         private XmlNode GetMaData(MAData madata, MAPartitionData partitionData, MARunData rundata)
         {
+            string result = ManagementAgentBase.WebService.GetMaData(this.ID.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
+            SyncServer.ThrowExceptionOnReturnError(result);
+
             XmlDocument d = new XmlDocument();
-            d.LoadXml(ws.GetMaData(this.ID.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata));
+            d.LoadXml(result);
             return d.SelectSingleNode("/");
         }
 
         private CSObjectEnumerator ExportConnectorSpace(string critieria, CSObjectParts csParts, uint entryParts)
         {
-            string token = ws.ExportConnectorSpace(this.Name, critieria, true);
-            return new CSObjectEnumerator(ws, token, true, csParts, entryParts);
+            string token = ManagementAgentBase.WebService.ExportConnectorSpace(this.Name, critieria, true);
+            SyncServer.ThrowExceptionOnReturnError(token);
+
+            return new CSObjectEnumerator(ManagementAgentBase.WebService, token, true, csParts, entryParts);
         }
 
         private CSObjectEnumerator ExportConnectorSpace(string critieria)
@@ -560,13 +555,15 @@ namespace Lithnet.Miiserver.Client
 
         private CSObjectEnumerator ExecuteCSSearch(string criteria, CSObjectParts csParts, uint entryParts)
         {
-            string token = ws.ExecuteCSSearch(this.ID.ToMmsGuid(), criteria);
-            return new CSObjectEnumerator(ws, token, false, csParts, entryParts);
+            string token = ManagementAgentBase.WebService.ExecuteCSSearch(this.ID.ToMmsGuid(), criteria);
+            SyncServer.ThrowExceptionOnReturnError(token);
+
+            return new CSObjectEnumerator(ManagementAgentBase.WebService, token, false, csParts, entryParts);
         }
 
         private static ManagementObject GetManagementAgentWmiObject(string id)
         {
-            ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_ManagementAgent where Guid='{0}'", id));
+            ObjectQuery query = new ObjectQuery($"SELECT * FROM MIIS_ManagementAgent where Guid='{id}'");
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.Scope, query);
             ManagementObjectCollection results = searcher.Get();
 

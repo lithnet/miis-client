@@ -42,17 +42,11 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        internal int BatchCount
-        {
-            get
-            {
-                return this.currentResultSet.Count;
-            }
-        }
+        internal int BatchCount => this.currentResultSet.Count;
 
         public IEnumerator<CSObject> GetEnumerator()
         {
-            if (disposed)
+            if (this.disposed)
             {
                 throw new ObjectDisposedException("SearchEnumerator");
             }
@@ -62,7 +56,7 @@ namespace Lithnet.Miiserver.Client
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            if (disposed)
+            if (this.disposed)
             {
                 throw new ObjectDisposedException("SearchEnumerator");
             }
@@ -74,7 +68,7 @@ namespace Lithnet.Miiserver.Client
         {
             get
             {
-                if (disposed)
+                if (this.disposed)
                 {
                     throw new ObjectDisposedException("SearchEnumerator");
                 }
@@ -87,7 +81,7 @@ namespace Lithnet.Miiserver.Client
         {
             get
             {
-                if (disposed)
+                if (this.disposed)
                 {
                     throw new ObjectDisposedException("SearchEnumerator");
                 }
@@ -98,7 +92,7 @@ namespace Lithnet.Miiserver.Client
 
         public bool MoveNext()
         {
-            if (disposed)
+            if (this.disposed)
             {
                 throw new ObjectDisposedException("SearchEnumerator");
             }
@@ -126,7 +120,7 @@ namespace Lithnet.Miiserver.Client
 
         public void Reset()
         {
-            if (disposed)
+            if (this.disposed)
             {
                 throw new ObjectDisposedException("SearchEnumerator");
             }
@@ -136,7 +130,7 @@ namespace Lithnet.Miiserver.Client
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposed)
+            if (this.disposed)
             {
                 return;
             }
@@ -155,14 +149,14 @@ namespace Lithnet.Miiserver.Client
                 this.currentResultSet.Dispose();
             }
 
-            disposed = true;
+            this.disposed = true;
         }
 
         private void GetNextPage()
         {
             string response;
 
-            if (exporting)
+            if (this.exporting)
             {
                 response = this.webService.ExportConnectorSpaceGetNext(this.token, (ulong)this.csParts, this.entryParts, 10);
                 SyncServer.ThrowExceptionOnReturnError(response);

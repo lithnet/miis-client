@@ -1,8 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Lithnet.Miiserver.Client
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [Flags]
     internal enum MARunData : uint
     {
         BFRUNDATA_ID = 1,

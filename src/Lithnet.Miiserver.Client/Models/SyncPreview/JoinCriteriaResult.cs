@@ -1,9 +1,9 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System;
+using System.Xml;
+using System.Collections.Generic;
 
+namespace Lithnet.Miiserver.Client
+{
     public class JoinCriteriaResult : XmlObjectBase
     {
         internal JoinCriteriaResult(XmlNode node)
@@ -11,35 +11,13 @@
         {
         }
 
-        public bool HasError
-        {
-            get
-            {
-                return this.GetValue<bool>("@has-error");
-            }
-        }
+        public bool HasError => this.GetValue<bool>("@has-error");
 
-        public Error Error
-        {
-            get
-            {
-                return this.GetObject<Error>("error");
-            }
-        }
+        public Error Error => this.GetObject<Error>("error");
 
-        public IReadOnlyList<JoinCriterionResult> JoinCriteria
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<JoinCriterionResult>("join-criterion");
-            }
-        }
+        public IReadOnlyList<JoinCriterionResult> JoinCriteria => this.GetReadOnlyObjectList<JoinCriterionResult>("join-criterion");
 
-        public Guid? JoinedMVObjectID { get
-            {
-                return this.GetValue<Guid?>("join-result/@object-id");
-            }
-        }
+        public Guid? JoinedMVObjectID => this.GetValue<Guid?>("join-result/@object-id");
 
         public override string ToString()
         {

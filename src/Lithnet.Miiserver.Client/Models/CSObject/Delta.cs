@@ -1,13 +1,9 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml.Serialization;
-    using System.Diagnostics;
-    using System.Xml;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class Delta : CSEntryBase
     {
         internal Delta(XmlNode node)
@@ -23,12 +19,6 @@
             }
         }
 
-        public DeltaOperationType Operation
-        {
-            get
-            {
-                return this.GetValue<DeltaOperationType>("@operation");
-            }
-        }
+        public DeltaOperationType Operation => this.GetValue<DeltaOperationType>("@operation");
     }
 }

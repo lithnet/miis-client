@@ -1,9 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
+using System.Collections.Generic;
 
+namespace Lithnet.Miiserver.Client
+{
     public class ProvisioningResult : XmlObjectBase
     {
         internal ProvisioningResult(XmlNode node)
@@ -11,45 +10,15 @@
         {
         }
 
-        public bool HasError
-        {
-            get
-            {
-                return this.GetValue<bool>("@has-error");
-            }
-        }
+        public bool HasError => this.GetValue<bool>("@has-error");
 
-        public IReadOnlyList<ConnectorAdd> ConnectorAdds
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<ConnectorAdd>("add-connector");
-            }
-        }
+        public IReadOnlyList<ConnectorAdd> ConnectorAdds => this.GetReadOnlyObjectList<ConnectorAdd>("add-connector");
 
-        public IReadOnlyList<ConnectorRename> ConnectorRenames
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<ConnectorRename>("rename-connector");
-            }
-        }
+        public IReadOnlyList<ConnectorRename> ConnectorRenames => this.GetReadOnlyObjectList<ConnectorRename>("rename-connector");
 
-        public IReadOnlyList<Delta> InitialFlows
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<Delta>("export-flow-rules/export-attribute-flow/values");
-            }
-        }
+        public IReadOnlyList<Delta> InitialFlows => this.GetReadOnlyObjectList<Delta>("export-flow-rules/export-attribute-flow/values");
 
-        public Error Error
-        {
-            get
-            {
-                return this.GetObject<Error>("error");
-            }
-        }
+        public Error Error => this.GetObject<Error>("error");
     }
 }
 

@@ -1,8 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class FilterConditionResult : FilterCondition
     {
         internal FilterConditionResult(XmlNode node)
@@ -10,21 +9,9 @@
         {
         }
 
-        private bool IntrinsicAttribute
-        {
-            get
-            {
-                return this.GetValue<bool>("@intrinsic-attribute");
-            }
-        }
+        private bool IntrinsicAttribute => this.GetValue<bool>("@intrinsic-attribute");
 
-        public bool ConditionMet
-        {
-            get
-            {
-                return this.GetValue<bool>("@status");
-            }
-        }
+        public bool ConditionMet => this.GetValue<bool>("@status");
     }
 }
 

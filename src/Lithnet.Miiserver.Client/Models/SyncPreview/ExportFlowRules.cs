@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -22,28 +19,10 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        public string Type
-        {
-            get
-            {
-                return this.GetValue<string>("@export-flow-type");
-            }
-        }
+        public string Type => this.GetValue<string>("@export-flow-type");
 
-        public bool HasError
-        {
-            get
-            {
-                return this.GetValue<bool>("@has-error");
-            }
-        }
+        public bool HasError => this.GetValue<bool>("@has-error");
 
-        public Delta Delta
-        {
-            get
-            {
-                return this.GetObject<Delta>("values/delta");
-            }
-        }
+        public Delta Delta => this.GetObject<Delta>("values/delta");
     }
 }

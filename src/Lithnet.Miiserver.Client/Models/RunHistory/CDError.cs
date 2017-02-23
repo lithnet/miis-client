@@ -1,30 +1,16 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Xml;
+﻿using System.Xml;
 
-    public partial class CDError : XmlObjectBase
+namespace Lithnet.Miiserver.Client
+{
+    public class CDError : XmlObjectBase
     {
         internal CDError(XmlNode node)
             :base(node)
         {
         }
 
-        public string ErrorCode
-        {
-            get
-            {
-                return this.GetValue<string>("error-code");
-            }
-        }
+        public string ErrorCode => this.GetValue<string>("error-code");
 
-        public string ErrorLiteral
-        {
-            get
-            {
-                return this.GetValue<string>("error-literal");
-            }
-        }
+        public string ErrorLiteral => this.GetValue<string>("error-literal");
     }
 }

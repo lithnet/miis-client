@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -15,30 +11,12 @@ namespace Lithnet.Miiserver.Client
             this.FlowRule = FlowRule.GetFlowRule(node);
         }
 
-        public string TargetAttribute
-        {
-            get
-            {
-                return this.GetValue<string>("@cd-attribute");
-            }
-        }
+        public string TargetAttribute => this.GetValue<string>("@cd-attribute");
 
-        public Guid ID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@id");
-            }
-        }
+        public Guid ID => this.GetValue<Guid>("@id");
 
-        public bool FlowNulls
-        {
-            get
-            {
-                return !this.GetValue<bool>("@suppress-deletions");
-            }
-        }
-      
+        public bool FlowNulls => !this.GetValue<bool>("@suppress-deletions");
+
         public FlowRule FlowRule { get; private set; }
 
         public override string ToString()

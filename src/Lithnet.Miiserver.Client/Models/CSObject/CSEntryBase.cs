@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    using System.Collections.Generic;
-    using System.Xml;
-
     /// <summary>
     /// A common base object that represents all types of CSEntry objects
     /// </summary>

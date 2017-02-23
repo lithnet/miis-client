@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -14,22 +10,10 @@ namespace Lithnet.Miiserver.Client
         {
         }
 
-        public Guid  SourceMAID
-        {
-            get
-            {
-                return this.GetValue<Guid >("@src-ma-id");
-            }
-        }
+        public Guid  SourceMAID => this.GetValue<Guid >("@src-ma-id");
 
 
-        public Guid SourceObjectID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@src-object-id");
-            }
-        }      
+        public Guid SourceObjectID => this.GetValue<Guid>("@src-object-id");
 
         public override string ToString()
         {

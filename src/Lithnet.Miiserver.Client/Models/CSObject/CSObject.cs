@@ -179,10 +179,7 @@ namespace Lithnet.Miiserver.Client
         /// <returns>An enumeration of connector space objects</returns>
         public static IEnumerable<CSObject> GetConnectedCSObjects(Guid mvObjectId)
         {
-            foreach (CSMVLink link in CSObject.GetConnectedCSObjectLinks(mvObjectId))
-            {
-                yield return link.GetCSObject();
-            }
+            return CSObject.GetConnectedCSObjectLinks(mvObjectId).Select(link => link.GetCSObject());
         }
 
         /// <summary>

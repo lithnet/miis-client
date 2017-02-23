@@ -1,9 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class ConnectorDeprovision : XmlObjectBase
     {
         internal ConnectorDeprovision(XmlNode node)
@@ -11,37 +9,13 @@
         {
         }
 
-        public bool HasError
-        {
-            get
-            {
-                return this.GetValue<bool>("@has-error");
-            }
-        }
+        public bool HasError => this.GetValue<bool>("@has-error");
 
-        public Error Error
-        {
-            get
-            {
-                return this.GetObject<Error>("error");
-            }
-        }
+        public Error Error => this.GetObject<Error>("error");
 
-        public string  Type
-        {
-            get
-            {
-                return this.GetValue<string>("cs-deprovisioning-action/@type");
-            }
-        }
+        public string  Type => this.GetValue<string>("cs-deprovisioning-action/@type");
 
-        public string Status
-        {
-            get
-            {
-                return this.GetValue<string>("cs-deprovisioning-action/@status");
-            }
-        }
+        public string Status => this.GetValue<string>("cs-deprovisioning-action/@status");
 
         public override string ToString()
         {

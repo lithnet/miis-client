@@ -1,23 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
-using System.Threading.Tasks;
-using System.Data;
 using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 using System.Xml;
-using System.Threading;
 using System.Runtime.InteropServices;
 
 namespace Lithnet.Miiserver.Client
 {
     public abstract class ManagementAgentBase : XmlObjectBase
     {
-        protected static MMSWebService ws = new MMSWebService();
-
-        //protected ManagementObject wmiobject;
-
+        protected static MMSWebService WebService = new MMSWebService();
+        
         private IReadOnlyList<MAImportFlowSet> importFlows;
 
         protected ManagementAgentBase(XmlNode node, Guid id)
@@ -25,7 +19,6 @@ namespace Lithnet.Miiserver.Client
 
         {
             this.ID = id;
-            //this.wmiobject = ManagementAgent.GetManagementAgentWmiObject(this.ID);
             this.Refresh();
         }
 
@@ -36,7 +29,7 @@ namespace Lithnet.Miiserver.Client
                 string lastRunXml;
                 uint mvObjectCount;
 
-                string result = ws.GetMAStatistics(this.ID.ToMmsGuid(), out lastRunXml, out mvObjectCount);
+                string result = ManagementAgentBase.WebService.GetMAStatistics(this.ID.ToMmsGuid(), out lastRunXml, out mvObjectCount);
 
                 SyncServer.ThrowExceptionOnReturnError(result);
 
@@ -47,87 +40,27 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        public string Name
-        {
-            get
-            {
-                return this.GetValue<string>("name");
-            }
-        }
+        public string Name => this.GetValue<string>("name");
 
-        public string Description
-        {
-            get
-            {
-                return this.GetValue<string>("description");
-            }
-        }
+        public string Description => this.GetValue<string>("description");
 
         public Guid ID { get; private set; }
 
-        public string ListName
-        {
-            get
-            {
-                return this.GetValue<string>("ma-listname");
-            }
-        }
+        public string ListName => this.GetValue<string>("ma-listname");
 
-        public string Category
-        {
-            get
-            {
-                return this.GetValue<string>("category");
-            }
-        }
+        public string Category => this.GetValue<string>("category");
 
-        public string SubType
-        {
-            get
-            {
-                return this.GetValue<string>("subtype");
-            }
-        }
+        public string SubType => this.GetValue<string>("subtype");
 
-        public string CompanyName
-        {
-            get
-            {
-                return this.GetValue<string>("ma-companyname");
-            }
-        }
+        public string CompanyName => this.GetValue<string>("ma-companyname");
 
-        public string Version
-        {
-            get
-            {
-                return this.GetValue<string>("version");
-            }
-        }
+        public string Version => this.GetValue<string>("version");
 
-        public DateTime CreationTime
-        {
-            get
-            {
-                return this.GetValue<DateTime>("creation-time");
-            }
-        }
+        public DateTime CreationTime => this.GetValue<DateTime>("creation-time");
 
-        public DateTime LastModificationTime
-        {
-            get
-            {
-                return this.GetValue<DateTime>("last-modification-time");
-            }
-        }
+        public DateTime LastModificationTime => this.GetValue<DateTime>("last-modification-time");
 
-        public bool PasswordSyncAllowed
-        {
-            get
-            {
-                return this.GetValue<string>("password-sync-allowed") == "1";
-            }
-        }
+        public bool PasswordSyncAllowed => this.GetValue<string>("password-sync-allowed") == "1";
 
         public IReadOnlyDictionary<string, FilterSet> ConnectorFilterRules
         {
@@ -145,13 +78,7 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        public IReadOnlyList<ExportFlowSet> ExportAttributeFlows
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<ExportFlowSet>("export-attribute-flow/export-flow-set");
-            }
-        }
+        public IReadOnlyList<ExportFlowSet> ExportAttributeFlows => this.GetReadOnlyObjectList<ExportFlowSet>("export-attribute-flow/export-flow-set");
 
         public IReadOnlyList<MAImportFlowSet> ImportAttributeFlows
         {
@@ -166,32 +93,12 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        private DsmlSchema schema;
+        public DsmlSchema Schema => this.GetObject<DsmlSchema>("schema/dsml:dsml");
 
-        public DsmlSchema Schema
-        {
-            get
-            {
-                return this.GetObject<DsmlSchema>("schema/dsml:dsml");
-            }
-        }
-
-        public PasswordSyncSettings PasswordSyncTargetSettings
-        {
-            get
-            {
-                return this.PasswordSyncAllowed ? this.GetObject<PasswordSyncSettings>("password-sync") : null;
-            }
-        }
+        public PasswordSyncSettings PasswordSyncTargetSettings => this.PasswordSyncAllowed ? this.GetObject<PasswordSyncSettings>("password-sync") : null;
 
 
-        public IReadOnlyList<string> SelectedAttributes
-        {
-            get
-            {
-                return this.GetReadOnlyValueList<string>("attribute-inclusion/attribute");
-            }
-        }
+        public IReadOnlyList<string> SelectedAttributes => this.GetReadOnlyValueList<string>("attribute-inclusion/attribute");
 
         public IReadOnlyDictionary<string, JoinProfile> JoinRules
         {
@@ -201,53 +108,17 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        public string DeprovisioningAction
-        {
-            get
-            {
-                return this.GetValue<string>("provisioning-cleanup/action");
-            }
-        }
+        public string DeprovisioningAction => this.GetValue<string>("provisioning-cleanup/action");
 
-        public string DeprovisioningActionType
-        {
-            get
-            {
-                return this.GetValue<string>("provisioning-cleanup/@type");
-            }
-        }
+        public string DeprovisioningActionType => this.GetValue<string>("provisioning-cleanup/@type");
 
-        public string RulesExtension
-        {
-            get
-            {
-                return this.GetValue<string>("extension/assembly-name");
-            }
-        }
+        public string RulesExtension => this.GetValue<string>("extension/assembly-name");
 
-        public bool RulesExtensionInSeperateProcess
-        {
-            get
-            {
-                return this.GetValue<string>("extension/application-protection") != "low";
-            }
-        }
+        public bool RulesExtensionInSeperateProcess => this.GetValue<string>("extension/application-protection") != "low";
 
-        public string MAArchitecture
-        {
-            get
-            {
-                return this.GetValue<string>("controller-configuration/application-architecture");
-            }
-        }
+        public string MAArchitecture => this.GetValue<string>("controller-configuration/application-architecture");
 
-        public bool MAInSeperateProcess
-        {
-            get
-            {
-                return this.GetValue<string>("controller-configuration/application-protection") != "low";
-            }
-        }
+        public bool MAInSeperateProcess => this.GetValue<string>("controller-configuration/application-protection") != "low";
 
         public IReadOnlyDictionary<string, RunConfiguration> RunProfiles
         {
@@ -285,7 +156,7 @@ namespace Lithnet.Miiserver.Client
 
             foreach (XmlNode n2 in n1.SelectNodes("import-flow-set"))
             {
-                List<MAImportFlow> importFlows = new List<MAImportFlow>();
+                List<MAImportFlow> flows = new List<MAImportFlow>();
 
                 string mvObjectType = n2.SelectSingleNode("@mv-object-type").InnerText;
 
@@ -296,11 +167,11 @@ namespace Lithnet.Miiserver.Client
                     foreach (XmlNode n4 in n3.SelectNodes(string.Format("import-flow[@src-ma='{0}']", this.ID.ToMmsGuid())))
                     {
                         MAImportFlow f = new MAImportFlow(n4, mvObjectType, mvAttribute);
-                        importFlows.Add(f);
+                        flows.Add(f);
                     }
                 }
 
-                foreach (IGrouping<string, MAImportFlow> g in importFlows.GroupBy(t => t.CSObjectType))
+                foreach (IGrouping<string, MAImportFlow> g in flows.GroupBy(t => t.CSObjectType))
                 {
                     MAImportFlowSet set = new MAImportFlowSet(g.Key, mvObjectType, g.ToList().AsReadOnly());
                     sets.Add(set);
@@ -327,7 +198,7 @@ namespace Lithnet.Miiserver.Client
 
         public string ExecuteRunProfileNative(string runProfileName)
         {
-            string result = ws.RunMA(this.ID.ToMmsGuid(), this.GetRunConfiguration(runProfileName), false);
+            string result = ManagementAgentBase.WebService.RunMA(this.ID.ToMmsGuid(), this.GetRunConfiguration(runProfileName), false);
             SyncServer.ThrowExceptionOnReturnError(result);
             return result;
         }
@@ -348,22 +219,21 @@ namespace Lithnet.Miiserver.Client
                 MARunData.BFRUNDATA_RUNCONFIGURATION);
 
 
-            XmlNode node = madata.SelectSingleNode(string.Format("/ma-data/ma-run-data/run-configuration[name='{0}']", runProfileName));
+            XmlNode node = madata.SelectSingleNode($"/ma-data/ma-run-data/run-configuration[name='{runProfileName}']");
 
 
             if (node == null)
             {
                 throw new InvalidOperationException("No such run profile " + runProfileName);
             }
-
-
+            
             return node.OuterXml;
         }
 
 
         private static ManagementObject GetManagementAgentWmiObject(Guid id)
         {
-            ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_ManagementAgent where Guid='{0}'", id.ToMmsGuid()));
+            ObjectQuery query = new ObjectQuery($"SELECT * FROM MIIS_ManagementAgent where Guid='{id.ToMmsGuid()}'");
 
             using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.Scope, query))
             {
@@ -387,7 +257,7 @@ namespace Lithnet.Miiserver.Client
 
         internal static XmlNode GetMaData(Guid id, MAData madata, MAPartitionData partitionData, MARunData rundata)
         {
-            string result = ws.GetMaData(id.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
+            string result = ManagementAgentBase.WebService.GetMaData(id.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             XmlDocument d = new XmlDocument();

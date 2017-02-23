@@ -1,9 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class PasswordSyncSettings : XmlObjectBase
     {
         internal PasswordSyncSettings(XmlNode node)
@@ -11,37 +9,13 @@
         {
         }
 
-        public int MaximumRetryCount
-        {
-            get
-            {
-                return this.GetValue<int>("maximum-retry-count");
-            }
-        }
+        public int MaximumRetryCount => this.GetValue<int>("maximum-retry-count");
 
-        public int RetryInterval
-        {
-            get
-            {
-                return this.GetValue<int>("maximum-retry-interval");
-            }
-        }
+        public int RetryInterval => this.GetValue<int>("maximum-retry-interval");
 
-        public bool UnlockAccount
-        {
-            get
-            {
-                return this.GetValue<string>("unlock-account") == "1";
-            }
-        }
+        public bool UnlockAccount => this.GetValue<string>("unlock-account") == "1";
 
-        public bool RequireSecureConnection
-        {
-            get
-            {
-                return this.GetValue<string>("allow-low-security") == "0";
-            }
-        }
+        public bool RequireSecureConnection => this.GetValue<string>("allow-low-security") == "0";
     }
 }
 /*

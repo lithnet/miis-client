@@ -1,9 +1,9 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System;
+using System.Xml;
+using System.Collections.Generic;
 
+namespace Lithnet.Miiserver.Client
+{
     public class ConnectorAdd : XmlObjectBase
     {
         internal ConnectorAdd(XmlNode node)
@@ -11,61 +11,19 @@
         {
         }
 
-        public string Status
-        {
-            get
-            {
-                return this.GetValue<string>("@status");
-            }
-        }
+        public string Status => this.GetValue<string>("@status");
 
-        public Guid MAID
-        {
-            get
-            {
-                return this.GetValue<Guid>("ma-guid");
-            }
-        }
+        public Guid MAID => this.GetValue<Guid>("ma-guid");
 
-        public string MAName
-        {
-            get
-            {
-                return this.GetValue<string>("ma-name");
-            }
-        }
+        public string MAName => this.GetValue<string>("ma-name");
 
-        public string DN
-        {
-            get
-            {
-                return this.GetValue<string>("dn");
-            }
-        }
+        public string DN => this.GetValue<string>("dn");
 
-        public Guid ID
-        {
-            get
-            {
-                return this.GetValue<Guid>("object-id");
-            }
-        }
+        public Guid ID => this.GetValue<Guid>("object-id");
 
-        public string ObjectClass
-        {
-            get
-            {
-                return this.GetValue<string>("primary-objectclass");
-            }
-        }
+        public string ObjectClass => this.GetValue<string>("primary-objectclass");
 
-        public IReadOnlyList<string> ObjectClasses
-        {
-            get
-            {
-                return this.GetReadOnlyValueList<string>("objectclass/oc-value");
-            }
-        }
+        public IReadOnlyList<string> ObjectClasses => this.GetReadOnlyValueList<string>("objectclass/oc-value");
 
         public override string ToString()
         {

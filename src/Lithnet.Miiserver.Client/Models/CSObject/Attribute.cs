@@ -1,9 +1,9 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Xml;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     /// <summary>
     /// Represents an attribute and its value collection
     /// </summary>

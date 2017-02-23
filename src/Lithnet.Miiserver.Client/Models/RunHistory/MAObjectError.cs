@@ -1,10 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Xml;
-    using System.Diagnostics;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class MAObjectError : XmlObjectBase
     {
         internal MAObjectError(XmlNode node)
@@ -12,68 +9,20 @@
         {
         }
 
-        public string ErrorType
-        {
-            get
-            {
-                return this.GetValue<string>("error-type");
-            }
-        }
+        public string ErrorType => this.GetValue<string>("error-type");
 
-        public int EntryNumber
-        {
-            get
-            {
-                return this.GetValue<int>("entry-number");
-            }
-        }
+        public int EntryNumber => this.GetValue<int>("entry-number");
 
-        public int LineNumber
-        {
-            get
-            {
-                return this.GetValue<int>("line-number");
-            }
-        }
+        public int LineNumber => this.GetValue<int>("line-number");
 
-        public int ColumnNumber
-        {
-            get
-            {
-                return this.GetValue<int>("column-number");
-            }
-        }
+        public int ColumnNumber => this.GetValue<int>("column-number");
 
-        public string DN
-        {
-            get
-            {
-                return this.GetValue<string>("dn");
-            }
-        }
+        public string DN => this.GetValue<string>("dn");
 
-        public EncodedValue Anchor
-        {
-            get
-            {
-                return this.GetObject<EncodedValue>("anchor");
-            }
-        }
+        public EncodedValue Anchor => this.GetObject<EncodedValue>("anchor");
 
-        public string AttributeName
-        {
-            get
-            {
-                return this.GetValue<string>("attribute-name");
-            }
-        }
+        public string AttributeName => this.GetValue<string>("attribute-name");
 
-        public MAObjectCDError CDError
-        {
-            get
-            {
-                return this.GetObject<MAObjectCDError>("cd-error");
-            }
-        }
+        public MAObjectCDError CDError => this.GetObject<MAObjectCDError>("cd-error");
     }
 }

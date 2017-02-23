@@ -1,7 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System.Xml;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class RunStep : XmlObjectBase
     {
         private RunStepType internalType = 0;
@@ -9,8 +9,6 @@
         internal RunStep(XmlNode node)
             : base(node)
         {
-
-
         }
 
         public RunStepType Type
@@ -32,106 +30,40 @@
 
         public bool ResumeFromAuditFile { get; private set; }
 
-        public int ObjectLimit
-        {
-            get
-            {
-                return this.GetValue<int>("threshold/object");
-            }
-        }
+        public int ObjectLimit => this.GetValue<int>("threshold/object");
 
-        public int BatchSize
-        {
-            get
-            {
-                return this.GetValue<int>("threshold/batch-size");
-            }
-        }
+        public int BatchSize => this.GetValue<int>("threshold/batch-size");
 
-        public string DropFileName
-        {
-            get
-            {
-                return this.GetValue<string>("dropfile-name");
-            }
-        }
+        public string DropFileName => this.GetValue<string>("dropfile-name");
 
-        public string Partition
-        {
-            get
-            {
-                return this.GetValue<string>("partition");
-            }
-        }
+        public string Partition => this.GetValue<string>("partition");
 
-        public bool IsImportStep
-        {
-            get
-            {
-                return this.Type == RunStepType.DeltaImport ||
-                    this.Type == RunStepType.DeltaImportDeltaSynchronization ||
-                    this.Type == RunStepType.FullImport ||
-                    this.Type == RunStepType.FullImportDeltaSynchronization ||
-                    this.Type == RunStepType.FullImportFullSynchronization;
-            }
-        }
+        public bool IsImportStep => this.Type == RunStepType.DeltaImport ||
+                                    this.Type == RunStepType.DeltaImportDeltaSynchronization ||
+                                    this.Type == RunStepType.FullImport ||
+                                    this.Type == RunStepType.FullImportDeltaSynchronization ||
+                                    this.Type == RunStepType.FullImportFullSynchronization;
 
-        public bool IsSyncStep
-        {
-            get
-            {
-                return this.Type == RunStepType.DeltaImportDeltaSynchronization ||
-                    this.Type == RunStepType.DeltaSynchronization ||
-                    this.Type == RunStepType.FullImportDeltaSynchronization ||
-                    this.Type == RunStepType.FullImportFullSynchronization ||
-                    this.Type == RunStepType.FullSynchronization;
-            }
-        }
+        public bool IsSyncStep => this.Type == RunStepType.DeltaImportDeltaSynchronization ||
+                                  this.Type == RunStepType.DeltaSynchronization ||
+                                  this.Type == RunStepType.FullImportDeltaSynchronization ||
+                                  this.Type == RunStepType.FullImportFullSynchronization ||
+                                  this.Type == RunStepType.FullSynchronization;
 
-        public bool IsDeltaSyncStep
-        {
-            get
-            {
-                return this.Type == RunStepType.DeltaImportDeltaSynchronization ||
-                    this.Type == RunStepType.DeltaSynchronization ||
-                    this.Type == RunStepType.FullImportDeltaSynchronization;
-            }
-        }
+        public bool IsDeltaSyncStep => this.Type == RunStepType.DeltaImportDeltaSynchronization ||
+                                       this.Type == RunStepType.DeltaSynchronization ||
+                                       this.Type == RunStepType.FullImportDeltaSynchronization;
 
-        public bool IsFullSyncStep
-        {
-            get
-            {
-                return this.Type == RunStepType.FullImportFullSynchronization ||
-                    this.Type == RunStepType.FullSynchronization;
-            }
-        }
+        public bool IsFullSyncStep => this.Type == RunStepType.FullImportFullSynchronization ||
+                                      this.Type == RunStepType.FullSynchronization;
 
-        public bool IsExportStep
-        {
-            get
-            {
-                return this.Type == RunStepType.Export;
-            }
-        }
+        public bool IsExportStep => this.Type == RunStepType.Export;
 
-        public bool IsTestRun
-        {
-            get
-            {
-                return this.DropAuditFileOnly || this.ResumeFromAuditFile;
-            }
-        }
+        public bool IsTestRun => this.DropAuditFileOnly || this.ResumeFromAuditFile;
 
-        public bool IsCombinedStep
-        {
-            get
-            {
-                return this.Type == RunStepType.DeltaImportDeltaSynchronization ||
-                    this.Type == RunStepType.FullImportDeltaSynchronization ||
-                     this.Type == RunStepType.FullImportFullSynchronization;
-            }
-        }
+        public bool IsCombinedStep => this.Type == RunStepType.DeltaImportDeltaSynchronization ||
+                                      this.Type == RunStepType.FullImportDeltaSynchronization ||
+                                      this.Type == RunStepType.FullImportFullSynchronization;
 
         public string StepTypeDescription
         {
@@ -238,13 +170,7 @@
             }
         }
 
-        public string CustomData
-        {
-            get
-            {
-                return this.XmlNode.SelectSingleNode("custom-data")?.InnerXml;
-            }
-        }
+        public string CustomData => this.XmlNode.SelectSingleNode("custom-data")?.InnerXml;
 
         public override string ToString()
         {

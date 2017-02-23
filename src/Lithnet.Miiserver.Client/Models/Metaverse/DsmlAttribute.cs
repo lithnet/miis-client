@@ -1,17 +1,15 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Xml;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class DsmlAttribute : XmlObjectBase
     {
-        private const string dsmlAttributeTypeBinary = "1.3.6.1.4.1.1466.115.121.1.5";
-        private const string dsmlAttributeTypeBoolean = "1.3.6.1.4.1.1466.115.121.1.7";
-        private const string dsmlAttributeTypeReference = "1.3.6.1.4.1.1466.115.121.1.12";
-        private const string dsmlAttributeTypeInteger = "1.3.6.1.4.1.1466.115.121.1.27";
-        private const string dsmlAttributeTypeString = "1.3.6.1.4.1.1466.115.121.1.15";
+        private const string DsmlAttributeTypeBinary = "1.3.6.1.4.1.1466.115.121.1.5";
+        private const string DsmlAttributeTypeBoolean = "1.3.6.1.4.1.1466.115.121.1.7";
+        private const string DsmlAttributeTypeReference = "1.3.6.1.4.1.1466.115.121.1.12";
+        private const string DsmlAttributeTypeInteger = "1.3.6.1.4.1.1466.115.121.1.27";
+        private const string DsmlAttributeTypeString = "1.3.6.1.4.1.1466.115.121.1.15";
 
         private AttributeType type = AttributeType.Unknown;
 
@@ -20,13 +18,7 @@
         {
         }
 
-        public string Name
-        {
-            get
-            {
-                return this.GetValue<string>("dsml:name");
-            }
-        }
+        public string Name => this.GetValue<string>("dsml:name");
 
         public AttributeType Type
         {
@@ -38,23 +30,23 @@
 
                     switch (syntax)
                     {
-                        case dsmlAttributeTypeBinary:
+                        case DsmlAttribute.DsmlAttributeTypeBinary:
                             this.type = AttributeType.Binary;
                             break;
 
-                        case dsmlAttributeTypeBoolean:
+                        case DsmlAttribute.DsmlAttributeTypeBoolean:
                             this.type = AttributeType.Boolean;
                             break;
 
-                        case dsmlAttributeTypeInteger:
+                        case DsmlAttribute.DsmlAttributeTypeInteger:
                             this.type = AttributeType.Integer;
                             break;
 
-                        case dsmlAttributeTypeReference:
+                        case DsmlAttribute.DsmlAttributeTypeReference:
                             this.type = AttributeType.Reference;
                             break;
 
-                        case dsmlAttributeTypeString:
+                        case DsmlAttribute.DsmlAttributeTypeString:
                             this.type = AttributeType.String;
                             break;
 
@@ -67,29 +59,11 @@
             }
         }
 
-        public bool Multivalued
-        {
-            get
-            {
-                return !this.GetValue<bool>("@single-value");
-            }
-        }
+        public bool Multivalued => !this.GetValue<bool>("@single-value");
 
-        public bool Indexable
-        {
-            get
-            {
-                return this.GetValue<bool>("@ms-dsml:indexable");
-            }
-        }
+        public bool Indexable => this.GetValue<bool>("@ms-dsml:indexable");
 
-        public bool Indexed
-        {
-            get
-            {
-                return this.GetValue<bool>("@ms-dsml:indexed");
-            }
-        }
+        public bool Indexed => this.GetValue<bool>("@ms-dsml:indexed");
 
         public override string ToString()
         {

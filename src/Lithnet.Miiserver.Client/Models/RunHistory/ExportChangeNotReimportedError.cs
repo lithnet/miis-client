@@ -1,7 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System.Xml;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class ExportChangeNotReimportedError : XmlObjectBase
     {
         internal ExportChangeNotReimportedError (XmlNode node)
@@ -9,20 +9,8 @@
         {
         }
 
-        public Delta Delta
-        {
-            get
-            {
-                return this.GetObject<Delta>("delta");
-            }
-        }
+        public Delta Delta => this.GetObject<Delta>("delta");
 
-        public Hologram Entry
-        {
-            get
-            {
-                return this.GetObject<Hologram>("entry");
-            }
-        }
+        public Hologram Entry => this.GetObject<Hologram>("entry");
     }
 }

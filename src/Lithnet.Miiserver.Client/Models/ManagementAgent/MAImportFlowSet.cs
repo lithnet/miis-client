@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Collections.Generic;
 
 namespace Lithnet.Miiserver.Client
 {
@@ -24,7 +19,7 @@ namespace Lithnet.Miiserver.Client
 
         public override string ToString()
         {
-            return string.Format("{0} -> {1}", this.MVObjectType, this.CDObjectType);
+            return $"{this.MVObjectType} -> {this.CDObjectType}";
         }
     }
 }

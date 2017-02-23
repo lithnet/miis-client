@@ -1,12 +1,9 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml;
-    using System.Diagnostics;
+﻿using System;
+using System.Xml;
+using System.Diagnostics;
 
+namespace Lithnet.Miiserver.Client
+{
     [Serializable]
     [DebuggerStepThroughAttribute]
     public class ExtensionErrorInfo : XmlObjectBase
@@ -16,36 +13,12 @@
         {
         }
 
-        public string ExtensionName
-        {
-            get
-            {
-                return this.GetValue<string>("extension-name");
-            }
-        }
+        public string ExtensionName => this.GetValue<string>("extension-name");
 
-        public string ExtensionCallSite
-        {
-            get
-            {
-                return this.GetValue<string>("extension-callsite");
-            }
-        }
+        public string ExtensionCallSite => this.GetValue<string>("extension-callsite");
 
-        public string ExtensionContext
-        {
-            get
-            {
-                return this.GetValue<string>("extension-context");
-            }
-        }
+        public string ExtensionContext => this.GetValue<string>("extension-context");
 
-        public string CallStack
-        {
-            get
-            {
-                return this.GetValue<string>("call-stack");
-            }
-        }
+        public string CallStack => this.GetValue<string>("call-stack");
     }
 }

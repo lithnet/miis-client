@@ -18,7 +18,7 @@ namespace Lithnet.Miiserver.Client
 
         private bool disposedValue = false;
 
-        protected internal XmlNamespaceManager nsmanager;
+        protected internal XmlNamespaceManager NsManager;
 
         private Dictionary<string, object> cachedProperties = new Dictionary<string, object>();
 
@@ -37,7 +37,7 @@ namespace Lithnet.Miiserver.Client
             XmlDocument d = this.XmlNode.OwnerDocument;
             if (d != null)
             {
-                this.nsmanager = XmlObjectBase.GetNSManager(d.NameTable);
+                this.NsManager = XmlObjectBase.GetNSManager(d.NameTable);
             }
         }
 
@@ -69,7 +69,7 @@ namespace Lithnet.Miiserver.Client
         {
             if (!this.cachedProperties.ContainsKey(name))
             {
-                T value = this.XmlNode.SelectSingleNode(name, this.nsmanager).ReadInnerText<T>();
+                T value = this.XmlNode.SelectSingleNode(name, this.NsManager).ReadInnerText<T>();
                 this.cachedProperties.Add(name, value);
             }
 
@@ -88,7 +88,7 @@ namespace Lithnet.Miiserver.Client
             {
                 List<T> list = new List<T>();
 
-                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.nsmanager))
+                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.NsManager))
                 {
                     T v1 = n1.ReadInnerText<T>();
 
@@ -117,7 +117,7 @@ namespace Lithnet.Miiserver.Client
             {
                 List<T> list = new List<T>();
 
-                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.nsmanager))
+                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.NsManager))
                 {
                     List<object> args = new List<object> {n1};
 
@@ -161,7 +161,7 @@ namespace Lithnet.Miiserver.Client
             {
                 Dictionary<TKey, TValue> list = new Dictionary<TKey, TValue>(keyComparer);
 
-                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.nsmanager))
+                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.NsManager))
                 {
                     List<object> args = new List<object> { n1 };
 
@@ -211,7 +211,7 @@ namespace Lithnet.Miiserver.Client
                         typeof(T),
                         BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                         null,
-                        new object[] { this.XmlNode.SelectNodes(nodeName, this.nsmanager) },
+                        new object[] { this.XmlNode.SelectNodes(nodeName, this.NsManager) },
                         null));
             }
 
@@ -231,7 +231,7 @@ namespace Lithnet.Miiserver.Client
             {
                 List<object> args = new List<object>();
 
-                XmlNode n1 = this.XmlNode.SelectSingleNode(nodeName, this.nsmanager);
+                XmlNode n1 = this.XmlNode.SelectSingleNode(nodeName, this.NsManager);
                 if (n1 == null)
                 {
                     this.cachedProperties.Add(nodeName, null);
@@ -270,7 +270,7 @@ namespace Lithnet.Miiserver.Client
                 {
                     this.cachedProperties = null;
                     this.XmlNode = null;
-                    this.nsmanager = null;
+                    this.NsManager = null;
                 }
 
                 this.disposedValue = true;

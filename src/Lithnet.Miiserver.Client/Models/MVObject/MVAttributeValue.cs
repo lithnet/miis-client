@@ -1,10 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Xml;
-    using System.Diagnostics;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class MVAttributeValue : AttributeValue
     {
         internal MVAttributeValue(XmlNode node, AttributeType type)
@@ -12,28 +10,10 @@
         {
         }
 
-        public Guid LineageID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@lineage-id");
-            }
-        }
+        public Guid LineageID => this.GetValue<Guid>("@lineage-id");
 
-        public Guid MAID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@lineage-ma-id");
-            }
-        }
+        public Guid MAID => this.GetValue<Guid>("@lineage-ma-id");
 
-        public DateTime? LineageTime
-        {
-            get
-            {
-                return this.GetValue<DateTime?>("@lineage-time");
-            }
-        }
+        public DateTime? LineageTime => this.GetValue<DateTime?>("@lineage-time");
     }
 }

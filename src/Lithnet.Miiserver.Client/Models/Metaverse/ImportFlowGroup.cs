@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -14,28 +10,10 @@ namespace Lithnet.Miiserver.Client
         {
         }
 
-        public string MVAttribute
-        {
-            get
-            {
-                return this.GetValue<string>("@mv-attribute");
-            }
-        }
+        public string MVAttribute => this.GetValue<string>("@mv-attribute");
 
-        public string Type
-        {
-            get
-            {
-                return this.GetValue<string>("@type");
-            }
-        }
-        public IReadOnlyList<ImportFlow> ImportFlows
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<ImportFlow>("import-flow");
-            }
-        }
+        public string Type => this.GetValue<string>("@type");
+        public IReadOnlyList<ImportFlow> ImportFlows => this.GetReadOnlyObjectList<ImportFlow>("import-flow");
 
         public override string ToString()
         {

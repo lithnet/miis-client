@@ -1,9 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class MVDeletion : XmlObjectBase
     {
         internal MVDeletion(XmlNode node)
@@ -11,37 +9,13 @@
         {
         }
 
-        public Error Error
-        {
-            get
-            {
-                return this.GetObject<Error>("error");
-            }
-        }
+        public Error Error => this.GetObject<Error>("error");
 
-        public bool HasError
-        {
-            get
-            {
-                return this.GetValue<bool>("@has-error");
-            }
-        }
+        public bool HasError => this.GetValue<bool>("@has-error");
 
-        public string  Type
-        {
-            get
-            {
-                return this.GetValue<string>("mv-deletion-rule/@type");
-            }
-        }
+        public string  Type => this.GetValue<string>("mv-deletion-rule/@type");
 
-        public string Status
-        {
-            get
-            {
-                return this.GetValue<string>("mv-deletion-rule/@status");
-            }
-        }
+        public string Status => this.GetValue<string>("mv-deletion-rule/@status");
 
         public override string ToString()
         {

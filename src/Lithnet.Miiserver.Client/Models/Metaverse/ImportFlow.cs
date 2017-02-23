@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -15,29 +11,11 @@ namespace Lithnet.Miiserver.Client
             this.SetFlowRule();
         }
 
-        public Guid ID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@id");
-            }
-        }
+        public Guid ID => this.GetValue<Guid>("@id");
 
-        public Guid SourceMAID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@src-ma");
-            }
-        }
+        public Guid SourceMAID => this.GetValue<Guid>("@src-ma");
 
-        public string CSObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("@cd-object-type");
-            }
-        }
+        public string CSObjectType => this.GetValue<string>("@cd-object-type");
 
         private void SetFlowRule()
         {

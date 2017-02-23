@@ -1,9 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class JoinRuleResult : XmlObjectBase
     {
         internal JoinRuleResult(XmlNode node)
@@ -12,29 +10,11 @@
             this.FlowRule = FlowRule.GetFlowRule(node.SelectSingleNode("attribute-mapping"));
         }
 
-        public string ObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("@mv-object-type");
-            }
-        }
+        public string ObjectType => this.GetValue<string>("@mv-object-type");
 
-        public string MVAttribute
-        {
-            get
-            {
-                return this.GetValue<string>("attribute-mapping/@mv-attribute");
-            }
-        }
+        public string MVAttribute => this.GetValue<string>("attribute-mapping/@mv-attribute");
 
-        public string Status
-        {
-            get
-            {
-                return this.GetValue<string>("attribute-mapping/@status");
-            }
-        }
+        public string Status => this.GetValue<string>("attribute-mapping/@status");
 
         public FlowRule FlowRule { get; private set; }
     }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -15,7 +11,7 @@ namespace Lithnet.Miiserver.Client
         {
             Dictionary<string, DsmlAttribute> attributes = new Dictionary<string, DsmlAttribute>();
 
-            foreach (XmlNode n2 in node.SelectNodes("dsml:attribute/@ref", this.nsmanager))
+            foreach (XmlNode n2 in node.SelectNodes("dsml:attribute/@ref", this.NsManager))
             {
                 string name = n2.InnerText.Remove(0, 1);
                 if (allAttributes.ContainsKey(name))
@@ -27,13 +23,7 @@ namespace Lithnet.Miiserver.Client
             this.Attributes = new ReadOnlyDictionary<string, DsmlAttribute>(attributes);
         }
 
-        public string Name
-        {
-            get
-            {
-                return this.GetValue<string>("dsml:name");
-            }
-        }
+        public string Name => this.GetValue<string>("dsml:name");
 
         public IReadOnlyDictionary<string, DsmlAttribute> Attributes { get; private set; }
 

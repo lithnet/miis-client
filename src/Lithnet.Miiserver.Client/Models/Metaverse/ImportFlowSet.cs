@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -14,13 +11,7 @@ namespace Lithnet.Miiserver.Client
         {
         }
 
-        public string MVObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("@mv-object-type");
-            }
-        }
+        public string MVObjectType => this.GetValue<string>("@mv-object-type");
 
         public IReadOnlyDictionary<string, ImportFlowGroup> ImportFlows
         {

@@ -1,7 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System.Xml;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public partial class MADiscoveryCounters : XmlObjectBase
     {
         internal MADiscoveryCounters(XmlNode node)
@@ -9,20 +9,8 @@
         {
         }
 
-        public int FilteredDeletions
-        {
-            get
-            {
-                return this.GetValue<int>("filtered-deletions");
-            }
-        }
+        public int FilteredDeletions => this.GetValue<int>("filtered-deletions");
 
-        public int FilteredObjects
-        {
-            get
-            {
-                return this.GetValue<int>("filtered-objects");
-            }
-        }
+        public int FilteredObjects => this.GetValue<int>("filtered-objects");
     }
 }

@@ -1,12 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml;
-    using System.Diagnostics;
+﻿using System;
+using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class ExportError : XmlObjectBase
     {
         internal ExportError(XmlNode node)
@@ -14,60 +10,18 @@
         {
         }
 
-        public DateTime DateOccurred
-        {
-            get
-            {
-                return this.GetValue<DateTime>("date-occurred");
-            }
-        }
+        public DateTime DateOccurred => this.GetValue<DateTime>("date-occurred");
 
-        public DateTime FirstOccurred
-        {
-            get
-            {
-                return this.GetValue<DateTime>("first-occurred");
-            }
-        }
+        public DateTime FirstOccurred => this.GetValue<DateTime>("first-occurred");
 
-        public int RetryCount
-        {
-            get
-            {
-                return this.GetValue<int>("retry-count");
-            }
-        }
+        public int RetryCount => this.GetValue<int>("retry-count");
 
-        public string ErrorType
-        {
-            get
-            {
-                return this.GetValue<string>("error-type");
-            }
-        }
+        public string ErrorType => this.GetValue<string>("error-type");
 
-        public ExportCDError CDError
-        {
-            get
-            {
-                return this.GetObject<ExportCDError>("cd-error");
-            }
-        }
+        public ExportCDError CDError => this.GetObject<ExportCDError>("cd-error");
 
-        public Guid CSGuid
-        {
-            get
-            {
-                return this.GetValue<Guid>("@cs-guid");
-            }
-        }
+        public Guid CSGuid => this.GetValue<Guid>("@cs-guid");
 
-        public string DN
-        {
-            get
-            {
-                return this.GetValue<string>("@dn");
-            }
-        }
+        public string DN => this.GetValue<string>("@dn");
     }
 }

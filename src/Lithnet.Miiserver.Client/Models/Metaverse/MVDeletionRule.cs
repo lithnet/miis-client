@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -15,37 +11,13 @@ namespace Lithnet.Miiserver.Client
         {
         }
 
-        public string ObjectType
-        {
-            get
-            {
-                return this.GetValue<string>("@mv-object-type");
-            }
-        }
+        public string ObjectType => this.GetValue<string>("@mv-object-type");
 
-        public Guid ID
-        {
-            get
-            {
-                return this.GetValue<Guid>("@id");
-            }
-        }
+        public Guid ID => this.GetValue<Guid>("@id");
 
-        public string Type
-        {
-            get
-            {
-                return this.GetValue<string>("@type");
-            }
-        }
+        public string Type => this.GetValue<string>("@type");
 
-        public IReadOnlyList<Guid> SourceMAs
-        {
-            get
-            {
-                return this.GetReadOnlyValueList<Guid>("src-ma");
-            }
-        }
+        public IReadOnlyList<Guid> SourceMAs => this.GetReadOnlyValueList<Guid>("src-ma");
     }
 }
 /*

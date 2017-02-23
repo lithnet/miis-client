@@ -6,7 +6,6 @@ using System.Xml;
 using System.Reflection;
 using System.Xml.Serialization;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters;
 using System.Security;
 
 namespace Lithnet.Miiserver.Client

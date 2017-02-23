@@ -1,7 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System.Xml;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public abstract class FlowRule : XmlObjectBase
     {
         internal FlowRule(XmlNode node)

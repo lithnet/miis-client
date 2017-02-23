@@ -1,9 +1,8 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Xml;
-    using System.Collections.Generic;
+﻿using System.Xml;
+using System.Collections.Generic;
 
+namespace Lithnet.Miiserver.Client
+{
     public class FilterConditionsResult : XmlObjectBase
     {
         internal FilterConditionsResult(XmlNode node)
@@ -11,21 +10,9 @@
         {
         }
 
-        public string Status
-        {
-            get
-            {
-                return this.GetValue<string>("@status");
-            }
-        }
+        public string Status => this.GetValue<string>("@status");
 
-        public IReadOnlyList<FilterConditionResult> Conditions
-        {
-            get
-            {
-                return this.GetReadOnlyObjectList<FilterConditionResult>("condition");
-            }
-        }
+        public IReadOnlyList<FilterConditionResult> Conditions => this.GetReadOnlyObjectList<FilterConditionResult>("condition");
 
         public override string ToString()
         {

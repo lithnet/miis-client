@@ -1,12 +1,7 @@
-﻿namespace Lithnet.Miiserver.Client
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Xml;
-    using System.Diagnostics;
+﻿using System.Xml;
 
+namespace Lithnet.Miiserver.Client
+{
     public class ExportCDError : XmlObjectBase
     {
         internal ExportCDError(XmlNode node)
@@ -14,28 +9,10 @@
         {
         }
 
-        public string ErrorCode
-        {
-            get
-            {
-                return this.GetValue<string>("error-code");
-            }
-        }
+        public string ErrorCode => this.GetValue<string>("error-code");
 
-        public string ErrorLiteral
-        {
-            get
-            {
-                return this.GetValue<string>("error-literal");
-            }
-        }
+        public string ErrorLiteral => this.GetValue<string>("error-literal");
 
-        public string ServerErrorDetail
-        {
-            get
-            {
-                return this.GetValue<string>("server-error-detail");
-            }
-        }
+        public string ServerErrorDetail => this.GetValue<string>("server-error-detail");
     }
 }
