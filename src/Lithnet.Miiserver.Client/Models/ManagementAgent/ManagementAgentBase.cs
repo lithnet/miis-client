@@ -36,8 +36,12 @@ namespace Lithnet.Miiserver.Client
                 string lastRunXml;
                 uint mvObjectCount;
 
+                string result = ws.GetMAStatistics(this.ID.ToMmsGuid(), out lastRunXml, out mvObjectCount);
+
+                SyncServer.ThrowExceptionOnReturnError(result);
+
                 XmlDocument d = new XmlDocument();
-                d.LoadXml(ws.GetMAStatistics(this.ID.ToMmsGuid(), out lastRunXml, out mvObjectCount));
+                d.LoadXml(result);
 
                 return new MAStatistics(d.SelectSingleNode("total-summary"));
             }
@@ -323,7 +327,9 @@ namespace Lithnet.Miiserver.Client
 
         public string ExecuteRunProfileNative(string runProfileName)
         {
-            return ws.RunMA(this.ID.ToMmsGuid(), this.GetRunConfiguration(runProfileName), false);
+            string result = ws.RunMA(this.ID.ToMmsGuid(), this.GetRunConfiguration(runProfileName), false);
+            SyncServer.ThrowExceptionOnReturnError(result);
+            return result;
         }
 
         protected string GetRunConfiguration(string runProfileName)
@@ -359,7 +365,7 @@ namespace Lithnet.Miiserver.Client
         {
             ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_ManagementAgent where Guid='{0}'", id.ToMmsGuid()));
 
-            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.scope, query))
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.Scope, query))
             {
                 using (ManagementObjectCollection results = searcher.Get())
                 {
@@ -381,8 +387,11 @@ namespace Lithnet.Miiserver.Client
 
         internal static XmlNode GetMaData(Guid id, MAData madata, MAPartitionData partitionData, MARunData rundata)
         {
+            string result = ws.GetMaData(id.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
+            SyncServer.ThrowExceptionOnReturnError(result);
+
             XmlDocument d = new XmlDocument();
-            d.LoadXml(ws.GetMaData(id.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata));
+            d.LoadXml(result);
             return d.SelectSingleNode("/ma-data");
         }
 

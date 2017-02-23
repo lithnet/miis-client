@@ -165,10 +165,12 @@ namespace Lithnet.Miiserver.Client
             if (exporting)
             {
                 response = this.webService.ExportConnectorSpaceGetNext(this.token, (ulong)this.csParts, this.entryParts, 10);
+                SyncServer.ThrowExceptionOnReturnError(response);
             }
             else
             {
                 response = this.webService.GetCSResults(this.token, 10, (ulong)this.csParts, this.entryParts, 0, null);
+                SyncServer.ThrowExceptionOnReturnError(response);
             }
 
             XmlDocument d = new XmlDocument();

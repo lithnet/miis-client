@@ -567,7 +567,7 @@ namespace Lithnet.Miiserver.Client
         private static ManagementObject GetManagementAgentWmiObject(string id)
         {
             ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_ManagementAgent where Guid='{0}'", id));
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.scope, query);
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.Scope, query);
             ManagementObjectCollection results = searcher.Get();
 
             if (results.Count == 0)

@@ -12,14 +12,14 @@ using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 using System.Runtime.InteropServices;
 using System.Xml;
 using Lithnet.Miiserver.Client;
+using Microsoft.DirectoryServices.MetadirectoryServices.UI.PropertySheetBase;
+using System.Threading.Tasks;
 
 namespace Lithnet.Miiserver.Client
 {
-    using Microsoft.DirectoryServices.MetadirectoryServices.UI.PropertySheetBase;
-    using System.Threading.Tasks;
     public static class SyncServer
     {
-        internal static ManagementScope scope = new ManagementScope(@"\\.\ROOT\MicrosoftIdentityIntegrationServer");
+        internal static ManagementScope Scope = new ManagementScope(@"\\.\ROOT\MicrosoftIdentityIntegrationServer");
 
         private static PowerShell psSession;
 
@@ -30,9 +30,10 @@ namespace Lithnet.Miiserver.Client
             return WebServiceUtils.TranslateMMSError(ex);
         }
 
-        public static MVObject GetMVObject(Guid ID)
+        public static MVObject GetMVObject(Guid id)
         {
-            string result = ws.GetMVObjects(new string[] { ID.ToMmsGuid() }, 1, 0xffffffff, 0xffffffff, 0, null);
+            string result = ws.GetMVObjects(new string[] { id.ToMmsGuid() }, 1, 0xffffffff, 0xffffffff, 0, null);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             XmlDocument d = new XmlDocument();
             d.LoadXml(result);
@@ -44,7 +45,7 @@ namespace Lithnet.Miiserver.Client
         {
             if (query == null)
             {
-                throw new ArgumentNullException("query");
+                throw new ArgumentNullException(nameof(query));
             }
 
             if (query.ObjectType == null && query.QueryItems.Count == 0)
@@ -56,6 +57,7 @@ namespace Lithnet.Miiserver.Client
             resultSet.AppendLine("<results>");
 
             string results = ws.SearchMV(query.GetXml());
+            SyncServer.ThrowExceptionOnReturnError(results);
 
             if (string.IsNullOrEmpty(results))
             {
@@ -74,6 +76,8 @@ namespace Lithnet.Miiserver.Client
         public static DsmlSchema GetMVSchema()
         {
             string schema = ws.GetMVData(MVData.MV_SCHEMA);
+            SyncServer.ThrowExceptionOnReturnError(schema);
+
             return DsmlSchema.GetMVSchema(schema);
         }
 
@@ -157,7 +161,7 @@ namespace Lithnet.Miiserver.Client
         private static ManagementObject GetServerManagementObject()
         {
             ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_Server"));
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.scope, query);
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.Scope, query);
             ManagementObjectCollection moc = searcher.Get();
 
             if (moc.Count == 0)
@@ -176,6 +180,7 @@ namespace Lithnet.Miiserver.Client
             uint returned;
 
             string result = ws.GetExecSummary(ref ts, out reload, out returned);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             return RunSummary.GetRunSummary(result);
         }
@@ -189,6 +194,7 @@ namespace Lithnet.Miiserver.Client
         {
             string query = $"<execution-history-req ma=\"{maid.ToMmsGuid()}\"><run-number>{runNumber}</run-number></execution-history-req>";
             string result = ws.GetExecutionHistory(query);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             return result != null ? RunDetails.GetRunDetails(result).FirstOrDefault() : null;
         }
@@ -202,6 +208,8 @@ namespace Lithnet.Miiserver.Client
         public static bool IsAdmin()
         {
             string result = ws.GetRole();
+            SyncServer.ThrowExceptionOnReturnError(result);
+
             int role = Convert.ToInt32(result);
 
             return (1 & role) == 1;
@@ -260,7 +268,8 @@ namespace Lithnet.Miiserver.Client
             SyncServer.PSSession.Invoke();
         }
 
-        public static bool Ping()
+        [Obsolete]
+        private static bool Ping()
         {
             Task t = Task.Run(() => ws.GetMAList());
 
@@ -322,9 +331,29 @@ namespace Lithnet.Miiserver.Client
             return new MVConfiguration(d.SelectSingleNode("mv-data"));
         }
 
+        /// <summary>
+        /// Throws an exception when the web service returns an error in an XML result
+        /// </summary>
+        /// <param name="result">The XML result from the server to parse</param>
+        internal static void ThrowExceptionOnReturnError(string result)
+        {
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                return;
+            }
+
+            if (result.StartsWith("<error>"))
+            {
+                result = result.Substring(7, result.Length - 15);
+                throw new MiiserverException(result);
+            }
+        }
+
         private static string GetMVData()
         {
-            return ws.GetMVData(MVData.MV_ALL);
+            string result = ws.GetMVData(MVData.MV_ALL);
+            SyncServer.ThrowExceptionOnReturnError(result);
+            return result;
         }
 
         public static XmlNode GetImportAttributeFlows()
@@ -337,7 +366,9 @@ namespace Lithnet.Miiserver.Client
 
         private static string GetImportFlows()
         {
-            return ws.GetMVData(MVData.MV_IMPORT_ATTR_FLOW);
+            string result = ws.GetMVData(MVData.MV_IMPORT_ATTR_FLOW);
+            SyncServer.ThrowExceptionOnReturnError(result);
+            return result;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Lithnet.Miiserver.Client
         public void SetConnectorState(ConnectorState connectorState)
         {
             string result = ws.SetConnectorState(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), (CONNECTORSTATE)connectorState);
-            CSObject.ThrowExceptionOnReturnError(result);
+            SyncServer.ThrowExceptionOnReturnError(result);
             this.Refresh();
         }
 
@@ -42,12 +42,12 @@ namespace Lithnet.Miiserver.Client
         public void Disconnect(bool makeExplicit)
         {
             string result = ws.Disconnect(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid());
-            CSObject.ThrowExceptionOnReturnError(result);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             if (makeExplicit)
             {
                 result = ws.SetExplicit(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), true);
-                CSObject.ThrowExceptionOnReturnError(result);
+                SyncServer.ThrowExceptionOnReturnError(result);
             }
 
             this.Refresh();
@@ -71,7 +71,7 @@ namespace Lithnet.Miiserver.Client
             }
             else
             {
-                CSObject.ThrowExceptionOnReturnError(result);
+                SyncServer.ThrowExceptionOnReturnError(result);
                 return null;
             }
         }
@@ -84,7 +84,7 @@ namespace Lithnet.Miiserver.Client
         {
             int willDelete = 0;
             string result = ws.CSObjectWillBeDeleted(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), ref willDelete);
-            CSObject.ThrowExceptionOnReturnError(result);
+            SyncServer.ThrowExceptionOnReturnError(result);
 
             return willDelete == 1;
         }
@@ -122,7 +122,7 @@ namespace Lithnet.Miiserver.Client
         public SyncPreview Sync(bool commit, bool delta)
         {
             string result = ws.Preview(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), delta, commit);
-            CSObject.ThrowExceptionOnReturnError(result);
+            SyncServer.ThrowExceptionOnReturnError(result);
             XmlDocument d = new XmlDocument();
             d.LoadXml(result);
 
@@ -152,7 +152,7 @@ namespace Lithnet.Miiserver.Client
         public void Join(string mvObjectType, Guid mvObjectId)
         {
             string result = ws.Join(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), mvObjectType, mvObjectId.ToMmsGuid());
-            CSObject.ThrowExceptionOnReturnError(result);
+            SyncServer.ThrowExceptionOnReturnError(result);
             this.Refresh();
         }
 
@@ -320,34 +320,7 @@ namespace Lithnet.Miiserver.Client
                 throw new MiiserverException($"The operation returned {result}");
             }
         }
-
-        /// <summary>
-        /// Throws an exception when the web service returns an error in an XML result
-        /// </summary>
-        /// <param name="result">The XML result from the server to parse</param>
-        private static void ThrowExceptionOnReturnError(string result)
-        {
-            if (string.IsNullOrWhiteSpace(result))
-            {
-                return;
-            }
-
-            XmlDocument d = new XmlDocument();
-            XmlNode error = null;
-
-            try
-            {
-                d.LoadXml(result);
-                error = d.SelectSingleNode("/error");
-            }
-            catch { }
-
-            if (error != null)
-            {
-                throw new MiiserverException(error.InnerText);
-            }
-        }
-
+        
         /// <summary>
         /// Gets the connector space object from WMI
         /// </summary>
@@ -356,7 +329,7 @@ namespace Lithnet.Miiserver.Client
         private static ManagementObject GetWmiObject(Guid id)
         {
             ObjectQuery query = new ObjectQuery($"SELECT * FROM MIIS_CSObject where Guid='{id.ToMmsGuid()}'");
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.scope, query);
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.Scope, query);
             ManagementObjectCollection results = searcher.Get();
 
             if (results.Count == 0)
