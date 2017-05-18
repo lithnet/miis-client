@@ -251,19 +251,22 @@ namespace Lithnet.Miiserver.Client
 
         public CSObject GetCSObject(string dn)
         {
-            string search = $"<searching><dn recursive=\"false\">{dn}</dn></searching>";
+            string search = $"<searching><dn recursive=\"false\">{dn.EscapeXmlElementText()}</dn></searching>";
             return this.GetSingleCSObject(search);
         }
+       
+
+
 
         public CSObjectEnumerator GetCSObjects(string dn, bool searchSubTree)
         {
-            string search = $"<searching><dn recursive=\"{searchSubTree.ToString().ToLower()}\">{dn}</dn></searching>";
+            string search = $"<searching><dn recursive=\"{searchSubTree.ToString().ToLower()}\">{dn.EscapeXmlElementText()}</dn></searching>";
             return this.ExecuteCSSearch(search);
         }
 
         public CSObjectEnumerator GetCSObjects(string rdn)
         {
-            string search = $"<searching><rdn>{rdn}</rdn></searching>";
+            string search = $"<searching><rdn>{rdn.EscapeXmlElementText()}</rdn></searching>";
             return this.ExecuteCSSearch(search);
         }
 

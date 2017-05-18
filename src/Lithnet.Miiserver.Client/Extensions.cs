@@ -350,5 +350,10 @@ namespace Lithnet.Miiserver.Client
         {
             return m.GetMVData((uint)mvdata);
         }
+
+        public static string EscapeXmlElementText(this string input)
+        {
+            return input.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("'", "&apos;");
+        }
     }
 }
