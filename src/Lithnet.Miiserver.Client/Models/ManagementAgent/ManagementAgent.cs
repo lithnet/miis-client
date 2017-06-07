@@ -16,7 +16,7 @@ namespace Lithnet.Miiserver.Client
         {
         }
 
-        private static ManagementAgent GetManagementAgentFromID(Guid id)
+        public static ManagementAgent GetManagementAgent(Guid id)
         {
             XmlNode node = ManagementAgent.GetMaData(id);
             return new ManagementAgent(node, id);
@@ -24,7 +24,7 @@ namespace Lithnet.Miiserver.Client
 
         public static ManagementAgent GetManagementAgent(string name)
         {
-            return ManagementAgent.GetManagementAgentFromID((ManagementAgent.MANameToID(name)));
+            return ManagementAgent.GetManagementAgent((ManagementAgent.MANameToID(name)));
         }
 
         public static IEnumerable<ManagementAgent> GetManagementAgents()
@@ -35,7 +35,7 @@ namespace Lithnet.Miiserver.Client
 
             foreach (string id in ids.OfType<string>())
             {
-                yield return ManagementAgent.GetManagementAgentFromID(new Guid(id));
+                yield return ManagementAgent.GetManagementAgent(new Guid(id));
             }
         }
 
