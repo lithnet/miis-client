@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Management;
@@ -8,6 +10,7 @@ using System.Management.Automation;
 using System.Diagnostics;
 using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using System.Xml;
 using System.Threading.Tasks;
 
@@ -28,12 +31,12 @@ namespace Lithnet.Miiserver.Client
 
         public static MVObject GetMVObject(Guid id)
         {
-            string result = ws.GetMVObjects(new string[] { id.ToMmsGuid() }, 1, 0xffffffff, 0xffffffff, 0, null);
+            string result = ws.GetMVObjects(new string[] {id.ToMmsGuid()}, 1, 0xffffffff, 0xffffffff, 0, null);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             XmlDocument d = new XmlDocument();
             d.LoadXml(result);
-            
+
             return new MVObject(d.SelectSingleNode("/mv-objects/mv-object"));
         }
 
@@ -108,7 +111,7 @@ namespace Lithnet.Miiserver.Client
 
             ManagementObject mo = SyncServer.GetServerManagementObject();
 
-            string result = mo.InvokeMethod("ClearRuns", new object[] { date }) as string;
+            string result = mo.InvokeMethod("ClearRuns", new object[] {date}) as string;
 
             if (result == "access-denied")
             {
@@ -126,7 +129,7 @@ namespace Lithnet.Miiserver.Client
 
             ManagementObject mo = SyncServer.GetServerManagementObject();
 
-            string result = mo.InvokeMethod("ClearPasswordHistory", new object[] { date }) as string;
+            string result = mo.InvokeMethod("ClearPasswordHistory", new object[] {date}) as string;
 
             if (result == "access-denied")
             {
@@ -244,7 +247,7 @@ namespace Lithnet.Miiserver.Client
                 return;
             }
 
-            using (XmlWriter w = XmlWriter.Create(filename, new XmlWriterSettings() { Indent = true }))
+            using (XmlWriter w = XmlWriter.Create(filename, new XmlWriterSettings() {Indent = true}))
             {
                 doc.WriteTo(w);
                 w.Close();
@@ -365,6 +368,60 @@ namespace Lithnet.Miiserver.Client
             string result = ws.GetMVData(MVData.MV_IMPORT_ATTR_FLOW);
             SyncServer.ThrowExceptionOnReturnError(result);
             return result;
+        }
+
+        public static SecurityIdentifier GetAdministratorsGroupSid()
+        {
+            return GetGroupSid("administrators_sid");
+        }
+
+        public static SecurityIdentifier GetOperatorsGroupSid()
+        {
+            return GetGroupSid("operators_sid");
+        }
+
+        public static SecurityIdentifier GetAccountJoinersGroupSid()
+        {
+            return GetGroupSid("account_joiners_sid");
+        }
+
+        public static SecurityIdentifier GetBrowsersGroupSid()
+        {
+            return GetGroupSid("browse_sid");
+        }
+
+        public static SecurityIdentifier GetPasswordSetGroupSid()
+        {
+            return GetGroupSid("passwordset_sid");
+        }
+
+        private static SecurityIdentifier GetGroupSid(string name)
+        {
+            string queryString = $"SELECT TOP 1 {name} FROM dbo.mms_server_configuration";
+
+            using (SqlConnection connection = new SqlConnection(MiiserverConfig.ConnectionString))
+            {
+                SqlCommand command = new SqlCommand(queryString, connection);
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    byte[] data = reader[0] as byte[];
+
+                    if (data == null)
+                    {
+                        return null;
+                    }
+
+                    return new SecurityIdentifier(data, 0);
+                }
+
+                reader.Close();
+            }
+
+            return null;
         }
     }
 }

@@ -62,5 +62,21 @@ namespace Lithnet.Miiserver.Client
         /// Gets the name of the synchronization service database
         /// </summary>
         public static string DBName => MiiserverConfig.BaseKey.GetValue("DBName", "FIMSynchronizationService") as string;
+
+
+        internal static string ConnectionString
+        {
+            get
+            {
+                if (DBInstanceName == null)
+                {
+                    return $"Server = {DBServerName}; Database = {DBName}; Integrated Security=true;";
+                }
+                else
+                {
+                    return $"Server = {DBServerName}\\{DBInstanceName}; Database = {DBName}; Integrated Security=true;";
+                }
+            }
+        }
     }
 }
