@@ -60,6 +60,7 @@
     <Compile Include="AssemblyProvider.cs" />
     <Compile Include="Enums\MVSearchFilterOperator.cs" />
     <Compile Include="Enums\RunStepType.cs" />
+    <Compile Include="Enums\SyncServiceRole.cs" />
     <Compile Include="MiiserverException.cs" />
     <Compile Include="MAExecutionException.cs" />
     <Compile Include="Models\ManagementAgent\MAImportFlowSet.cs" />

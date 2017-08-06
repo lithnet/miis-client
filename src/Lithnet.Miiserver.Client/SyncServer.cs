@@ -31,7 +31,7 @@ namespace Lithnet.Miiserver.Client
 
         public static MVObject GetMVObject(Guid id)
         {
-            string result = ws.GetMVObjects(new string[] {id.ToMmsGuid()}, 1, 0xffffffff, 0xffffffff, 0, null);
+            string result = ws.GetMVObjects(new string[] { id.ToMmsGuid() }, 1, 0xffffffff, 0xffffffff, 0, null);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             XmlDocument d = new XmlDocument();
@@ -111,7 +111,7 @@ namespace Lithnet.Miiserver.Client
 
             ManagementObject mo = SyncServer.GetServerManagementObject();
 
-            string result = mo.InvokeMethod("ClearRuns", new object[] {date}) as string;
+            string result = mo.InvokeMethod("ClearRuns", new object[] { date }) as string;
 
             if (result == "access-denied")
             {
@@ -129,7 +129,7 @@ namespace Lithnet.Miiserver.Client
 
             ManagementObject mo = SyncServer.GetServerManagementObject();
 
-            string result = mo.InvokeMethod("ClearPasswordHistory", new object[] {date}) as string;
+            string result = mo.InvokeMethod("ClearPasswordHistory", new object[] { date }) as string;
 
             if (result == "access-denied")
             {
@@ -206,12 +206,39 @@ namespace Lithnet.Miiserver.Client
 
         public static bool IsAdmin()
         {
+            try
+            {
+                return GetRole().HasFlag(SyncServiceRole.Administrator);
+            }
+            catch (MiiserverException e)
+            {
+                Trace.WriteLine(e);
+                return false;
+            }
+        }
+
+        public static bool IsOperator()
+        {
+            try
+            {
+                SyncServiceRole r = GetRole();
+                return r.HasFlag(SyncServiceRole.Administrator) || r.HasFlag(SyncServiceRole.Operator);
+            }
+            catch (MiiserverException e)
+            {
+                Trace.WriteLine(e);
+                return false;
+            }
+        }
+
+        public static SyncServiceRole GetRole()
+        {
             string result = ws.GetRole();
             SyncServer.ThrowExceptionOnReturnError(result);
 
             int role = Convert.ToInt32(result);
 
-            return (1 & role) == 1;
+            return (SyncServiceRole)role;
         }
 
         public static void SaveRunHistory(string filename)
@@ -247,7 +274,7 @@ namespace Lithnet.Miiserver.Client
                 return;
             }
 
-            using (XmlWriter w = XmlWriter.Create(filename, new XmlWriterSettings() {Indent = true}))
+            using (XmlWriter w = XmlWriter.Create(filename, new XmlWriterSettings() { Indent = true }))
             {
                 doc.WriteTo(w);
                 w.Close();
