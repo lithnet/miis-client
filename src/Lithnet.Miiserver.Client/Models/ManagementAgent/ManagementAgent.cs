@@ -254,7 +254,7 @@ namespace Lithnet.Miiserver.Client
             string search = $"<searching><dn recursive=\"false\">{dn.EscapeXmlElementText()}</dn></searching>";
             return this.GetSingleCSObject(search);
         }
-       
+
 
 
 
@@ -272,8 +272,7 @@ namespace Lithnet.Miiserver.Client
 
         public CSObject GetCSObject(Guid id)
         {
-            string search = $"<searching><id>{id.ToMmsGuid()}</id></searching>";
-            return this.GetSingleCSObject(search);
+            return CSObject.GetCSObject(id);
         }
 
         internal CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes, CSObjectParts csParts, uint entryParts)
