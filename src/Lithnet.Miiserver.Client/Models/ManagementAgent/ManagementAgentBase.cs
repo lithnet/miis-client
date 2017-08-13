@@ -10,7 +10,7 @@ namespace Lithnet.Miiserver.Client
 {
     public abstract class ManagementAgentBase : XmlObjectBase
     {
-        protected static MMSWebService WebService = new MMSWebService();
+        protected MMSWebService WebService = new MMSWebService();
         
         private IReadOnlyList<MAImportFlowSet> importFlows;
 
@@ -29,7 +29,7 @@ namespace Lithnet.Miiserver.Client
                 string lastRunXml;
                 uint mvObjectCount;
 
-                string result = ManagementAgentBase.WebService.GetMAStatistics(this.ID.ToMmsGuid(), out lastRunXml, out mvObjectCount);
+                string result = this.WebService.GetMAStatistics(this.ID.ToMmsGuid(), out lastRunXml, out mvObjectCount);
 
                 SyncServer.ThrowExceptionOnReturnError(result);
 
@@ -140,7 +140,7 @@ namespace Lithnet.Miiserver.Client
 
         private XmlNode GetMaData()
         {
-            return ManagementAgentBase.GetMaData(this.ID);
+            return this.GetMaData(this.ID);
         }
 
         private IReadOnlyList<MAImportFlowSet> GetImportFlows()
@@ -198,14 +198,14 @@ namespace Lithnet.Miiserver.Client
 
         public string ExecuteRunProfileNative(string runProfileName)
         {
-            string result = ManagementAgentBase.WebService.RunMA(this.ID.ToMmsGuid(), this.GetRunConfiguration(runProfileName), false);
+            string result = this.WebService.RunMA(this.ID.ToMmsGuid(), this.GetRunConfiguration(runProfileName), false);
             SyncServer.ThrowExceptionOnReturnError(result);
             return result;
         }
 
         protected string GetRunConfiguration(string runProfileName)
         {
-            XmlNode madata = ManagementAgentBase.GetMaData(this.ID,
+            XmlNode madata = this.GetMaData(this.ID,
                 MAData.MA_PARTITION_DATA |
                 MAData.MA_RUN_DATA,
                 MAPartitionData.BFPARTITION_SELECTED |
@@ -255,9 +255,9 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        internal static XmlNode GetMaData(Guid id, MAData madata, MAPartitionData partitionData, MARunData rundata)
+        internal static XmlNode GetMaData(MMSWebService ws, Guid id, MAData madata, MAPartitionData partitionData, MARunData rundata)
         {
-            string result = ManagementAgentBase.WebService.GetMaData(id.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
+            string result = ws.GetMaData(id.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             XmlDocument d = new XmlDocument();
@@ -265,9 +265,19 @@ namespace Lithnet.Miiserver.Client
             return d.SelectSingleNode("/ma-data");
         }
 
-        internal static XmlNode GetMaData(Guid id)
+        internal static XmlNode GetMaData(MMSWebService ws, Guid id)
         {
-            return ManagementAgentBase.GetMaData(id, MAData.MA_ALLBITS, MAPartitionData.BFPARTITION_ALL, MARunData.BFRUNDATA_ALLBITS);
+            return ManagementAgentBase.GetMaData(ws, id, MAData.MA_ALLBITS, MAPartitionData.BFPARTITION_ALL, MARunData.BFRUNDATA_ALLBITS);
+        }
+
+        internal XmlNode GetMaData(Guid id, MAData madata, MAPartitionData partitionData, MARunData rundata)
+        {
+            return ManagementAgentBase.GetMaData(this.WebService, id, madata, partitionData, rundata);
+        }
+
+        internal XmlNode GetMaData(Guid id)
+        {
+            return ManagementAgentBase.GetMaData(this.WebService, id, MAData.MA_ALLBITS, MAPartitionData.BFPARTITION_ALL, MARunData.BFRUNDATA_ALLBITS);
         }
 
         public void Refresh()

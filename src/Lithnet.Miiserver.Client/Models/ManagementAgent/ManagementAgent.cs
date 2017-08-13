@@ -6,6 +6,8 @@ using System.Management;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Threading;
+using Microsoft.DirectoryServices.MetadirectoryServices;
+using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
@@ -18,7 +20,8 @@ namespace Lithnet.Miiserver.Client
 
         public static ManagementAgent GetManagementAgent(Guid id)
         {
-            XmlNode node = ManagementAgent.GetMaData(id);
+            MMSWebService ws = new MMSWebService();
+            XmlNode node = ManagementAgentBase.GetMaData(ws, id);
             return new ManagementAgent(node, id);
         }
 
@@ -31,7 +34,9 @@ namespace Lithnet.Miiserver.Client
         {
             ArrayList names;
             ArrayList ids;
-            ManagementAgentBase.WebService.GetMAGuidList(out ids, out names);
+            MMSWebService ws = new MMSWebService();
+
+            ws.GetMAGuidList(out ids, out names);
 
             foreach (string id in ids.OfType<string>())
             {
@@ -43,7 +48,9 @@ namespace Lithnet.Miiserver.Client
         {
             ArrayList names;
             ArrayList ids;
-            ManagementAgentBase.WebService.GetMAGuidList(out ids, out names);
+            MMSWebService ws = new MMSWebService();
+
+            ws.GetMAGuidList(out ids, out names);
 
             if (names.Count != ids.Count)
             {
@@ -63,7 +70,7 @@ namespace Lithnet.Miiserver.Client
 
         public bool IsIdle()
         {
-            return ManagementAgentBase.WebService.IsMAIdle(this.ID.ToMmsGuid());
+            return this.WebService.IsMAIdle(this.ID.ToMmsGuid());
         }
 
         public void Wait()
@@ -119,7 +126,7 @@ namespace Lithnet.Miiserver.Client
 
         public void Stop()
         {
-            string result = ManagementAgentBase.WebService.StopMA(this.ID.ToMmsGuid());
+            string result = this.WebService.StopMA(this.ID.ToMmsGuid());
             SyncServer.ThrowExceptionOnReturnError(result);
         }
 
@@ -411,7 +418,7 @@ namespace Lithnet.Miiserver.Client
             int reload;
             uint returned;
 
-            string result = ManagementAgentBase.WebService.GetExecSummary(ref ts, out reload, out returned);
+            string result = this.WebService.GetExecSummary(ref ts, out reload, out returned);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             return RunSummary.GetRunSummary(result, this.ID);
@@ -425,7 +432,7 @@ namespace Lithnet.Miiserver.Client
         public RunDetails GetRunDetail(int runNumber)
         {
             string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><run-number>{runNumber}</run-number></execution-history-req>";
-            string result = ManagementAgentBase.WebService.GetExecutionHistory(query);
+            string result = this.WebService.GetExecutionHistory(query);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             if (result != null)
@@ -447,7 +454,7 @@ namespace Lithnet.Miiserver.Client
 
             string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>{count}</num-req></execution-history-req>";
 
-            string result = ManagementAgentBase.WebService.GetExecutionHistory(query);
+            string result = this.WebService.GetExecutionHistory(query);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             if (result != null)
@@ -464,7 +471,7 @@ namespace Lithnet.Miiserver.Client
         {
             string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>1</num-req></execution-history-req>";
 
-            string result = ManagementAgentBase.WebService.GetExecutionHistory(query);
+            string result = this.WebService.GetExecutionHistory(query);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             if (result != null)
@@ -482,7 +489,7 @@ namespace Lithnet.Miiserver.Client
 
         internal string ExportManagementAgent(bool includeIafs, string timestamp)
         {
-            string result = ManagementAgent.WebService.ExportManagementAgent(this.Name, true, includeIafs, timestamp);
+            string result = this.WebService.ExportManagementAgent(this.Name, true, includeIafs, timestamp);
             SyncServer.ThrowExceptionOnReturnError(result);
             return result;
         }
@@ -510,7 +517,7 @@ namespace Lithnet.Miiserver.Client
 
         private XmlNode GetMaData(MAData madata, MAPartitionData partitionData, MARunData rundata)
         {
-            string result = ManagementAgentBase.WebService.GetMaData(this.ID.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
+            string result = this.WebService.GetMaData(this.ID.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             XmlDocument d = new XmlDocument();
@@ -520,10 +527,10 @@ namespace Lithnet.Miiserver.Client
 
         private CSObjectEnumerator ExportConnectorSpace(string critieria, CSObjectParts csParts, uint entryParts)
         {
-            string token = ManagementAgentBase.WebService.ExportConnectorSpace(this.Name, critieria, true);
+            string token = this.WebService.ExportConnectorSpace(this.Name, critieria, true);
             SyncServer.ThrowExceptionOnReturnError(token);
 
-            return new CSObjectEnumerator(ManagementAgentBase.WebService, token, true, csParts, entryParts);
+            return new CSObjectEnumerator(this.WebService, token, true, csParts, entryParts);
         }
 
         private CSObjectEnumerator ExportConnectorSpace(string critieria)
@@ -557,10 +564,10 @@ namespace Lithnet.Miiserver.Client
 
         private CSObjectEnumerator ExecuteCSSearch(string criteria, CSObjectParts csParts, uint entryParts)
         {
-            string token = ManagementAgentBase.WebService.ExecuteCSSearch(this.ID.ToMmsGuid(), criteria);
+            string token = this.WebService.ExecuteCSSearch(this.ID.ToMmsGuid(), criteria);
             SyncServer.ThrowExceptionOnReturnError(token);
 
-            return new CSObjectEnumerator(ManagementAgentBase.WebService, token, false, csParts, entryParts);
+            return new CSObjectEnumerator(this.WebService, token, false, csParts, entryParts);
         }
 
         private static ManagementObject GetManagementAgentWmiObject(string id)
