@@ -21,5 +21,7 @@ namespace Lithnet.Miiserver.Client
         public RulesErrorInfoContext RulesErrorInfo => this.GetObject<RulesErrorInfoContext>("rules-error-info/context");
 
         public string DisplayName => this.GetValue<string>("@display-name");
+
+        public string MVID => this.GetValue<string>("@mv-guid");
     }
 }
