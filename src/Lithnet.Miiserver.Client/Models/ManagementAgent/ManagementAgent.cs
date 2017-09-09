@@ -27,25 +27,60 @@ namespace Lithnet.Miiserver.Client
 
         public static ManagementAgent GetManagementAgent(string name)
         {
-            return ManagementAgent.GetManagementAgent((ManagementAgent.MANameToID(name)));
+            return ManagementAgent.GetManagementAgent(ManagementAgent.MANameToID(name));
         }
 
         public static IEnumerable<ManagementAgent> GetManagementAgents()
         {
-            ArrayList names;
-            ArrayList ids;
-            MMSWebService ws = new MMSWebService();
-
-            ws.GetMAGuidList(out ids, out names);
-
-            foreach (string id in ids.OfType<string>())
+            foreach (KeyValuePair<Guid, string> k in GetManagementAgentNameAndIDPairs())
             {
-                yield return ManagementAgent.GetManagementAgent(new Guid(id));
+                yield return ManagementAgent.GetManagementAgent(k.Key);
+
             }
         }
 
         public static Guid MANameToID(string name)
         {
+            Guid id = ManagementAgent.GetManagementAgentNameAndIDPairs().FirstOrDefault(t => string.Equals(t.Value, name, StringComparison.CurrentCultureIgnoreCase)).Key;
+
+            if (id == Guid.Empty)
+            {
+                throw new InvalidOperationException($"Management agent {name} was not found");
+            }
+
+            return id;
+        }
+
+        /// <summary>
+        /// Gets the current ID of a management based on its last known name or ID. This function can find management agents that have been renamed, or that have been recreated with a new ID
+        /// </summary>
+        /// <param name="name">The last known name of the management agent</param>
+        /// <param name="id">The last known ID of the management agent</param>
+        /// <returns>The current ID of the management agent, or null if the management agent could not be found</returns>
+        public static Guid? FindManagementAgentID(string name, Guid id)
+        {
+            var mapping = GetManagementAgentNameAndIDPairs();
+
+            foreach (KeyValuePair<Guid, string> k in mapping)
+            {
+                if (id == k.Key)
+                {
+                    return k.Key;
+                }
+
+                if (string.Equals(name, k.Value, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return k.Key;
+                }
+            }
+
+            return null;
+        }
+
+        public static Dictionary<Guid, string> GetManagementAgentNameAndIDPairs()
+        {
+            Dictionary<Guid, string> mapping = new Dictionary<Guid, string>();
+
             ArrayList names;
             ArrayList ids;
             MMSWebService ws = new MMSWebService();
@@ -59,13 +94,10 @@ namespace Lithnet.Miiserver.Client
 
             for (int i = 0; i < ids.Count; i++)
             {
-                if (string.Equals(name, (string)names[i], StringComparison.OrdinalIgnoreCase))
-                {
-                    return new Guid((string)ids[i]);
-                }
+                mapping.Add(new Guid((string)ids[i]), (string)(names[i]));
             }
 
-            throw new InvalidOperationException($"Management agent {name} was not found");
+            return mapping;
         }
 
         public bool IsIdle()
