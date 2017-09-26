@@ -1,25 +1,43 @@
-﻿using System.Xml;
+﻿using System;
+using System.Collections.Generic;
+using System.Xml;
+using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
     public class ExportCounters : XmlObjectBase
     {
-        internal ExportCounters(XmlNode node)
+        private Guid stepID;
+
+        internal ExportCounters(XmlNode node, Guid stepID)
             : base(node)
         {
+            this.stepID = stepID;
         }
 
-        public int ExportAdd => this.GetValue<int>("export-add");
+        public int ExportAdd => this.ExportAddDetail.Count;
 
-        public int ExportUpdate => this.GetValue<int>("export-update");
+        public CounterDetail ExportAddDetail => this.GetObject<CounterDetail>("export-add");
 
-        public int ExportRename => this.GetValue<int>("export-rename");
+        public int ExportUpdate => this.ExportUpdateDetail.Count;
 
-        public int ExportDelete => this.GetValue<int>("export-delete");
+        public CounterDetail ExportUpdateDetail => this.GetObject<CounterDetail>("export-update");
 
-        public int ExportDeleteAdd => this.GetValue<int>("export-delete-add");
+        public int ExportRename => this.ExportRenameDetail.Count;
 
-        public int ExportFailure => this.GetValue<int>("export-failure");
+        public CounterDetail ExportRenameDetail => this.GetObject<CounterDetail>("export-rename");
+
+        public int ExportDelete => this.ExportDeleteDetail.Count;
+
+        public CounterDetail ExportDeleteDetail => this.GetObject<CounterDetail>("export-delete");
+
+        public int ExportDeleteAdd => this.ExportDeleteAddDetail.Count;
+
+        public CounterDetail ExportDeleteAddDetail => this.GetObject<CounterDetail>("export-delete-add");
+
+        public int ExportFailure => this.ExportFailureDetail.Count;
+
+        public CounterDetail ExportFailureDetail => this.GetObject<CounterDetail>("export-failure");
 
         public bool HasChanges => this.ExportChanges > 0;
 

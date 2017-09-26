@@ -1,16 +1,24 @@
-﻿using System.Xml;
+﻿using System;
+using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public partial class MADiscoveryCounters : XmlObjectBase
+    public class MADiscoveryCounters : XmlObjectBase
     {
-        internal MADiscoveryCounters(XmlNode node)
-            :base(node)
+        private Guid stepID;
+
+        internal MADiscoveryCounters(XmlNode node, Guid stepID)
+            : base(node)
         {
+            this.stepID = stepID;
         }
 
-        public int FilteredDeletions => this.GetValue<int>("filtered-deletions");
+        public int FilteredDeletions => this.FilteredDeletionsDetail.Count;
 
-        public int FilteredObjects => this.GetValue<int>("filtered-objects");
+        public CounterDetail FilteredDeletionsDetail => this.GetObject<CounterDetail>("filtered-deletions", this.stepID);
+        
+        public int FilteredObjects => this.FilteredObjectsDetail.Count;
+
+        public CounterDetail FilteredObjectsDetail => this.GetObject<CounterDetail>("filtered-objects", this.stepID);
     }
 }
