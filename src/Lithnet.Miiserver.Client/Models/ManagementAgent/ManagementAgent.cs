@@ -349,7 +349,10 @@ namespace Lithnet.Miiserver.Client
             return this.ExportConnectorSpace(searchText, csParts, entryParts);
         }
 
-
+        public CSObjectEnumerator GetPendingExportPartitions()
+        {
+            return this.GetPendingExports(true, true, true, CSObjectParts.ManagementAgentPartitionID, 0);
+        }
 
         public CSObjectEnumerator GetImportErrors()
         {
@@ -556,7 +559,7 @@ namespace Lithnet.Miiserver.Client
             d.LoadXml(result);
             return d.SelectSingleNode("/");
         }
-
+        
         private CSObjectEnumerator ExportConnectorSpace(string critieria, CSObjectParts csParts, uint entryParts)
         {
             string token = this.WebService.ExportConnectorSpace(this.Name, critieria, true);

@@ -120,6 +120,8 @@ namespace Lithnet.Miiserver.Client
 
         public bool MAInSeperateProcess => this.GetValue<string>("controller-configuration/application-protection") != "low";
 
+        public IReadOnlyDictionary<string, Partition> Partitions => this.GetReadOnlyObjectDictionary<string, Partition>("ma-partition-data/partition", (t) => t.Name ,StringComparer.OrdinalIgnoreCase);
+
         public IReadOnlyDictionary<string, RunConfiguration> RunProfiles
         {
             get

@@ -58,7 +58,7 @@ namespace Lithnet.Miiserver.Client
         /// <summary>
         /// Gets the GUID of the management agent partition with the connector space object.
         /// </summary>
-        public Guid? PartitionGuid => this.GetValue<Guid?>("@partition-id");
+        public Guid? PartitionGuid => this.GetValue<Guid?>("partition-id");
 
         /// <summary>
         /// Gets the display name of the management agent partition with the connector space object.

@@ -25,7 +25,8 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>Lithnet.Miiserver.Client.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Debug\Lithnet.Miiserver.Client.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -63,15 +64,19 @@
     <Compile Include="Enums\SyncServiceRole.cs" />
     <Compile Include="MiiserverException.cs" />
     <Compile Include="MAExecutionException.cs" />
+    <Compile Include="Models\CSObject\CSObjectRef.cs" />
     <Compile Include="Models\ManagementAgent\MAImportFlowSet.cs" />
     <Compile Include="Models\ManagementAgent\ExportFlowSet.cs" />
     <Compile Include="Models\ManagementAgent\ExportFlow.cs" />
     <Compile Include="Models\ManagementAgent\MAImportFlow.cs" />
+    <Compile Include="Models\ManagementAgent\PartitionPasswordSyncSettings.cs" />
+    <Compile Include="Models\ManagementAgent\PartitionFilter.cs" />
     <Compile Include="Models\ManagementAgent\ProjectionClassMapping.cs" />
     <Compile Include="Models\ManagementAgent\JoinProfile.cs" />
     <Compile Include="Models\ManagementAgent\JoinCriterion.cs" />
     <Compile Include="Models\ManagementAgent\ManagementAgentBase.cs" />
     <Compile Include="Models\ManagementAgent\PasswordSyncSettings.cs" />
+    <Compile Include="Models\ManagementAgent\Partition.cs" />
     <Compile Include="Models\Metaverse\DsmlObjectClass.cs" />
     <Compile Include="Models\Metaverse\DsmlAttribute.cs" />
     <Compile Include="Models\Metaverse\ImportFlowSet.cs" />
@@ -84,6 +89,8 @@
     <Compile Include="Models\Metaverse\MVAttributeQuery.cs" />
     <Compile Include="Models\MVObject\MVObjectCollection.cs" />
     <Compile Include="Models\MVObject\MVObject.cs" />
+    <Compile Include="Models\RunHistory\CounterDetail.cs" />
+    <Compile Include="Models\RunHistory\StepDescription.cs" />
     <Compile Include="Models\XmlObjectBase.cs" />
     <Compile Include="Models\CSObject\CSObjectBase.cs" />
     <Compile Include="Models\ManagementAgent\CSObjectEnumerator.cs" />
@@ -197,8 +204,9 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>d:\NuGet\NuGet.exe pack $(ProjectPath) -OutputDirectory D:\nuget\packages
-"C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /sha1 5ce168989b1359309dddee460c10e96fa60fa78b /t http://time.certum.pl /v $(TargetFileName)</PostBuildEvent>
+    <PostBuildEvent>if "$(ConfigurationName)"=="Release" ("C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /sha1 $(CSCERTTHUMBPRINT) /t http://time.certum.pl /v $(TargetFileName) )
+d:\NuGet\NuGet.exe pack $(ProjectPath) -OutputDirectory D:\nuget\packages
+</PostBuildEvent>
   </PropertyGroup>
   <Import Project="..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
