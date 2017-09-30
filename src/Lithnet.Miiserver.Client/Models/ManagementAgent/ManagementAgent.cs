@@ -349,11 +349,16 @@ namespace Lithnet.Miiserver.Client
             return this.ExportConnectorSpace(searchText, csParts, entryParts);
         }
 
-        public CSObjectEnumerator GetPendingExportPartitions()
+        public CSObjectEnumerator GetPendingExportCSObjectIDAndPartitions()
         {
             return this.GetPendingExports(true, true, true, CSObjectParts.ManagementAgentPartitionID, 0);
         }
 
+        public CSObjectEnumerator GetPendingImportCSObjectIDAndPartitions()
+        {
+            return this.GetPendingImports(true, true, true, CSObjectParts.ManagementAgentPartitionID, 0);
+        }
+        
         public CSObjectEnumerator GetImportErrors()
         {
             string searchText = "<criteria><import-error>true</import-error></criteria>";

@@ -15,29 +15,29 @@ namespace Lithnet.Miiserver.Client
             this.stepID = stepID;
         }
 
-        public int ExportAdd => this.ExportAddDetail.Count;
+        public int ExportAdd => this.ExportAddDetail?.Count ?? 0;
 
-        public CounterDetail ExportAddDetail => this.GetObject<CounterDetail>("export-add");
+        public CounterDetail ExportAddDetail => this.GetObject<CounterDetail>("export-add", this.stepID);
 
-        public int ExportUpdate => this.ExportUpdateDetail.Count;
+        public int ExportUpdate => this.ExportUpdateDetail?.Count ?? 0;
 
-        public CounterDetail ExportUpdateDetail => this.GetObject<CounterDetail>("export-update");
+        public CounterDetail ExportUpdateDetail => this.GetObject<CounterDetail>("export-update", this.stepID);
 
-        public int ExportRename => this.ExportRenameDetail.Count;
+        public int ExportRename => this.ExportRenameDetail?.Count ?? 0;
 
-        public CounterDetail ExportRenameDetail => this.GetObject<CounterDetail>("export-rename");
+        public CounterDetail ExportRenameDetail => this.GetObject<CounterDetail>("export-rename", this.stepID);
 
-        public int ExportDelete => this.ExportDeleteDetail.Count;
+        public int ExportDelete => this.ExportDeleteDetail?.Count ?? 0;
 
-        public CounterDetail ExportDeleteDetail => this.GetObject<CounterDetail>("export-delete");
+        public CounterDetail ExportDeleteDetail => this.GetObject<CounterDetail>("export-delete", this.stepID);
 
-        public int ExportDeleteAdd => this.ExportDeleteAddDetail.Count;
+        public int ExportDeleteAdd => this.ExportDeleteAddDetail?.Count ?? 0;
 
-        public CounterDetail ExportDeleteAddDetail => this.GetObject<CounterDetail>("export-delete-add");
+        public CounterDetail ExportDeleteAddDetail => this.GetObject<CounterDetail>("export-delete-add", this.stepID);
 
-        public int ExportFailure => this.ExportFailureDetail.Count;
+        public int ExportFailure => this.ExportFailureDetail?.Count ?? 0;
 
-        public CounterDetail ExportFailureDetail => this.GetObject<CounterDetail>("export-failure");
+        public CounterDetail ExportFailureDetail => this.GetObject<CounterDetail>("export-failure", this.stepID);
 
         public bool HasChanges => this.ExportChanges > 0;
 

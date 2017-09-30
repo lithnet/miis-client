@@ -13,11 +13,11 @@ namespace Lithnet.Miiserver.Client
             this.stepID = stepID;
         }
 
-        public int FilteredDeletions => this.FilteredDeletionsDetail.Count;
+        public int FilteredDeletions => this.FilteredDeletionsDetail?.Count ?? 0;
 
         public CounterDetail FilteredDeletionsDetail => this.GetObject<CounterDetail>("filtered-deletions", this.stepID);
         
-        public int FilteredObjects => this.FilteredObjectsDetail.Count;
+        public int FilteredObjects => this.FilteredObjectsDetail?.Count ?? 0;
 
         public CounterDetail FilteredObjectsDetail => this.GetObject<CounterDetail>("filtered-objects", this.stepID);
     }

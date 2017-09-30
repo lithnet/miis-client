@@ -13,39 +13,39 @@ namespace Lithnet.Miiserver.Client
             this.stepID = stepID;
         }
 
-        public int ProvisionedAddNoFlow => this.ProvisionedAddNoFlowDetail.Count;
+        public int ProvisionedAddNoFlow => this.ProvisionedAddNoFlowDetail?.Count ?? 0;
 
         public CounterDetail ProvisionedAddNoFlowDetail => this.GetObject<CounterDetail>("provisioned-add-no-flow", this.stepID);
 
-        public int ProvisionedAddFlow => this.ProvisionedAddFlowDetail.Count;
+        public int ProvisionedAddFlow => this.ProvisionedAddFlowDetail?.Count ?? 0;
 
         public CounterDetail ProvisionedAddFlowDetail => this.GetObject<CounterDetail>("provisioned-add-flow", this.stepID);
         
-        public int ProvisionedRenameNoFlow => this.ProvisionedRenameNoFlowDetail.Count;
+        public int ProvisionedRenameNoFlow => this.ProvisionedRenameNoFlowDetail?.Count ?? 0;
 
         public CounterDetail ProvisionedRenameNoFlowDetail => this.GetObject<CounterDetail>("provisioned-rename-no-flow", this.stepID);
         
-        public int ProvisionRenameFlow => this.ProvisionRenameFlowDetail.Count;
+        public int ProvisionRenameFlow => this.ProvisionRenameFlowDetail?.Count ?? 0;
 
         public CounterDetail ProvisionRenameFlowDetail => this.GetObject<CounterDetail>("provisioned-rename-flow", this.stepID);
         
-        public int ProvisionedDisconnect => this.ProvisionedDisconnectDetail.Count;
+        public int ProvisionedDisconnect => this.ProvisionedDisconnectDetail?.Count ?? 0;
 
         public CounterDetail ProvisionedDisconnectDetail => this.GetObject<CounterDetail>("provisioned-disconnect", this.stepID);
         
-        public int ConnectorFlow => this.ConnectorFlowDetail.Count;
+        public int ConnectorFlow => this.ConnectorFlowDetail?.Count ?? 0;
 
         public CounterDetail ConnectorFlowDetail => this.GetObject<CounterDetail>("connector-flow", this.stepID);
 
-        public int ConnectorNoFlow => this.ConnectorNoFlowDetail.Count;
+        public int ConnectorNoFlow => this.ConnectorNoFlowDetail?.Count ?? 0;
 
         public CounterDetail ConnectorNoFlowDetail => this.GetObject<CounterDetail>("connector-no-flow", this.stepID);
 
-        public int ProvisionedDeleteAddNoFlow => this.ProvisionedDeleteAddNoFlowDetail.Count;
+        public int ProvisionedDeleteAddNoFlow => this.ProvisionedDeleteAddNoFlowDetail?.Count ?? 0;
 
         public CounterDetail ProvisionedDeleteAddNoFlowDetail => this.GetObject<CounterDetail>("provisioned-delete-add-no-flow", this.stepID);
 
-        public int ProvisionedDeleteAddFlow => this.ProvisionedDeleteAddFlowDetail.Count;
+        public int ProvisionedDeleteAddFlow => this.ProvisionedDeleteAddFlowDetail?.Count ?? 0;
 
         public CounterDetail ProvisionedDeleteAddFlowDetail => this.GetObject<CounterDetail>("provisioned-delete-add-flow", this.stepID);
 
