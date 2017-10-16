@@ -68,7 +68,7 @@ namespace Lithnet.Miiserver.Client
         {
             get
             {
-                if (DBInstanceName == null)
+                if (string.IsNullOrWhiteSpace(DBInstanceName))
                 {
                     return $"Server = {DBServerName}; Database = {DBName}; Integrated Security=true;";
                 }

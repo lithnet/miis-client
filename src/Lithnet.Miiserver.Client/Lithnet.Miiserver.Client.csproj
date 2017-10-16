@@ -204,7 +204,10 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)"=="Release" ("C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /sha1 $(CSCERTTHUMBPRINT) /t http://time.certum.pl /v $(TargetFileName) )
+    <PostBuildEvent>"C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /sha1 "$(CSCERTTHUMBPRINT)" /t http://timestamp.digicert.com /fd sha256 /v "$(TargetFileName)"
+
+"C:\Program Files\Debugging Tools for Windows (x64)\symstore" add /f "$(TargetDir)*.pdb" /s \\localhost\symbols /t "$(ProjectName)" /v "@(VersionNumber)"
+
 d:\NuGet\NuGet.exe pack $(ProjectPath) -OutputDirectory D:\nuget\packages
 </PostBuildEvent>
   </PropertyGroup>
