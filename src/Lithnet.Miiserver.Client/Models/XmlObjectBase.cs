@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Xml;
 using System.Collections.ObjectModel;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Xml;
+using Newtonsoft.Json;
 
 namespace Lithnet.Miiserver.Client
 {
     /// <summary>
     /// Represents the base object used by sync service objects that are represented via XML nodes
     /// </summary>
-    public abstract class XmlObjectBase : IDisposable
+    [Serializable]
+    public abstract class XmlObjectBase : IDisposable, ISerializable
     {
         private const string DsmlUri = "http://www.dsml.org/DSML";
         private const string MsdsmlUri = "http://www.microsoft.com/MMS/DSML";
         private const string DsmlPrefix = "dsml";
         private const string MsdsmlPrefix = "ms-dsml";
 
-        private bool disposedValue = false;
+        private bool disposedValue;
 
         protected internal XmlNamespaceManager NsManager;
 
@@ -39,6 +42,15 @@ namespace Lithnet.Miiserver.Client
             {
                 this.NsManager = XmlObjectBase.GetNSManager(d.NameTable);
             }
+        }
+
+        protected XmlObjectBase(SerializationInfo info, StreamingContext context)
+        {
+            string xml = (string)info.GetValue("raw-xml", typeof(string));
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
+
+            this.XmlNode = doc.FirstChild;
         }
 
         /// <summary>
@@ -73,7 +85,7 @@ namespace Lithnet.Miiserver.Client
                 this.cachedProperties.Add(name, value);
             }
 
-            return (T)(object)this.cachedProperties[name];
+            return (T)this.cachedProperties[name];
         }
 
         /// <summary>
@@ -101,7 +113,7 @@ namespace Lithnet.Miiserver.Client
                 this.cachedProperties.Add(name, list.AsReadOnly());
             }
 
-            return (IReadOnlyList<T>)(object)this.cachedProperties[name];
+            return (IReadOnlyList<T>)this.cachedProperties[name];
         }
 
         /// <summary>
@@ -119,7 +131,7 @@ namespace Lithnet.Miiserver.Client
 
                 foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.NsManager))
                 {
-                    List<object> args = new List<object> {n1};
+                    List<object> args = new List<object> { n1 };
 
                     if (parameters != null)
                     {
@@ -133,16 +145,13 @@ namespace Lithnet.Miiserver.Client
                         args.ToArray(),
                         null);
 
-                    if (v1 != null)
-                    {
-                        list.Add(v1);
-                    }
+                    list.Add(v1);
                 }
 
                 this.cachedProperties.Add(name, list.AsReadOnly());
             }
 
-            return (IReadOnlyList<T>)(object)this.cachedProperties[name];
+            return (IReadOnlyList<T>)this.cachedProperties[name];
         }
 
         /// <summary>
@@ -177,16 +186,13 @@ namespace Lithnet.Miiserver.Client
                         args.ToArray(),
                         null);
 
-                    if (v1 != null)
-                    {
-                        list.Add(keySelector.Invoke(v1), v1);
-                    }
+                    list.Add(keySelector.Invoke(v1), v1);
                 }
 
                 this.cachedProperties.Add(name, new ReadOnlyDictionary<TKey, TValue>(list));
             }
 
-            return (IReadOnlyDictionary<TKey, TValue>)(object)this.cachedProperties[name];
+            return (IReadOnlyDictionary<TKey, TValue>)this.cachedProperties[name];
         }
 
         /// <summary>
@@ -277,9 +283,7 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        /// <summary>
-        /// Disposes the current object
-        /// </summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             this.Dispose(true);
@@ -304,15 +308,6 @@ namespace Lithnet.Miiserver.Client
         }
 
         /// <summary>
-        /// Gets the underlying XML node object
-        /// </summary>
-        /// <returns>The underlying XML node object</returns>
-        internal XmlNode GetNode()
-        {
-            return this.XmlNode;
-        }
-
-        /// <summary>
         /// Gets the namespace manager for the specified XmlNameTable
         /// </summary>
         /// <param name="n">The XmlNameTable to build the namespace manager for</param>
@@ -326,5 +321,14 @@ namespace Lithnet.Miiserver.Client
             return nsmanager;
         }
 
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("raw-xml", this.GetOuterXml(), typeof(string));
+        }
+
+        public string ToJson()
+        {
+            return JsonConvert.SerializeXmlNode(this.XmlNode);
+        }
     }
 }

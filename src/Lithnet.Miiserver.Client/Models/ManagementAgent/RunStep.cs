@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
-using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
@@ -182,62 +177,6 @@ namespace Lithnet.Miiserver.Client
         {
             return this.StepTypeDescription;
         }
-
-        internal static IEnumerable<CSObjectRef> GetStepDetailCSObjectRefs(Guid stepID, string queryType)
-        {
-            return RunStep.GetStepDetailCSObjectRefs(stepID, queryType, new CancellationToken());
-        }
-
-        internal static IEnumerable<CSObjectRef> GetStepDetailCSObjectRefs(Guid stepID, string queryType, CancellationToken t)
-        {
-            MMSWebService ws = new MMSWebService();
-
-            string query = string.Format("<step-object-details-filter step-id='{0}'><statistics type='{1}'/></step-object-details-filter>", stepID.ToMmsGuid(), queryType);
-            string token = null;
-
-            try
-            {
-                token = ws.ExecuteStepObjectDetailsSearch(query);
-
-                while (!t.IsCancellationRequested)
-                {
-                    int count = 0;
-
-                    string xml = ws.GetStepObjectResults(token, 10);
-                    SyncServer.ThrowExceptionOnReturnError(xml);
-
-                    XmlDocument d = new XmlDocument();
-                    d.LoadXml(xml);
-
-                    foreach (XmlNode node in d.SelectNodes("step-object-details/cs-object"))
-                    {
-                        yield return new CSObjectRef(node);
-
-                        count++;
-                    }
-
-                    if (count == 0)
-                    {
-                        break;
-                    }
-                }
-            }
-            finally
-            {
-                if (token != null)
-                {
-                    ws.ReleaseSessionObjects(new string[] { token });
-                }
-            }
-        }
-
-        /*
-         <step-object-details step-id="{7C44FD84-3CA4-4286-A750-3114FE7A0223}">
- <cs-object id="{F650712A-7013-E711-9160-005056B50BB9}" cs-dn="dn1"/>
- <cs-object id="{EAA1C9A7-6F13-E711-9160-005056B50BB9}" cs-dn="dn2"/>
-</step-object-details>
-
-             */
 
         private void ResolveType()
         {

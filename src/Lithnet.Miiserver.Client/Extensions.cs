@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
-using System.Xml;
 using System.Reflection;
-using System.Xml.Serialization;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
+using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
@@ -104,9 +104,8 @@ namespace Lithnet.Miiserver.Client
             }
             else
             {
-                DateTime parsedDateTime;
 
-                if (DateTime.TryParse(date, out parsedDateTime))
+                if (DateTime.TryParse(date, out DateTime parsedDateTime))
                 {
                     return parsedDateTime.ToLocalTime();
                 }
@@ -129,12 +128,7 @@ namespace Lithnet.Miiserver.Client
                 return 0;
             }
 
-            int result = 0;
-
-            if (int.TryParse(node.InnerText, out result))
-            {
-                return result;
-            }
+            int.TryParse(node.InnerText, out int result);
 
             return result;
         }
@@ -146,9 +140,7 @@ namespace Lithnet.Miiserver.Client
                 return null;
             }
 
-            bool result;
-
-            if (bool.TryParse(node.InnerText, out result))
+            if (bool.TryParse(node.InnerText, out bool result))
             {
                 return result;
             }
@@ -185,9 +177,7 @@ namespace Lithnet.Miiserver.Client
 
             foreach (FieldInfo field in type.GetFields())
             {
-                XmlEnumAttribute attribute = System.Attribute.GetCustomAttribute(field, typeof(XmlEnumAttribute)) as XmlEnumAttribute;
-
-                if (attribute != null)
+                if (System.Attribute.GetCustomAttribute(field, typeof(XmlEnumAttribute)) is XmlEnumAttribute attribute)
                 {
                     if (attribute.Name.Equals(description, StringComparison.OrdinalIgnoreCase))
                     {
@@ -218,9 +208,8 @@ namespace Lithnet.Miiserver.Client
                 return null;
             }
 
-            Guid result;
 
-            if (Guid.TryParse(node.InnerText, out result))
+            if (Guid.TryParse(node.InnerText, out Guid result))
             {
                 return result;
             }
@@ -297,19 +286,7 @@ namespace Lithnet.Miiserver.Client
         /// <returns>The concatenated string</returns>
         public static string AppendWithCommaSeparator(this string text, string textToAppend)
         {
-            string newString = string.Empty;
-
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                text += ", ";
-            }
-            else
-            {
-                text = string.Empty;
-            }
-
-            newString = text + textToAppend;
-            return newString;
+            return text.AppendWithSeparator(", ", textToAppend);
         }
 
         /// <summary>
@@ -321,8 +298,6 @@ namespace Lithnet.Miiserver.Client
         /// <returns>The concatenated string</returns>
         public static string AppendWithSeparator(this string text, string separator, string textToAppend)
         {
-            string newString = string.Empty;
-
             if (!string.IsNullOrWhiteSpace(text))
             {
                 text += separator;
@@ -332,8 +307,7 @@ namespace Lithnet.Miiserver.Client
                 text = string.Empty;
             }
 
-            newString = text + textToAppend;
-            return newString;
+            return text + textToAppend;
         }
 
         public static string ToMmsGuid(this Guid guid)
@@ -354,6 +328,11 @@ namespace Lithnet.Miiserver.Client
         public static string EscapeXmlElementText(this string input)
         {
             return input.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;").Replace("'", "&apos;");
+        }
+
+        public static IEnumerable<CSObjectRef> GetCSObjectReferences(this CounterDetail detail)
+        {
+            return SyncServer.GetStepDetailCSObjectRefs(detail.StepId, detail.XmlNode.Name);
         }
     }
 }

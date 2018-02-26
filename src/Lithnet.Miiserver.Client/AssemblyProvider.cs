@@ -1,6 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Diagnostics;
+using System.Reflection;
 
 namespace Lithnet.Miiserver.Client
 {

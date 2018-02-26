@@ -33,16 +33,13 @@ namespace Lithnet.Miiserver.Client
             switch (this.Attribute.Type)
             {
                 case AttributeType.Binary:
-                    byte[] bytes = this.Value as byte[];
 
-                    if (bytes != null)
+                    if (this.Value is byte[] bytes)
                     {
                         return Convert.ToBase64String(bytes);
                     }
 
-                    string stringvalue = this.Value as string;
-
-                    if (stringvalue != null)
+                    if (this.Value is string stringvalue)
                     {
                         return stringvalue;
                     }

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
-using System.IO;
 
 namespace Lithnet.Miiserver.Client
 {
     public class RunDetails : XmlObjectBase
     {
-        internal RunDetails(XmlNode node)
+        public RunDetails(XmlNode node)
             : base(node)
         {
         }
@@ -67,12 +67,7 @@ namespace Lithnet.Miiserver.Client
             {
                 StepDetails step = this.StepDetails.FirstOrDefault();
 
-                if (step == null)
-                {
-                    return null;
-                }
-
-                return step.StepResult;
+                return step?.StepResult;
             }
         }
 

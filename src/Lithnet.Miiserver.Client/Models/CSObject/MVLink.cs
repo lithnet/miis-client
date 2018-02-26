@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-   public class MVLink : XmlObjectBase
+    public class MVLink : XmlObjectBase
     {
         internal MVLink(XmlNode node)
             : base(node)

@@ -2,7 +2,7 @@
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
-{    
+{
     public class EncodedValue : XmlObjectBase
     {
         internal EncodedValue(XmlNode node)

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections;
-using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
+using System.Collections.Generic;
 using System.Xml;
+using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
@@ -24,13 +24,16 @@ namespace Lithnet.Miiserver.Client
 
         private uint entryParts;
 
-        internal CSObjectEnumerator(MMSWebService ws, string token, bool exporting, CSObjectParts csParts, uint entryParts)
+        private uint pageSize;
+
+        internal CSObjectEnumerator(MMSWebService ws, string token, bool exporting, int pageSize, CSObjectParts csParts, uint entryParts)
         {
             this.token = token;
             this.webService = ws;
             this.exporting = exporting;
             this.csParts = csParts;
             this.entryParts = entryParts;
+            this.pageSize = (uint)pageSize;
 
             if (token == null)
             {
@@ -158,12 +161,12 @@ namespace Lithnet.Miiserver.Client
 
             if (this.exporting)
             {
-                response = this.webService.ExportConnectorSpaceGetNext(this.token, (ulong)this.csParts, this.entryParts, 10);
+                response = this.webService.ExportConnectorSpaceGetNext(this.token, (ulong)this.csParts, this.entryParts, this.pageSize);
                 SyncServer.ThrowExceptionOnReturnError(response);
             }
             else
             {
-                response = this.webService.GetCSResults(this.token, 10, (ulong)this.csParts, this.entryParts, 0, null);
+                response = this.webService.GetCSResults(this.token, this.pageSize, (ulong)this.csParts, this.entryParts, 0, null);
                 SyncServer.ThrowExceptionOnReturnError(response);
             }
 

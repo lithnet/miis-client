@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Management;
-using System.IO;
-using System.Management.Automation;
 using System.Diagnostics;
-using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
+using System.IO;
+using System.Linq;
+using System.Management;
+using System.Management.Automation;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Text;
+using System.Threading;
 using System.Xml;
-using System.Threading.Tasks;
+using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
@@ -21,6 +20,8 @@ namespace Lithnet.Miiserver.Client
         internal static ManagementScope Scope = new ManagementScope(@"\\.\ROOT\MicrosoftIdentityIntegrationServer");
 
         private static PowerShell psSession;
+
+        private static object schemaSyncObject = new object();
 
         private static MMSWebService ws = new MMSWebService();
 
@@ -31,7 +32,7 @@ namespace Lithnet.Miiserver.Client
 
         public static MVObject GetMVObject(Guid id)
         {
-            string result = ws.GetMVObjects(new string[] { id.ToMmsGuid() }, 1, 0xffffffff, 0xffffffff, 0, null);
+            string result = ws.GetMVObjects(new[] { id.ToMmsGuid() }, 1, 0xffffffff, 0xffffffff, 0, null);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             XmlDocument d = new XmlDocument();
@@ -78,10 +79,6 @@ namespace Lithnet.Miiserver.Client
             SyncServer.ThrowExceptionOnReturnError(schema);
 
             return DsmlSchema.GetMVSchema(schema);
-        }
-
-        static SyncServer()
-        {
         }
 
         private static PowerShell PSSession
@@ -159,7 +156,7 @@ namespace Lithnet.Miiserver.Client
 
         private static ManagementObject GetServerManagementObject()
         {
-            ObjectQuery query = new ObjectQuery(string.Format("SELECT * FROM MIIS_Server"));
+            ObjectQuery query = new ObjectQuery("SELECT * FROM MIIS_Server");
             ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.Scope, query);
             ManagementObjectCollection moc = searcher.Get();
 
@@ -175,10 +172,8 @@ namespace Lithnet.Miiserver.Client
         public static IEnumerable<RunSummary> GetRunSummary()
         {
             ulong ts = 0;
-            int reload;
-            uint returned;
 
-            string result = ws.GetExecSummary(ref ts, out reload, out returned);
+            string result = ws.GetExecSummary(ref ts, out _, out _);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             return RunSummary.GetRunSummary(result);
@@ -263,7 +258,7 @@ namespace Lithnet.Miiserver.Client
                 {
                     count++;
                     RunDetails d = SyncServer.GetRunDetail(item);
-                    parent.AppendChild(doc.ImportNode(d.GetNode(), true));
+                    parent.AppendChild(doc.ImportNode(d.XmlNode, true));
                 }
             }
 
@@ -292,21 +287,6 @@ namespace Lithnet.Miiserver.Client
             SyncServer.PSSession.AddCommand("Set-ProvisioningRulesExtension");
             SyncServer.PSSession.AddParameter("Value", enabled.ToString());
             SyncServer.PSSession.Invoke();
-        }
-
-        [Obsolete]
-        private static bool Ping()
-        {
-            Task t = Task.Run(() => ws.GetMAList());
-
-            if (t.Wait(5000))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         public static void ExportMetaverseConfiguration(string path)
@@ -355,6 +335,86 @@ namespace Lithnet.Miiserver.Client
             XmlDocument d = new XmlDocument();
             d.LoadXml(result);
             return new MVConfiguration(d.SelectSingleNode("mv-data"));
+        }
+      
+        public static IEnumerable<CSObjectRef> GetStepDetailCSObjectRefs(Guid stepID, string statisticsType)
+        {
+            return GetStepDetailCSObjectRefs(stepID, statisticsType, new CancellationToken());
+        }
+
+        public static IEnumerable<CSObjectRef> GetStepDetailCSObjectRefs(Guid stepID, string statisticsType, CancellationToken t, uint pageSize = 10)
+        {
+            string query = $"<step-object-details-filter step-id='{stepID.ToMmsGuid()}'><statistics type='{statisticsType}'/></step-object-details-filter>";
+            string token = null;
+
+            try
+            {
+                token = ws.ExecuteStepObjectDetailsSearch(query);
+
+                while (!t.IsCancellationRequested)
+                {
+                    int count = 0;
+
+                    string xml = ws.GetStepObjectResults(token, pageSize);
+                    SyncServer.ThrowExceptionOnReturnError(xml);
+
+                    XmlDocument d = new XmlDocument();
+                    d.LoadXml(xml);
+
+                    foreach (XmlNode node in d.SelectNodes("step-object-details/cs-object"))
+                    {
+                        yield return new CSObjectRef(node);
+
+                        count++;
+                    }
+
+                    if (count == 0)
+                    {
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                if (token != null)
+                {
+                    ws.ReleaseSessionObjects(new[] { token });
+                }
+            }
+        }
+
+        private static DsmlSchema schemaCache;
+
+        private static DsmlSchema SchemaCache
+        {
+            get
+            {
+                if (SyncServer.schemaCache == null)
+                {
+                    lock (schemaSyncObject)
+                    {
+                        SyncServer.schemaCache = SyncServer.GetMVSchema();
+                    }
+                }
+
+                return SyncServer.schemaCache;
+            }
+        }
+
+        public static void RefreshSchemaCache()
+        {
+            lock (schemaSyncObject)
+            {
+                SyncServer.schemaCache = null;
+            }
+        }
+
+        internal static void ThrowOnInvalidObjectType(string objectType)
+        {
+            if (!SyncServer.SchemaCache.ObjectClasses.ContainsKey(objectType))
+            {
+                throw new MiiserverException($"The object type {objectType} was not found in the schema");
+            }
         }
 
         /// <summary>
@@ -435,9 +495,7 @@ namespace Lithnet.Miiserver.Client
 
                 while (reader.Read())
                 {
-                    byte[] data = reader[0] as byte[];
-
-                    if (data == null)
+                    if (!(reader[0] is byte[] data))
                     {
                         return null;
                     }

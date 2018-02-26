@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Xml;
 
 namespace Lithnet.Miiserver.Client
@@ -7,10 +7,16 @@ namespace Lithnet.Miiserver.Client
     /// <summary>
     /// A lightweight reference to a CSObject
     /// </summary>
+    [Serializable]
     public class CSObjectRef : XmlObjectBase
     {
         internal CSObjectRef(XmlNode node)
             : base(node)
+        {
+        }
+
+        protected CSObjectRef(SerializationInfo info, StreamingContext context)
+        : base(info, context)
         {
         }
 

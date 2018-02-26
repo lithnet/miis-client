@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
-using System.Xml;
 using System.Linq;
 using System.Management;
 using System.Security;
+using System.Xml;
+using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
@@ -60,11 +60,11 @@ namespace Lithnet.Miiserver.Client
         /// <returns>Returns the newly created metaverse object</returns>
         public MVObject Project(string objectType)
         {
+            SyncServer.ThrowOnInvalidObjectType(objectType);
+
             string result = ws.Project(this.MAID.ToMmsGuid(), objectType, this.ID.ToMmsGuid());
 
-            Guid mvid;
-
-            if (Guid.TryParse(result, out mvid))
+            if (Guid.TryParse(result, out Guid mvid))
             {
                 this.Refresh();
                 return SyncServer.GetMVObject(mvid);
@@ -151,6 +151,8 @@ namespace Lithnet.Miiserver.Client
         /// <param name="mvObjectId">The ID of the metaverse object to join</param>
         public void Join(string mvObjectType, Guid mvObjectId)
         {
+            SyncServer.ThrowOnInvalidObjectType(mvObjectType);
+
             string result = ws.Join(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), mvObjectType, mvObjectId.ToMmsGuid());
             SyncServer.ThrowExceptionOnReturnError(result);
             this.Refresh();
@@ -224,7 +226,7 @@ namespace Lithnet.Miiserver.Client
         /// <returns>A connector space object</returns>
         protected internal static XmlNode GetCSObjectXml(Guid id)
         {
-            string xml = ws.GetCSObjects(new string[] { id.ToMmsGuid() }, 1, 0xFFFFFFFF, 0xFFFFFFFF, 0, null);
+            string xml = ws.GetCSObjects(new[] { id.ToMmsGuid() }, 1, 0xFFFFFFFF, 0xFFFFFFFF, 0, null);
             XmlDocument d = new XmlDocument();
             d.LoadXml(xml);
             XmlNode node = d.SelectSingleNode("cs-objects/cs-object");

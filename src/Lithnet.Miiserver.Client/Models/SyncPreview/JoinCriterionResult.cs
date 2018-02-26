@@ -1,5 +1,5 @@
-﻿using System.Xml;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {

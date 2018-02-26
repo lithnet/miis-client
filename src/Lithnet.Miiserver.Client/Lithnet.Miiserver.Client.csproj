@@ -39,6 +39,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PropertySheetBase">
       <HintPath>C:\Program Files\Microsoft Forefront Identity Manager\2010\Synchronization Service\UIShell\PropertySheetBase.dll</HintPath>
       <Private>False</Private>
@@ -62,8 +65,8 @@
     <Compile Include="Enums\MVSearchFilterOperator.cs" />
     <Compile Include="Enums\RunStepType.cs" />
     <Compile Include="Enums\SyncServiceRole.cs" />
-    <Compile Include="MiiserverException.cs" />
-    <Compile Include="MAExecutionException.cs" />
+    <Compile Include="Exceptions\MiiserverException.cs" />
+    <Compile Include="Exceptions\MAExecutionException.cs" />
     <Compile Include="Models\CSObject\CSObjectRef.cs" />
     <Compile Include="Models\ManagementAgent\MAImportFlowSet.cs" />
     <Compile Include="Models\ManagementAgent\ExportFlowSet.cs" />
@@ -93,14 +96,14 @@
     <Compile Include="Models\RunHistory\StepDescription.cs" />
     <Compile Include="Models\XmlObjectBase.cs" />
     <Compile Include="Models\CSObject\CSObjectBase.cs" />
-    <Compile Include="Models\ManagementAgent\CSObjectEnumerator.cs" />
-    <Compile Include="Models\CSObject\CSObject.cs" />
+    <Compile Include="CSObjectEnumerator.cs" />
+    <Compile Include="Wrappers\CSObject.cs" />
     <Compile Include="Enums\MAData.cs" />
     <Compile Include="Enums\MAPartitionData.cs" />
     <Compile Include="Enums\MARunData.cs" />
     <Compile Include="Enums\MVData.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Models\ManagementAgent\ManagementAgent.cs" />
+    <Compile Include="Wrappers\ManagementAgent.cs" />
     <Compile Include="Models\RunHistory\RunSummary.cs" />
     <Compile Include="Models\SyncPreview\ConnectorRename.cs" />
     <Compile Include="Models\SyncPreview\FilterConditionResult.cs" />
@@ -138,7 +141,7 @@
     <Compile Include="SyncServer.cs" />
     <Compile Include="MiiserverConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TooManyResultsException.cs" />
+    <Compile Include="Exceptions\TooManyResultsException.cs" />
     <Compile Include="Models\CSObject\CSEntryBase.cs" />
     <Compile Include="Models\RunHistory\MAConnectionIncident.cs" />
     <Compile Include="Models\ManagementAgent\MAStatistics.cs" />

@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace Lithnet.Miiserver.Client
 {
-    public abstract class CSObjectBase : XmlObjectBase
+    public class CSObjectBase : XmlObjectBase
     {
         protected CSObjectBase(XmlNode node)
             : base(node)

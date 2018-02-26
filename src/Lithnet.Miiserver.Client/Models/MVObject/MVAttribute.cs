@@ -21,7 +21,7 @@ namespace Lithnet.Miiserver.Client
 
         public override string ToString()
         {
-            return string.Format("{0}:{1}", this.Name, this.Values.Select(t => t.ToString()).ToCommaSeparatedString());
+            return $"{this.Name}:{this.Values.Select(t => t.ToString()).ToCommaSeparatedString()}";
         }
     }
 }

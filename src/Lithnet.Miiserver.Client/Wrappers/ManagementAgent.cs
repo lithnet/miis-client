@@ -3,25 +3,163 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Threading;
-using Microsoft.DirectoryServices.MetadirectoryServices;
 using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
     public class ManagementAgent : ManagementAgentBase
     {
+        private IReadOnlyList<MAImportFlowSet> importFlows;
+
+        protected MMSWebService WebService = new MMSWebService();
+
+        public MAStatistics Statistics
+        {
+            get
+            {
+                string result = this.WebService.GetMAStatistics(this.ID.ToMmsGuid(), out string lastRunXml, out uint mvObjectCount);
+
+                SyncServer.ThrowExceptionOnReturnError(result);
+
+                XmlDocument d = new XmlDocument();
+                d.LoadXml(result);
+
+                return new MAStatistics(d.SelectSingleNode("total-summary"));
+            }
+        }
+
+
+        protected object InvokeWmi(string method, params object[] arguments)
+        {
+            try
+            {
+                using (ManagementObject wmiObject = ManagementAgent.GetManagementAgentWmiObject(this.ID))
+                {
+                    return wmiObject.InvokeMethod(method, arguments);
+                }
+            }
+            catch (COMException ex)
+            {
+                throw new MiiserverException(SyncServer.TranslateCOMException(ex), ex);
+            }
+        }
+
+        public XmlNode GetPrivateData()
+        {
+            return this.XmlNode.SelectSingleNode("private-configuration");
+        }
+
+        private XmlNode GetMaData()
+        {
+            return this.GetMaData(this.ID);
+        }
+
+
+        public void Refresh()
+        {
+            this.Reload(this.GetMaData());
+            this.importFlows = null;
+            this.ClearCache();
+        }
+
+        public string ExecuteRunProfileNative(string runProfileName)
+        {
+            string result = this.WebService.RunMA(this.ID.ToMmsGuid(), this.GetRunConfiguration(runProfileName), false);
+            SyncServer.ThrowExceptionOnReturnError(result);
+            return result;
+        }
+
+        protected string GetRunConfiguration(string runProfileName)
+        {
+            XmlNode madata = this.GetMaData(this.ID,
+                MAData.MA_PARTITION_DATA |
+                MAData.MA_RUN_DATA,
+                MAPartitionData.BFPARTITION_SELECTED |
+                MAPartitionData.BFPARTITION_CUSTOM_DATA |
+                MAPartitionData.BFPARTITION_ID |
+                MAPartitionData.BFPARTITION_NAME |
+                MAPartitionData.BFPARTITION_ALLOWED_OPERATIONS,
+                MARunData.BFRUNDATA_NAME |
+                MARunData.BFRUNDATA_ID |
+                MARunData.BFRUNDATA_VERSION |
+                MARunData.BFRUNDATA_RUNCONFIGURATION);
+
+
+            XmlNode node = madata.SelectSingleNode($"/ma-data/ma-run-data/run-configuration[name='{runProfileName}']");
+
+
+            if (node == null)
+            {
+                throw new InvalidOperationException("No such run profile " + runProfileName);
+            }
+
+            return node.OuterXml;
+        }
+
+
+        private static ManagementObject GetManagementAgentWmiObject(Guid id)
+        {
+            ObjectQuery query = new ObjectQuery($"SELECT * FROM MIIS_ManagementAgent where Guid='{id.ToMmsGuid()}'");
+
+            using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(SyncServer.Scope, query))
+            {
+                using (ManagementObjectCollection results = searcher.Get())
+                {
+                    if (results.Count == 0)
+                    {
+                        throw new MiiserverException($"The specified management agent ({id}) was not found");
+                    }
+                    else if (results.Count > 1)
+                    {
+                        throw new TooManyResultsException();
+                    }
+                    else
+                    {
+                        return results.OfType<ManagementObject>().First();
+                    }
+                }
+            }
+        }
+
+        internal static XmlNode GetMaData(MMSWebService ws, Guid id, MAData madata, MAPartitionData partitionData, MARunData rundata)
+        {
+            string result = ws.GetMaData(id.ToMmsGuid(), (uint)madata, (uint)partitionData, (uint)rundata);
+            SyncServer.ThrowExceptionOnReturnError(result);
+
+            XmlDocument d = new XmlDocument();
+            d.LoadXml(result);
+            return d.SelectSingleNode("/ma-data");
+        }
+
+        internal static XmlNode GetMaData(MMSWebService ws, Guid id)
+        {
+            return ManagementAgent.GetMaData(ws, id, MAData.MA_ALLBITS, MAPartitionData.BFPARTITION_ALL, MARunData.BFRUNDATA_ALLBITS);
+        }
+
+        internal XmlNode GetMaData(Guid id, MAData madata, MAPartitionData partitionData, MARunData rundata)
+        {
+            return ManagementAgent.GetMaData(this.WebService, id, madata, partitionData, rundata);
+        }
+
+        internal XmlNode GetMaData(Guid id)
+        {
+            return ManagementAgent.GetMaData(this.WebService, id, MAData.MA_ALLBITS, MAPartitionData.BFPARTITION_ALL, MARunData.BFRUNDATA_ALLBITS);
+        }
+
         protected ManagementAgent(XmlNode node, Guid id)
             : base(node, id)
         {
+            this.Refresh();
         }
 
         public static ManagementAgent GetManagementAgent(Guid id)
         {
             MMSWebService ws = new MMSWebService();
-            XmlNode node = ManagementAgentBase.GetMaData(ws, id);
+            XmlNode node = ManagementAgent.GetMaData(ws, id);
             return new ManagementAgent(node, id);
         }
 
@@ -81,11 +219,9 @@ namespace Lithnet.Miiserver.Client
         {
             Dictionary<Guid, string> mapping = new Dictionary<Guid, string>();
 
-            ArrayList names;
-            ArrayList ids;
             MMSWebService ws = new MMSWebService();
 
-            ws.GetMAGuidList(out ids, out names);
+            ws.GetMAGuidList(out ArrayList ids, out ArrayList names);
 
             if (names.Count != ids.Count)
             {
@@ -162,11 +298,9 @@ namespace Lithnet.Miiserver.Client
             SyncServer.ThrowExceptionOnReturnError(result);
         }
 
-        public void StopAsync()
+        public async Task StopAsync()
         {
-            Task t = new Task(this.Stop);
-
-            t.Start();
+            await Task.Run(() => this.Stop());
         }
 
         public void SuppressFullSyncWarning()
@@ -176,7 +310,7 @@ namespace Lithnet.Miiserver.Client
 
         public string ExecuteRunProfile(string name)
         {
-            string result = this.InvokeWmi("Execute", new object[] { name }) as string;
+            string result = this.InvokeWmi("Execute", name) as string;
 
             if (result != "success" && !result.StartsWith("completed-"))
             {
@@ -188,7 +322,7 @@ namespace Lithnet.Miiserver.Client
 
         public string ExecuteRunProfile(string name, bool resumeLastRun)
         {
-            string result = this.InvokeWmi("Execute", new object[] { name, resumeLastRun }) as string;
+            string result = this.InvokeWmi("Execute", name, resumeLastRun) as string;
 
             if (result != "success" && !result.StartsWith("completed-"))
             {
@@ -198,22 +332,14 @@ namespace Lithnet.Miiserver.Client
             return result;
         }
 
-        public Task<string> ExecuteRunProfileAsync(string name, bool resumeLastRun)
+        public async Task<string> ExecuteRunProfileAsync(string name, bool resumeLastRun)
         {
-            Task<string> t = new Task<string>(() => this.ExecuteRunProfile(name, resumeLastRun));
-
-            t.Start();
-
-            return t;
+            return await Task.FromResult(this.ExecuteRunProfile(name, resumeLastRun));
         }
 
-        public Task<string> ExecuteRunProfileAsync(string name)
+        public async Task<string> ExecuteRunProfileAsync(string name)
         {
-            Task<string> t = new Task<string>(() => this.ExecuteRunProfile(name));
-
-            t.Start();
-
-            return t;
+            return await Task.FromResult(this.ExecuteRunProfile(name));
         }
 
         public string ExecuteRunProfile(string name, bool resumeLastRun, CancellationToken waitCancellationToken)
@@ -293,10 +419,7 @@ namespace Lithnet.Miiserver.Client
             string search = $"<searching><dn recursive=\"false\">{dn.EscapeXmlElementText()}</dn></searching>";
             return this.GetSingleCSObject(search);
         }
-
-
-
-
+        
         public CSObjectEnumerator GetCSObjects(string dn, bool searchSubTree)
         {
             string search = $"<searching><dn recursive=\"{searchSubTree.ToString().ToLower()}\">{dn.EscapeXmlElementText()}</dn></searching>";
@@ -314,7 +437,7 @@ namespace Lithnet.Miiserver.Client
             return CSObject.GetCSObject(id);
         }
 
-        internal CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes, CSObjectParts csParts, uint entryParts)
+        internal CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize, CSObjectParts csParts, uint entryParts)
         {
             if (!(getAdds | getUpdates | getDeletes))
             {
@@ -323,21 +446,21 @@ namespace Lithnet.Miiserver.Client
 
             string searchText = $"<criteria><pending-import add=\"{getAdds.ToString().ToLower()}\" modify=\"{getUpdates.ToString().ToLower()}\" delete=\"{getDeletes.ToString().ToLower()}\"></pending-import></criteria>";
 
-            return this.ExportConnectorSpace(searchText, csParts, entryParts);
+            return this.ExportConnectorSpace(searchText, pageSize, csParts, entryParts);
         }
 
-        public CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes)
+        public CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize)
         {
-            return this.GetPendingImports(getAdds, getUpdates, getDeletes, CSObjectParts.AllItems, 0xffffffff);
+            return this.GetPendingImports(getAdds, getUpdates, getDeletes, pageSize, CSObjectParts.AllItems, 0xffffffff);
 
         }
 
-        public CSObjectEnumerator GetPendingExports(bool getAdds, bool getUpdates, bool getDeletes)
+        public CSObjectEnumerator GetPendingExports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize)
         {
-            return this.GetPendingExports(getAdds, getUpdates, getDeletes, CSObjectParts.AllItems, 0xffffffff);
+            return this.GetPendingExports(getAdds, getUpdates, getDeletes, pageSize, CSObjectParts.AllItems, 0xffffffff);
         }
 
-        internal CSObjectEnumerator GetPendingExports(bool getAdds, bool getUpdates, bool getDeletes, CSObjectParts csParts, uint entryParts)
+        internal CSObjectEnumerator GetPendingExports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize, CSObjectParts csParts, uint entryParts)
         {
             if (!(getAdds | getUpdates | getDeletes))
             {
@@ -346,17 +469,17 @@ namespace Lithnet.Miiserver.Client
 
             string searchText = $"<criteria><pending-export add=\"{getAdds.ToString().ToLower()}\" modify=\"{getUpdates.ToString().ToLower()}\" delete=\"{getDeletes.ToString().ToLower()}\"></pending-export></criteria>";
 
-            return this.ExportConnectorSpace(searchText, csParts, entryParts);
+            return this.ExportConnectorSpace(searchText, pageSize, csParts, entryParts);
         }
 
         public CSObjectEnumerator GetPendingExportCSObjectIDAndPartitions()
         {
-            return this.GetPendingExports(true, true, true, CSObjectParts.ManagementAgentPartitionID, 0);
+            return this.GetPendingExports(true, true, true, 10, CSObjectParts.ManagementAgentPartitionID, 0);
         }
 
         public CSObjectEnumerator GetPendingImportCSObjectIDAndPartitions()
         {
-            return this.GetPendingImports(true, true, true, CSObjectParts.ManagementAgentPartitionID, 0);
+            return this.GetPendingImports(true, true, true, 10, CSObjectParts.ManagementAgentPartitionID, 0);
         }
         
         public CSObjectEnumerator GetImportErrors()
@@ -427,18 +550,16 @@ namespace Lithnet.Miiserver.Client
             string searchText = "<criteria><connector>false</connector></criteria>";
             return this.ExportConnectorSpace(searchText);
         }
-
-
+        
         public CSObjectEnumerator GetConnectors()
         {
             string searchText = "<criteria><connector>true</connector></criteria>";
             return this.ExportConnectorSpace(searchText);
         }
-
-
+        
         public bool HasPendingExports()
         {
-            using (CSObjectEnumerator e = this.GetPendingExports(true, true, true, 0, 0))
+            using (CSObjectEnumerator e = this.GetPendingExports(true, true, true, 10, 0, 0))
             {
                 return e.BatchCount > 0;
             }
@@ -446,7 +567,7 @@ namespace Lithnet.Miiserver.Client
 
         public bool HasPendingImports()
         {
-            using (CSObjectEnumerator e = this.GetPendingImports(true, true, true, 0, 0))
+            using (CSObjectEnumerator e = this.GetPendingImports(true, true, true, 10, 0, 0))
             {
                 return e.BatchCount > 0;
             }
@@ -455,10 +576,8 @@ namespace Lithnet.Miiserver.Client
         public IEnumerable<RunSummary> GetRunSummary()
         {
             ulong ts = 0;
-            int reload;
-            uint returned;
 
-            string result = this.WebService.GetExecSummary(ref ts, out reload, out returned);
+            string result = this.WebService.GetExecSummary(ref ts, out _, out _);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             return RunSummary.GetRunSummary(result, this.ID);
@@ -489,7 +608,7 @@ namespace Lithnet.Miiserver.Client
         {
             if (count <= 0)
             {
-                throw new ArgumentOutOfRangeException("count", "Run history count must be greater than zero");
+                throw new ArgumentOutOfRangeException(nameof(count), "Run history count must be greater than zero");
             }
 
             string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>{count}</num-req></execution-history-req>";
@@ -544,14 +663,14 @@ namespace Lithnet.Miiserver.Client
             this.ExportManagementAgent(file, true);
         }
 
-        public void ExportManagementAgent(string file, bool includeIAFs)
+        public void ExportManagementAgent(string file, bool includeIafs)
         {
-            this.ExportManagementAgent(file, includeIAFs, DateTime.Now.ToMmsDateString());
+            this.ExportManagementAgent(file, includeIafs, DateTime.Now.ToMmsDateString());
         }
 
-        internal void ExportManagementAgent(string file, bool includeIAFs, string timestamp)
+        internal void ExportManagementAgent(string file, bool includeIafs, string timestamp)
         {
-            string data = this.ExportManagementAgent(includeIAFs, timestamp);
+            string data = this.ExportManagementAgent(includeIafs, timestamp);
             System.IO.File.WriteAllText(file, data);
         }
 
@@ -565,17 +684,12 @@ namespace Lithnet.Miiserver.Client
             return d.SelectSingleNode("/");
         }
         
-        private CSObjectEnumerator ExportConnectorSpace(string critieria, CSObjectParts csParts, uint entryParts)
+        private CSObjectEnumerator ExportConnectorSpace(string critieria, int pageSize = 10, CSObjectParts csParts = CSObjectParts.AllItems, uint entryParts = 0xFFFFFFFF)
         {
             string token = this.WebService.ExportConnectorSpace(this.Name, critieria, true);
             SyncServer.ThrowExceptionOnReturnError(token);
 
-            return new CSObjectEnumerator(this.WebService, token, true, csParts, entryParts);
-        }
-
-        private CSObjectEnumerator ExportConnectorSpace(string critieria)
-        {
-            return this.ExportConnectorSpace(critieria, CSObjectParts.AllItems, 0xFFFFFFFF);
+            return new CSObjectEnumerator(this.WebService, token, true, pageSize, csParts, entryParts);
         }
 
         private CSObject GetSingleCSObject(string criteria)
@@ -597,17 +711,12 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        private CSObjectEnumerator ExecuteCSSearch(string criteria)
-        {
-            return this.ExecuteCSSearch(criteria, CSObjectParts.AllItems, 0xFFFFFFFF);
-        }
-
-        private CSObjectEnumerator ExecuteCSSearch(string criteria, CSObjectParts csParts, uint entryParts)
+        private CSObjectEnumerator ExecuteCSSearch(string criteria, int pageSize = 10, CSObjectParts csParts = CSObjectParts.AllItems, uint entryParts = 0xFFFFFFFF)
         {
             string token = this.WebService.ExecuteCSSearch(this.ID.ToMmsGuid(), criteria);
             SyncServer.ThrowExceptionOnReturnError(token);
 
-            return new CSObjectEnumerator(this.WebService, token, false, csParts, entryParts);
+            return new CSObjectEnumerator(this.WebService, token, false, pageSize, csParts, entryParts);
         }
 
         private static ManagementObject GetManagementAgentWmiObject(string id)
@@ -628,6 +737,58 @@ namespace Lithnet.Miiserver.Client
             {
                 return results.OfType<ManagementObject>().First();
             }
+        }
+
+
+        public IReadOnlyList<MAImportFlowSet> ImportAttributeFlows
+        {
+            get
+            {
+                if (this.importFlows == null)
+                {
+                    this.importFlows = this.GetImportFlows();
+                }
+
+                return this.importFlows;
+            }
+        }
+
+        private IReadOnlyList<MAImportFlowSet> GetImportFlows()
+        {
+            List<MAImportFlowSet> sets = new List<MAImportFlowSet>();
+
+            XmlNode n1 = SyncServer.GetImportAttributeFlows();
+
+            if (n1 == null)
+            {
+                return sets.AsReadOnly();
+            }
+
+            foreach (XmlNode n2 in n1.SelectNodes("import-flow-set"))
+            {
+                List<MAImportFlow> flows = new List<MAImportFlow>();
+
+                string mvObjectType = n2.SelectSingleNode("@mv-object-type").InnerText;
+
+                foreach (XmlNode n3 in n2.SelectNodes("import-flows"))
+                {
+                    string mvAttribute = n3.SelectSingleNode("@mv-attribute").InnerText;
+
+                    foreach (XmlNode n4 in n3.SelectNodes(string.Format("import-flow[@src-ma='{0}']", this.ID.ToMmsGuid())))
+                    {
+                        MAImportFlow f = new MAImportFlow(n4, mvObjectType, mvAttribute);
+                        flows.Add(f);
+                    }
+                }
+
+                foreach (IGrouping<string, MAImportFlow> g in flows.GroupBy(t => t.CSObjectType))
+                {
+                    MAImportFlowSet set = new MAImportFlowSet(g.Key, mvObjectType, g.ToList().AsReadOnly());
+                    sets.Add(set);
+                }
+            }
+
+            return sets.AsReadOnly();
         }
     }
 }

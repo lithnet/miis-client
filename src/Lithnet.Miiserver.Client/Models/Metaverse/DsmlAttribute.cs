@@ -88,7 +88,7 @@ namespace Lithnet.Miiserver.Client
                         return "reference";
                     case AttributeType.Unknown:
                     default:
-                        throw new InvalidOperationException("Unknown attibute type");
+                        throw new InvalidOperationException("Unknown attribute type");
                 }
             }
         }
