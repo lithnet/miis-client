@@ -15,10 +15,10 @@ namespace Lithnet.Miiserver.Client
 
         public int FilteredDeletions => this.FilteredDeletionsDetail?.Count ?? 0;
 
-        public CounterDetail FilteredDeletionsDetail => this.GetObject<CounterDetail>("filtered-deletions", this.stepID);
+        public CounterDetail FilteredDeletionsDetail => this.GetObject<CounterDetail>("filtered-deletions",  new object[] { this.stepID });
         
         public int FilteredObjects => this.FilteredObjectsDetail?.Count ?? 0;
 
-        public CounterDetail FilteredObjectsDetail => this.GetObject<CounterDetail>("filtered-objects", this.stepID);
+        public CounterDetail FilteredObjectsDetail => this.GetObject<CounterDetail>("filtered-objects",  new object[] { this.stepID });
     }
 }

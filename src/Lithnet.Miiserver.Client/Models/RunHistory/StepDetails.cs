@@ -61,7 +61,7 @@ namespace Lithnet.Miiserver.Client
         /// <summary>
         /// Gets the values of some management agent discovery counters.
         /// </summary>
-        public MADiscoveryCounters MADiscoveryCounters => this.GetObject<MADiscoveryCounters>("ma-discovery-counters", this.StepID);
+        public MADiscoveryCounters MADiscoveryCounters => this.GetObject<MADiscoveryCounters>("ma-discovery-counters",  new object[] { this.StepID });
 
         /// <summary>
         /// Gets a list of connector space objects that are having problems either synchronizing a connector space delta through to the metaverse and out to other connector spaces, or pushing an export delta out to the connected directory.
@@ -76,22 +76,22 @@ namespace Lithnet.Miiserver.Client
         /// <summary>
         /// Gets objects that records the counts of provisioning and export attribute flow. If the step involves applying changes from the connector space to the metaverse, there may be one or more provisioning changes or export attribute flow. Each management agent for which provisioning or non-trivial export attribute flow occurs, then this object is present
         /// </summary>
-        public IReadOnlyList<OutboundFlowCounters> OutboundFlowCounters => this.GetReadOnlyObjectList<OutboundFlowCounters>("outbound-flow-counters", this.StepID);
+        public IReadOnlyList<OutboundFlowCounters> OutboundFlowCounters => this.GetReadOnlyObjectList<OutboundFlowCounters>("outbound-flow-counters",  new object[] { this.StepID });
 
         /// <summary>
         /// Gets statistics on the staging of the entries that were imported. If the step involves importing from a connected directory or from a drop file, this element is present.
         /// </summary>
-        public StagingCounters StagingCounters => this.GetObject<StagingCounters>("staging-counters", this.StepID);
+        public StagingCounters StagingCounters => this.GetObject<StagingCounters>("staging-counters",  new object[] { this.StepID });
 
         /// <summary>
         /// Gets information about the number of disconnectors that became connectors during this run, and the disposition of existing connectors.
         /// </summary>
-        public InboundFlowCounters InboundFlowCounters => this.GetObject<InboundFlowCounters>("inbound-flow-counters", this.StepID);
+        public InboundFlowCounters InboundFlowCounters => this.GetObject<InboundFlowCounters>("inbound-flow-counters",  new object[] { this.StepID });
 
         /// <summary>
         /// Gets statistics on the number of changes that are sent out. If the step type is export, this element is present.
         /// </summary>
-        public ExportCounters ExportCounters => this.GetObject<ExportCounters>("export-counters", this.StepID);
+        public ExportCounters ExportCounters => this.GetObject<ExportCounters>("export-counters",  new object[] { this.StepID });
 
         /// <summary>
         /// Gets the sequence number of the step within the run, starting with 1

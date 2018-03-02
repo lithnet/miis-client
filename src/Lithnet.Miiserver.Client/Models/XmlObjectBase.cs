@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml;
@@ -71,36 +73,59 @@ namespace Lithnet.Miiserver.Client
             this.cachedProperties = new Dictionary<string, object>();
         }
 
+        protected internal T GetValue<T>(string xmlName)
+        {
+            return this.GetValue<T>(xmlName, xmlName);
+        }
+
         /// <summary>
         /// Gets the value from the internal XML structure with the specified node name
         /// </summary>
         /// <typeparam name="T">The type of value</typeparam>
-        /// <param name="name">The name of the attribute</param>
+        /// <param name="xmlName">The XML name of the attribute</param>
+        /// <param name="key">The name of the attribute</param>
         /// <returns>Returns a typed value for the specified element name</returns>
-        protected internal T GetValue<T>(string name)
+        protected internal T GetValue<T>(string xmlName, string key)
         {
-            if (!this.cachedProperties.ContainsKey(name))
+            if (!this.cachedProperties.ContainsKey(key))
             {
-                T value = this.XmlNode.SelectSingleNode(name, this.NsManager).ReadInnerText<T>();
-                this.cachedProperties.Add(name, value);
+                T value = this.XmlNode.SelectSingleNode(xmlName, this.NsManager).ReadInnerText<T>();
+                this.cachedProperties.Add(key, value);
             }
 
-            return (T)this.cachedProperties[name];
+            return (T)this.cachedProperties[key];
+        }
+
+        protected internal void AddOrUpdateValue(string key, object value)
+        {
+            if (!this.cachedProperties.ContainsKey(key))
+            {
+                this.cachedProperties.Add(key, value);
+            }
+            else
+            {
+                this.cachedProperties[key] = value;
+            }
+        }
+
+        protected internal IReadOnlyList<T> GetReadOnlyValueList<T>(string xmlName)
+        {
+            return this.GetReadOnlyValueList<T>(xmlName, xmlName);
         }
 
         /// <summary>
         /// Gets a value from the internal XML structure as a typed read-only list
         /// </summary>
         /// <typeparam name="T">The type of value</typeparam>
-        /// <param name="name">The name of the attribute</param>
+        /// <param name="xmlName">The name of the attribute</param>
         /// <returns>Returns a read only list of values for the specified element name</returns>
-        protected internal IReadOnlyList<T> GetReadOnlyValueList<T>(string name)
+        protected internal IReadOnlyList<T> GetReadOnlyValueList<T>(string xmlName, string key)
         {
-            if (!this.cachedProperties.ContainsKey(name))
+            if (!this.cachedProperties.ContainsKey(key))
             {
                 List<T> list = new List<T>();
 
-                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.NsManager))
+                foreach (XmlNode n1 in this.XmlNode.SelectNodes(xmlName, this.NsManager))
                 {
                     T v1 = n1.ReadInnerText<T>();
 
@@ -110,26 +135,36 @@ namespace Lithnet.Miiserver.Client
                     }
                 }
 
-                this.cachedProperties.Add(name, list.AsReadOnly());
+                this.cachedProperties.Add(key, list.AsReadOnly());
             }
 
-            return (IReadOnlyList<T>)this.cachedProperties[name];
+            return (IReadOnlyList<T>)this.cachedProperties[key];
+        }
+
+        protected internal IReadOnlyList<T> GetReadOnlyObjectList<T>(string xmlName)
+        {
+            return this.GetReadOnlyObjectList<T>(xmlName, xmlName, null);
+        }
+
+        protected internal IReadOnlyList<T> GetReadOnlyObjectList<T>(string xmlName, object[] parameters)
+        {
+            return this.GetReadOnlyObjectList<T>(xmlName, xmlName, parameters);
         }
 
         /// <summary>
         /// Gets a read-only list of objects from an internal XML structure
         /// </summary>
         /// <typeparam name="T">The type of object</typeparam>
-        /// <param name="name">The name of the attribute</param>
+        /// <param name="xmlName">The name of the attribute</param>
         /// <param name="parameters">A list of parameters to pass to the constructor for the type</param>
         /// <returns>Returns a read only list of objects for the specified element name</returns>
-        protected internal IReadOnlyList<T> GetReadOnlyObjectList<T>(string name, params object[] parameters)
+        protected internal IReadOnlyList<T> GetReadOnlyObjectList<T>(string xmlName, string key, object[] parameters)
         {
-            if (!this.cachedProperties.ContainsKey(name))
+            if (!this.cachedProperties.ContainsKey(key))
             {
                 List<T> list = new List<T>();
 
-                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.NsManager))
+                foreach (XmlNode n1 in this.XmlNode.SelectNodes(xmlName, this.NsManager))
                 {
                     List<object> args = new List<object> { n1 };
 
@@ -148,10 +183,20 @@ namespace Lithnet.Miiserver.Client
                     list.Add(v1);
                 }
 
-                this.cachedProperties.Add(name, list.AsReadOnly());
+                this.cachedProperties.Add(key, list.AsReadOnly());
             }
 
-            return (IReadOnlyList<T>)this.cachedProperties[name];
+            return (IReadOnlyList<T>)this.cachedProperties[key];
+        }
+
+        protected internal IReadOnlyDictionary<TKey, TValue> GetReadOnlyObjectDictionary<TKey, TValue>(string xmlName, Func<TValue, TKey> keySelector, IEqualityComparer<TKey> keyComparer)
+        {
+            return this.GetReadOnlyObjectDictionary<TKey, TValue>(xmlName, xmlName, keySelector, keyComparer, null);
+        }
+
+        protected internal IReadOnlyDictionary<TKey, TValue> GetReadOnlyObjectDictionary<TKey, TValue>(string xmlName, Func<TValue, TKey> keySelector, IEqualityComparer<TKey> keyComparer, object[] parameters)
+        {
+            return this.GetReadOnlyObjectDictionary<TKey, TValue>(xmlName, xmlName, keySelector, keyComparer, parameters);
         }
 
         /// <summary>
@@ -159,18 +204,18 @@ namespace Lithnet.Miiserver.Client
         /// </summary>
         /// <typeparam name="TKey">The type of the key</typeparam>
         /// <typeparam name="TValue">The type of the value</typeparam>
-        /// <param name="name">The name of the xml node</param>
+        /// <param name="xmlName">The name of the xml node</param>
         /// <param name="keySelector">A function that returns the key from the created object</param>
         /// <param name="keyComparer">A comparer used to compare equality of the keys in the dictionary</param>
         /// <param name="parameters">A list of parameters to pass to the constructor for the type</param>
         /// <returns>Returns a read only dictionary of objects for the specified element name</returns>
-        protected internal IReadOnlyDictionary<TKey, TValue> GetReadOnlyObjectDictionary<TKey, TValue>(string name, Func<TValue, TKey> keySelector, IEqualityComparer<TKey> keyComparer, params object[] parameters)
+        protected internal IReadOnlyDictionary<TKey, TValue> GetReadOnlyObjectDictionary<TKey, TValue>(string xmlName, string key, Func<TValue, TKey> keySelector, IEqualityComparer<TKey> keyComparer, object[] parameters)
         {
-            if (!this.cachedProperties.ContainsKey(name))
+            if (!this.cachedProperties.ContainsKey(key))
             {
                 Dictionary<TKey, TValue> list = new Dictionary<TKey, TValue>(keyComparer);
 
-                foreach (XmlNode n1 in this.XmlNode.SelectNodes(name, this.NsManager))
+                foreach (XmlNode n1 in this.XmlNode.SelectNodes(xmlName, this.NsManager))
                 {
                     List<object> args = new List<object> { n1 };
 
@@ -189,58 +234,78 @@ namespace Lithnet.Miiserver.Client
                     list.Add(keySelector.Invoke(v1), v1);
                 }
 
-                this.cachedProperties.Add(name, new ReadOnlyDictionary<TKey, TValue>(list));
+                this.cachedProperties.Add(key, new ReadOnlyDictionary<TKey, TValue>(list));
             }
 
-            return (IReadOnlyDictionary<TKey, TValue>)this.cachedProperties[name];
+            return (IReadOnlyDictionary<TKey, TValue>)this.cachedProperties[key];
+        }
+
+        protected internal T GetObject<T>(string xmlName, string key) where T : class
+        {
+            return this.GetObject<T>(xmlName, key, null);
+        }
+
+        protected internal T GetObject<T>(string xmlName, object[] parameters) where T : class
+        {
+            return this.GetObject<T>(xmlName, xmlName, parameters);
+        }
+
+        protected internal T GetObject<T>(string xmlName) where T : class
+        {
+            return this.GetObject<T>(xmlName, xmlName, false);
+        }
+
+        protected internal T GetObject<T>(string xmlName, bool passNodeListToConstructor) where T : class
+        {
+            return this.GetObject<T>(xmlName, xmlName, passNodeListToConstructor);
         }
 
         /// <summary>
         /// Gets an object represented by the specified XML node
         /// </summary>
         /// <typeparam name="T">The type of the object</typeparam>
-        /// <param name="nodeName">The name of the XML node</param>
+        /// <param name="xmlName">The name of the XML node</param>
         /// <param name="passNodeListToConstructor">A flag that indicated if a single or multiple nodes are expected to match the given name</param>
         /// <returns>Returns an object for the specified element name</returns>
-        protected internal T GetObject<T>(string nodeName, bool passNodeListToConstructor) where T : class
+        protected internal T GetObject<T>(string xmlName, string key, bool passNodeListToConstructor) where T : class
         {
             if (!passNodeListToConstructor)
             {
-                return this.GetObject<T>(nodeName);
+                return this.GetObject<T>(xmlName, key, null);
             }
 
-            if (!this.cachedProperties.ContainsKey(nodeName))
+            if (!this.cachedProperties.ContainsKey(key))
             {
                 this.cachedProperties.Add(
-                    nodeName,
+                    key,
                     Activator.CreateInstance(
                         typeof(T),
                         BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
                         null,
-                        new object[] { this.XmlNode.SelectNodes(nodeName, this.NsManager) },
+                        new object[] { this.XmlNode.SelectNodes(xmlName, this.NsManager) },
                         null));
             }
 
-            return (T)this.cachedProperties[nodeName];
+            return (T)this.cachedProperties[key];
         }
 
         /// <summary>
         /// Gets an object from the specified node name
         /// </summary>
         /// <typeparam name="T">The type of object</typeparam>
-        /// <param name="nodeName">The name of the XML node</param>
+        /// <param name="xmlName">The name of the XML node</param>
         /// <param name="parameters">The parameters to pass to the constructor of the specified type</param>
         /// <returns>An object representing the specified node</returns>
-        protected internal T GetObject<T>(string nodeName, params object[] parameters) where T : class
+        protected internal T GetObject<T>(string xmlName, string key, object[] parameters) where T : class
         {
-            if (!this.cachedProperties.ContainsKey(nodeName))
+            if (!this.cachedProperties.ContainsKey(key))
             {
                 List<object> args = new List<object>();
 
-                XmlNode n1 = this.XmlNode.SelectSingleNode(nodeName, this.NsManager);
+                XmlNode n1 = this.XmlNode.SelectSingleNode(xmlName, this.NsManager);
                 if (n1 == null)
                 {
-                    this.cachedProperties.Add(nodeName, null);
+                    this.cachedProperties.Add(key, null);
                 }
                 else
                 {
@@ -251,7 +316,7 @@ namespace Lithnet.Miiserver.Client
                     }
 
                     this.cachedProperties.Add(
-                        nodeName,
+                        key,
                         Activator.CreateInstance(
                             typeof(T),
                             BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
@@ -261,7 +326,7 @@ namespace Lithnet.Miiserver.Client
                 }
             }
 
-            return (T)this.cachedProperties[nodeName];
+            return (T)this.cachedProperties[key];
         }
 
         /// <summary>
@@ -323,12 +388,20 @@ namespace Lithnet.Miiserver.Client
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("raw-xml", this.GetOuterXml(), typeof(string));
-        }
+            foreach (var property in this.GetType().GetProperties())
+            {
+                if (property.CustomAttributes.Any(t => t.AttributeType == typeof(SerializeAttribute)))
+                {
+                    property.GetValue(this);
+                }
+            }
 
-        public string ToJson()
-        {
-            return JsonConvert.SerializeXmlNode(this.XmlNode);
+            foreach (var item in this.cachedProperties)
+            {
+                info.AddValue(item.Key, item.Value, item.Value?.GetType() ?? typeof(object));
+            }
+
+            info.AddValue("raw-xml", this.GetOuterXml(), typeof(string));
         }
     }
 }

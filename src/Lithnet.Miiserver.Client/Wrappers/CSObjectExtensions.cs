@@ -11,62 +11,62 @@ namespace Lithnet.Miiserver.Client
     /// <summary>
     /// Represents a connector space object
     /// </summary>
-    public class CSObject : CSObjectBase
+    public static class CSObjectExtensions
     {
         private static MMSWebService ws = new MMSWebService();
-       
-        /// <summary>
-        /// Initializes a new instance of the CSObject class
-        /// </summary>
-        /// <param name="node">The XML node representation of the object</param>
-        internal CSObject(XmlNode node)
-            : base(node)
+
+
+        public static CSObjectBase GetCSObject(this CSObjectRef cSObjectRef)
         {
+            return CSObjectExtensions.GetCSObject(cSObjectRef.ID);
         }
 
         /// <summary>
         /// Sets the state of the connector space object
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="connectorState">The state to set the connector to</param>
-        public void SetConnectorState(ConnectorState connectorState)
+        public static void SetConnectorState(this CSObjectBase csobject, ConnectorState connectorState)
         {
-            string result = ws.SetConnectorState(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), (CONNECTORSTATE)connectorState);
+            string result = ws.SetConnectorState(csobject.MAID.ToMmsGuid(), csobject.ID.ToMmsGuid(), (CONNECTORSTATE)connectorState);
             SyncServer.ThrowExceptionOnReturnError(result);
-            this.Refresh();
+            csobject.Refresh();
         }
 
         /// <summary>
         /// Disconnects a connector space object
         /// </summary>
-        /// <param name="makeExplicit">A value indicating either an explicit disconnector should be created</param>
-        public void Disconnect(bool makeExplicit)
+        /// <param name="csobject">A connector space object</param>
+        /// <param name="makeExplicit">A value indicating whether an explicit disconnector should be created</param>
+        public static void Disconnect(this CSObjectBase csobject, bool makeExplicit)
         {
-            string result = ws.Disconnect(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid());
+            string result = ws.Disconnect(csobject.MAID.ToMmsGuid(), csobject.ID.ToMmsGuid());
             SyncServer.ThrowExceptionOnReturnError(result);
 
             if (makeExplicit)
             {
-                result = ws.SetExplicit(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), true);
+                result = ws.SetExplicit(csobject.MAID.ToMmsGuid(), csobject.ID.ToMmsGuid(), true);
                 SyncServer.ThrowExceptionOnReturnError(result);
             }
 
-            this.Refresh();
+            csobject.Refresh();
         }
 
         /// <summary>
         /// Projects a connector space object to the metaverse
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="objectType">The name of the metaverse object type to project the connector space object as</param>
         /// <returns>Returns the newly created metaverse object</returns>
-        public MVObject Project(string objectType)
+        public static MVObject Project(this CSObjectBase csobject, string objectType)
         {
             SyncServer.ThrowOnInvalidObjectType(objectType);
 
-            string result = ws.Project(this.MAID.ToMmsGuid(), objectType, this.ID.ToMmsGuid());
+            string result = ws.Project(csobject.MAID.ToMmsGuid(), objectType, csobject.ID.ToMmsGuid());
 
             if (Guid.TryParse(result, out Guid mvid))
             {
-                this.Refresh();
+                csobject.Refresh();
                 return SyncServer.GetMVObject(mvid);
             }
             else
@@ -79,11 +79,12 @@ namespace Lithnet.Miiserver.Client
         /// <summary>
         /// Gets a value that indicates if the metaverse object will be deleted when this object is disconnected
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <returns>This method returns true if the object deletion rule of the object will be satisfied as a result of disconnecting the object</returns>
-        public bool WillDeleteMVObjectOnDisconnect()
+        public static bool WillDeleteMVObjectOnDisconnect(this CSObjectBase csobject)
         {
             int willDelete = 0;
-            string result = ws.CSObjectWillBeDeleted(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), ref willDelete);
+            string result = ws.CSObjectWillBeDeleted(csobject.MAID.ToMmsGuid(), csobject.ID.ToMmsGuid(), ref willDelete);
             SyncServer.ThrowExceptionOnReturnError(result);
 
             return willDelete == 1;
@@ -92,43 +93,42 @@ namespace Lithnet.Miiserver.Client
         /// <summary>
         /// Disconnects the object from the metaverse, leaving it as a normal disconnector
         /// </summary>
-        public void Disconnect()
+        public static void Disconnect(this CSObjectBase csobject)
         {
-            this.Disconnect(false);
+            csobject.Disconnect(false);
         }
 
         /// <summary>
         /// Gets the links to the other connector space objects linked to this object via the metaverse
         /// </summary>
-        public IEnumerable<CSMVLink> ConnectedCSObjectLinks
+        /// <param name="csobject">A connector space object</param>
+        public static IEnumerable<CSMVLink> GetConnectedCSObjectLinks(this CSObjectBase csobject)
         {
-            get
+            if (csobject.MvGuid == null)
             {
-                if (this.MvGuid == null)
-                {
-                    return new List<CSMVLink>();
-                }
-
-                return CSObject.GetConnectedCSObjectLinks(this.MvGuid.Value);
+                return new List<CSMVLink>();
             }
+
+            return CSObjectExtensions.GetConnectedCSObjectLinks(csobject.MvGuid.Value);
         }
 
         /// <summary>
         /// Performs a synchronization of the connector space object, and optionally commits the result of the synchronization to the metaverse
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="commit">A value indicating if the synchronization should be committed</param>
         /// <param name="delta">A value indicating that a delta synchronization, rather than a full synchronization should be performed</param>
         /// <returns>An object representing the results of the synchronization operation</returns>
-        public SyncPreview Sync(bool commit, bool delta)
+        public static SyncPreview Sync(this CSObjectBase csobject, bool commit, bool delta)
         {
-            string result = ws.Preview(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), delta, commit);
+            string result = ws.Preview(csobject.MAID.ToMmsGuid(), csobject.ID.ToMmsGuid(), delta, commit);
             SyncServer.ThrowExceptionOnReturnError(result);
             XmlDocument d = new XmlDocument();
             d.LoadXml(result);
 
             if (commit)
             {
-                this.Refresh();
+                csobject.Refresh();
             }
 
             return new SyncPreview(d.SelectSingleNode("/preview"));
@@ -137,41 +137,41 @@ namespace Lithnet.Miiserver.Client
         /// <summary>
         /// Joins the connector space object to the specified metaverse entry
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="mventry">The metaverse entry to join</param>
-        public void Join(MVObject mventry)
+        public static void Join(this CSObjectBase csobject, MVObject mventry)
         {
-            this.Join(mventry.ObjectType, mventry.DN);
-            this.Refresh();
+            csobject.Join(mventry.ObjectType, mventry.DN);
+            csobject.Refresh();
         }
 
         /// <summary>
         /// Joins the connector space object to the metaverse object with the specified type and ID
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="mvObjectType">The type of metaverse object to join</param>
         /// <param name="mvObjectId">The ID of the metaverse object to join</param>
-        public void Join(string mvObjectType, Guid mvObjectId)
+        public static void Join(this CSObjectBase csobject, string mvObjectType, Guid mvObjectId)
         {
             SyncServer.ThrowOnInvalidObjectType(mvObjectType);
 
-            string result = ws.Join(this.MAID.ToMmsGuid(), this.ID.ToMmsGuid(), mvObjectType, mvObjectId.ToMmsGuid());
+            string result = ws.Join(csobject.MAID.ToMmsGuid(), csobject.ID.ToMmsGuid(), mvObjectType, mvObjectId.ToMmsGuid());
             SyncServer.ThrowExceptionOnReturnError(result);
-            this.Refresh();
+            csobject.Refresh();
         }
 
         /// <summary>
         /// Gets the connector space objects linked to this object via the metaverse object
         /// </summary>
-        public IEnumerable<CSObject> ConnectedCSObjects
+        /// <param name="csobject">A connector space object</param>
+        public static IEnumerable<CSObjectBase> GetConnectedCSObjects(this CSObjectBase csobject)
         {
-            get
+            if (csobject.MvGuid == null)
             {
-                if (this.MvGuid == null)
-                {
-                    return new List<CSObject>();
-                }
-
-                return CSObject.GetConnectedCSObjects(this.MvGuid.Value);
+                return new List<CSObjectBase>();
             }
+
+            return CSObjectExtensions.GetConnectedCSObjects(csobject.MvGuid.Value);
         }
 
         /// <summary>
@@ -179,9 +179,9 @@ namespace Lithnet.Miiserver.Client
         /// </summary>
         /// <param name="mvObjectId">The ID of the metaverse object</param>
         /// <returns>An enumeration of connector space objects</returns>
-        public static IEnumerable<CSObject> GetConnectedCSObjects(Guid mvObjectId)
+        public static IEnumerable<CSObjectBase> GetConnectedCSObjects(Guid mvObjectId)
         {
-            return CSObject.GetConnectedCSObjectLinks(mvObjectId).Select(link => link.GetCSObject());
+            return CSObjectExtensions.GetConnectedCSObjectLinks(mvObjectId).Select(link => link.GetCSObject());
         }
 
         /// <summary>
@@ -206,12 +206,12 @@ namespace Lithnet.Miiserver.Client
         /// </summary>
         /// <param name="id">The ID of the connector space object</param>
         /// <returns>A connector space object</returns>
-        internal static CSObject GetCSObject(Guid id)
+        public static CSObjectBase GetCSObject(Guid id)
         {
-            XmlNode node = CSObject.GetCSObjectXml(id);
+            XmlNode node = CSObjectExtensions.GetCSObjectXml(id);
             if (node != null)
             {
-                return new CSObject(node);
+                return new CSObjectBase(node);
             }
             else
             {
@@ -224,7 +224,7 @@ namespace Lithnet.Miiserver.Client
         /// </summary>
         /// <param name="id">The ID of the object to get</param>
         /// <returns>A connector space object</returns>
-        protected internal static XmlNode GetCSObjectXml(Guid id)
+        internal static XmlNode GetCSObjectXml(Guid id)
         {
             string xml = ws.GetCSObjects(new[] { id.ToMmsGuid() }, 1, 0xFFFFFFFF, 0xFFFFFFFF, 0, null);
             XmlDocument d = new XmlDocument();
@@ -242,40 +242,43 @@ namespace Lithnet.Miiserver.Client
         /// <param name="connectorState">The state of the connector to set</param>
         public static void SetConnectorState(Guid id, Guid maid, ConnectorState connectorState)
         {
-            CSObject.ws.SetConnectorState(maid.ToMmsGuid(), id.ToMmsGuid(), (CONNECTORSTATE)connectorState);
+            CSObjectExtensions.ws.SetConnectorState(maid.ToMmsGuid(), id.ToMmsGuid(), (CONNECTORSTATE)connectorState);
         }
 
         /// <summary>
         /// Reloads the connector space object from the metadirectory
         /// </summary>
-        public void Refresh()
+        /// <param name="csobject">A connector space object</param>
+        public static void Refresh(this CSObjectBase csobject)
         {
-            XmlNode node = CSObject.GetCSObjectXml(this.ID);
-            this.Reload(node);
+            XmlNode node = CSObjectExtensions.GetCSObjectXml(csobject.ID);
+            csobject.Reload(node);
         }
 
         /// <summary>
         /// Sets the password for the connector space object
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="password">The password to set</param>
         /// <param name="forceChangeAtLogin">A value that indicates whether the password should be changed at the next login</param>
         /// <param name="unlockAccount">A value that indicates whether the account should be unlocked</param>
         /// <param name="enforcePasswordPolicy">A value that indicates whether the password policy should be enforced</param>
-        public void SetPassword(SecureString password, bool forceChangeAtLogin, bool unlockAccount, bool enforcePasswordPolicy)
+        public static void SetPassword(this CSObjectBase csobject, SecureString password, bool forceChangeAtLogin, bool unlockAccount, bool enforcePasswordPolicy)
         {
-            this.SetPassword(password.ConvertToUnsecureString(), forceChangeAtLogin, unlockAccount, enforcePasswordPolicy);
+            csobject.SetPassword(password.ConvertToUnsecureString(), forceChangeAtLogin, unlockAccount, enforcePasswordPolicy);
         }
 
         /// <summary>
         /// Sets the password for the connector space object
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="password">The password to set</param>
         /// <param name="forceChangeAtLogin">A value that indicates whether the password should be changed at the next login</param>
         /// <param name="unlockAccount">A value that indicates whether the account should be unlocked</param>
         /// <param name="enforcePasswordPolicy">A value that indicates whether the password policy should be enforced</param>
-        public void SetPassword(string password, bool forceChangeAtLogin, bool unlockAccount, bool enforcePasswordPolicy)
+        public static void SetPassword(this CSObjectBase csobject, string password, bool forceChangeAtLogin, bool unlockAccount, bool enforcePasswordPolicy)
         {
-            ManagementObject mo = CSObject.GetWmiObject(this.ID);
+            ManagementObject mo = CSObjectExtensions.GetWmiObject(csobject.ID);
 
             string result = mo.InvokeMethod("SetPassword", new object[] { password, forceChangeAtLogin, unlockAccount, enforcePasswordPolicy }) as string;
 
@@ -292,21 +295,23 @@ namespace Lithnet.Miiserver.Client
         /// <summary>
         /// Changes the password for a connector space object
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="oldPassword">The user's old password</param>
         /// <param name="newPassword">The user's new password</param>
-        public void ChangePassword(SecureString oldPassword, SecureString newPassword)
+        public static void ChangePassword(this CSObjectBase csobject, SecureString oldPassword, SecureString newPassword)
         {
-            this.ChangePassword(oldPassword.ConvertToUnsecureString(), newPassword.ConvertToUnsecureString());
+            csobject.ChangePassword(oldPassword.ConvertToUnsecureString(), newPassword.ConvertToUnsecureString());
         }
 
         /// <summary>
         /// Changes the password for a connector space object
         /// </summary>
+        /// <param name="csobject">A connector space object</param>
         /// <param name="oldPassword">The user's old password</param>
         /// <param name="newPassword">The user's new password</param>
-        public void ChangePassword(string oldPassword, string newPassword)
+        public static void ChangePassword(this CSObjectBase csobject, string oldPassword, string newPassword)
         {
-            ManagementObject mo = CSObject.GetWmiObject(this.ID);
+            ManagementObject mo = CSObjectExtensions.GetWmiObject(csobject.ID);
 
             string result = mo.InvokeMethod("ChangePassword", new object[] { oldPassword, newPassword }) as string;
 
@@ -319,7 +324,7 @@ namespace Lithnet.Miiserver.Client
                 throw new MiiserverException($"The operation returned {result}");
             }
         }
-        
+
         /// <summary>
         /// Gets the connector space object from WMI
         /// </summary>

@@ -16,6 +16,6 @@ namespace Lithnet.Miiserver.Client
 
         public int ErrorCount => this.GetValue<int>("errorcount");
 
-        public IReadOnlyList<CSObject> CSObjects => this.GetReadOnlyObjectList<CSObject>("cs-objects/cs-object");
+        public IReadOnlyList<CSObjectBase> CSObjects => this.GetReadOnlyObjectList<CSObjectBase>("cs-objects/cs-object");
     }
 }

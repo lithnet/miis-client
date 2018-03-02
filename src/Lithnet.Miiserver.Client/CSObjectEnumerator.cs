@@ -6,7 +6,7 @@ using Microsoft.DirectoryServices.MetadirectoryServices.UI.WebServices;
 
 namespace Lithnet.Miiserver.Client
 {
-    public class CSObjectEnumerator : IEnumerator<CSObject>, IEnumerable<CSObject>, IDisposable
+    public class CSObjectEnumerator : IEnumerator<CSObjectBase>, IEnumerable<CSObjectBase>, IDisposable
     {
         private string token;
 
@@ -47,7 +47,7 @@ namespace Lithnet.Miiserver.Client
 
         internal int BatchCount => this.currentResultSet.Count;
 
-        public IEnumerator<CSObject> GetEnumerator()
+        public IEnumerator<CSObjectBase> GetEnumerator()
         {
             if (this.disposed)
             {
@@ -67,7 +67,7 @@ namespace Lithnet.Miiserver.Client
             return this;
         }
 
-        public CSObject Current
+        public CSObjectBase Current
         {
             get
             {
@@ -147,10 +147,7 @@ namespace Lithnet.Miiserver.Client
             }
             catch { }
 
-            if (this.currentResultSet != null)
-            {
-                this.currentResultSet.Dispose();
-            }
+            this.currentResultSet?.Dispose();
 
             this.disposed = true;
         }

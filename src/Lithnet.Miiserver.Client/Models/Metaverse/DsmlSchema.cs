@@ -7,7 +7,7 @@ namespace Lithnet.Miiserver.Client
     public class DsmlSchema : XmlObjectBase
     {
         internal DsmlSchema(XmlNode node)
-            :base (node)
+            : base(node)
         {
         }
 
@@ -15,10 +15,10 @@ namespace Lithnet.Miiserver.Client
         {
             get
             {
-                return this.GetReadOnlyObjectDictionary<string, DsmlObjectClass>("dsml:directory-schema/dsml:class", t => t.Name,  StringComparer.OrdinalIgnoreCase, this.Attributes);
+                return this.GetReadOnlyObjectDictionary<string, DsmlObjectClass>("dsml:directory-schema/dsml:class", t => t.Name, StringComparer.OrdinalIgnoreCase, new object[] { this.Attributes });
             }
         }
-        
+
         public IReadOnlyDictionary<string, DsmlAttribute> Attributes
         {
             get

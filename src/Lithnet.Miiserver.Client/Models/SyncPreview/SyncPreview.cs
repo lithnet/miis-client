@@ -14,7 +14,7 @@ namespace Lithnet.Miiserver.Client
 
         public string MVOperation => this.GetValue<string>("mv-operation");
 
-        public CSObject CSObject => this.GetObject<CSObject>("cs-object");
+        public CSObjectBase CSObject => this.GetObject<CSObjectBase>("cs-object");
 
         public MVObject MVObject => this.GetObject<MVObject>("mv/mv-object");
 

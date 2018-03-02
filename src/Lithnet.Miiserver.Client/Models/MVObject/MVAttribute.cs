@@ -11,7 +11,7 @@ namespace Lithnet.Miiserver.Client
         {
         }
 
-        public IReadOnlyList<MVAttributeValue> Values => this.GetReadOnlyObjectList<MVAttributeValue>("value", this.Type);
+        public IReadOnlyList<MVAttributeValue> Values => this.GetReadOnlyObjectList<MVAttributeValue>("value", new object[] { this.Type });
 
         public string Name => this.GetValue<string>("@name");
 

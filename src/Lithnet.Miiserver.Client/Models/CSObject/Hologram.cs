@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Xml;
+using Newtonsoft.Json;
 
 namespace Lithnet.Miiserver.Client
 {
+    [Serializable]
     public class Hologram : CSEntryBase
     {
         internal Hologram(XmlNode node)
             : base(node)
+        {
+        }
+
+        protected Hologram(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
 
@@ -19,8 +27,13 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
+        [DataMember(Name = "attributes")]
+        private IEnumerable<Attribute> AttributesInternal => this.Attributes.Values;
+
+        [Serialize]
         public string PrimaryObjectClass => this.GetValue<string>("primary-objectclass");
 
-        public IReadOnlyList<string> ObjectClasses => this.GetReadOnlyValueList<string>("objectclass/oc-value");
+        [Serialize]
+        public IReadOnlyList<string> ObjectClasses => this.GetReadOnlyValueList<string>("objectclass/oc-value", "objectclasses");
     }
 }

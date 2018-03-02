@@ -52,9 +52,9 @@ namespace Lithnet.Miiserver.Client
         /// Gets the connector space object referenced by this link
         /// </summary>
         /// <returns></returns>
-        public CSObject GetCSObject()
+        public CSObjectBase GetCSObject()
         {
-            return CSObject.GetCSObject(this.ConnectorSpaceID);
+            return CSObjectExtensions.GetCSObject(this.ConnectorSpaceID);
         }
     }
 }

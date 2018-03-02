@@ -19,6 +19,7 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        public DeltaOperationType Operation => this.GetValue<DeltaOperationType>("@operation");
+        [Serialize]
+        public DeltaOperationType Operation => this.GetValue<DeltaOperationType>("@operation", "operation");
     }
 }

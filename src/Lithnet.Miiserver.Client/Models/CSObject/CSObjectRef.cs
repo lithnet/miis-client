@@ -36,11 +36,6 @@ namespace Lithnet.Miiserver.Client
         /// </summary>
         public string DN => this.GetValue<string>("@cs-dn");
 
-        public CSObject GetCSObject()
-        {
-            return CSObject.GetCSObject(this.ID);
-        }
-
         /// <summary>Returns a string that represents the current object.</summary>
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()

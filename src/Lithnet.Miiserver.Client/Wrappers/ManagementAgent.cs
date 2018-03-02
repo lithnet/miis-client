@@ -414,7 +414,7 @@ namespace Lithnet.Miiserver.Client
             }
         }
 
-        public CSObject GetCSObject(string dn)
+        public CSObjectBase GetCSObject(string dn)
         {
             string search = $"<searching><dn recursive=\"false\">{dn.EscapeXmlElementText()}</dn></searching>";
             return this.GetSingleCSObject(search);
@@ -432,9 +432,9 @@ namespace Lithnet.Miiserver.Client
             return this.ExecuteCSSearch(search);
         }
 
-        public CSObject GetCSObject(Guid id)
+        public CSObjectBase GetCSObject(Guid id)
         {
-            return CSObject.GetCSObject(id);
+            return CSObjectExtensions.GetCSObject(id);
         }
 
         internal CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize, CSObjectParts csParts, uint entryParts)
@@ -692,7 +692,7 @@ namespace Lithnet.Miiserver.Client
             return new CSObjectEnumerator(this.WebService, token, true, pageSize, csParts, entryParts);
         }
 
-        private CSObject GetSingleCSObject(string criteria)
+        private CSObjectBase GetSingleCSObject(string criteria)
         {
             using (CSObjectEnumerator x = this.ExecuteCSSearch(criteria))
             {

@@ -18,6 +18,6 @@ namespace Lithnet.Miiserver.Client
 
         public Delta MVChanges => this.GetObject<Delta>("import-attribute-flow/values/delta");
 
-        public IReadOnlyList<CSObject> ReferencedConnectors => this.GetReadOnlyObjectList<CSObject>("import-attribute-flow/referenced-connectors/cs-object");
+        public IReadOnlyList<CSObjectBase> ReferencedConnectors => this.GetReadOnlyObjectList<CSObjectBase>("import-attribute-flow/referenced-connectors/cs-object");
     }
 }
