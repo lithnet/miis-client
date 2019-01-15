@@ -449,13 +449,13 @@ namespace Lithnet.Miiserver.Client
             return this.ExportConnectorSpace(searchText, pageSize, csParts, entryParts);
         }
 
-        public CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize)
+        public CSObjectEnumerator GetPendingImports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize = 100)
         {
             return this.GetPendingImports(getAdds, getUpdates, getDeletes, pageSize, CSObjectParts.AllItems, 0xffffffff);
 
         }
 
-        public CSObjectEnumerator GetPendingExports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize)
+        public CSObjectEnumerator GetPendingExports(bool getAdds, bool getUpdates, bool getDeletes, int pageSize = 100)
         {
             return this.GetPendingExports(getAdds, getUpdates, getDeletes, pageSize, CSObjectParts.AllItems, 0xffffffff);
         }
