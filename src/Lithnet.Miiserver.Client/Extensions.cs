@@ -31,7 +31,7 @@ namespace Lithnet.Miiserver.Client
 
         public static string ToMmsDateString(this DateTime date)
         {
-            return date.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fff");
+            return date.ToUniversalTime().ToString("yyyy'-'MM'-'dd HH':'mm':'ss'.'fff");
         }
 
         public static T ReadInnerText<T>(this XmlNode node)
