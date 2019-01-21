@@ -298,9 +298,9 @@ namespace Lithnet.Miiserver.Client
             SyncServer.ThrowExceptionOnReturnError(result);
         }
 
-        public async Task StopAsync()
+        public Task StopAsync()
         {
-            await Task.Run(() => this.Stop());
+            return Task.Run(() => this.Stop());
         }
 
         public void SuppressFullSyncWarning()
@@ -332,86 +332,35 @@ namespace Lithnet.Miiserver.Client
             return result;
         }
 
-        public async Task<string> ExecuteRunProfileAsync(string name, bool resumeLastRun)
+        public Task<string> ExecuteRunProfileAsync(string name, bool resumeLastRun)
         {
-            return await Task.FromResult(this.ExecuteRunProfile(name, resumeLastRun));
+            return this.ExecuteRunProfileAsync(name, resumeLastRun, CancellationToken.None);
         }
 
-        public async Task<string> ExecuteRunProfileAsync(string name)
+        public Task<string> ExecuteRunProfileAsync(string name)
         {
-            return await Task.FromResult(this.ExecuteRunProfile(name));
+            return this.ExecuteRunProfileAsync(name, CancellationToken.None);
         }
 
-        public string ExecuteRunProfile(string name, bool resumeLastRun, CancellationToken waitCancellationToken)
+        public Task<string> ExecuteRunProfileAsync(string name, bool resumeLastRun, CancellationToken ct)
         {
-            Task<string> t = this.ExecuteRunProfileAsync(name, resumeLastRun);
-            try
-            {
-                t.Wait(waitCancellationToken);
-            }
-            catch (AggregateException e)
-            {
-                if (e.InnerExceptions.Count == 1)
-                {
-                    throw e.InnerExceptions.First();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            if (t.IsCanceled)
-            {
-                return "cancelled";
-            }
-            else
-            {
-                if (t.IsFaulted)
-                {
-                    throw t.Exception.InnerExceptions.First();
-                }
-                else
-                {
-                    return t.Result;
-                }
-            }
+            return Task.Run(() => this.ExecuteRunProfile(name, resumeLastRun), ct);
         }
 
-        public string ExecuteRunProfile(string name, CancellationToken waitCancellationToken)
+        public Task<string> ExecuteRunProfileAsync(string name, CancellationToken ct)
         {
-            Task<string> t = this.ExecuteRunProfileAsync(name);
-            try
-            {
-                t.Wait(waitCancellationToken);
-            }
-            catch (AggregateException e)
-            {
-                if (e.InnerExceptions.Count == 1)
-                {
-                    throw e.InnerExceptions.First();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            return this.ExecuteRunProfileAsync(name, false, ct);
+        }
 
-            if (t.IsCanceled)
-            {
-                return "cancelled";
-            }
-            else
-            {
-                if (t.IsFaulted)
-                {
-                    throw t.Exception.InnerExceptions.First();
-                }
-                else
-                {
-                    return t.Result;
-                }
-            }
+        public string ExecuteRunProfile(string name, bool resumeLastRun, CancellationToken ct)
+        {
+            Task<string> t = this.ExecuteRunProfileAsync(name, resumeLastRun, ct);
+            return t.GetAwaiter().GetResult();
+        }
+
+        public string ExecuteRunProfile(string name, CancellationToken ct)
+        {
+            return this.ExecuteRunProfile(name, false, ct);
         }
 
         public CSObject GetCSObject(string dn)
@@ -419,7 +368,7 @@ namespace Lithnet.Miiserver.Client
             string search = $"<searching><dn recursive=\"false\">{dn.EscapeXmlElementText()}</dn></searching>";
             return this.GetSingleCSObject(search);
         }
-        
+
         public CSObjectEnumerator GetCSObjects(string dn, bool searchSubTree)
         {
             string search = $"<searching><dn recursive=\"{searchSubTree.ToString().ToLower()}\">{dn.EscapeXmlElementText()}</dn></searching>";
@@ -481,7 +430,7 @@ namespace Lithnet.Miiserver.Client
         {
             return this.GetPendingImports(true, true, true, 10, CSObjectParts.ManagementAgentPartitionID, 0);
         }
-        
+
         public CSObjectEnumerator GetImportErrors()
         {
             string searchText = "<criteria><import-error>true</import-error></criteria>";
@@ -550,13 +499,13 @@ namespace Lithnet.Miiserver.Client
             string searchText = "<criteria><connector>false</connector></criteria>";
             return this.ExportConnectorSpace(searchText);
         }
-        
+
         public CSObjectEnumerator GetConnectors()
         {
             string searchText = "<criteria><connector>true</connector></criteria>";
             return this.ExportConnectorSpace(searchText);
         }
-        
+
         public bool HasPendingExports()
         {
             using (CSObjectEnumerator e = this.GetPendingExports(true, true, true, 10, 0, 0))
@@ -683,7 +632,7 @@ namespace Lithnet.Miiserver.Client
             d.LoadXml(result);
             return d.SelectSingleNode("/");
         }
-        
+
         private CSObjectEnumerator ExportConnectorSpace(string critieria, int pageSize = 10, CSObjectParts csParts = CSObjectParts.AllItems, uint entryParts = 0xFFFFFFFF)
         {
             string token = this.WebService.ExportConnectorSpace(this.Name, critieria, true);
