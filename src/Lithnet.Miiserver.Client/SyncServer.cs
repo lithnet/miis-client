@@ -244,7 +244,10 @@ namespace Lithnet.Miiserver.Client
         public static void SaveRunHistory(DateTime beforeDate, string filename)
         {
             XmlDocument doc = new XmlDocument();
-            XmlElement parent = doc.CreateElement("execution-histories");
+            XmlElement executionHistories = doc.CreateElement("execution-histories");
+            XmlElement runHistoryElement = doc.CreateElement("run-history");
+            executionHistories.AppendChild(runHistoryElement);
+
             int count = 0;
 
             foreach (RunSummary item in SyncServer.GetRunSummary())
@@ -258,11 +261,11 @@ namespace Lithnet.Miiserver.Client
                 {
                     count++;
                     RunDetails d = SyncServer.GetRunDetail(item);
-                    parent.AppendChild(doc.ImportNode(d.XmlNode, true));
+                    runHistoryElement.AppendChild(doc.ImportNode(d.XmlNode, true));
                 }
             }
 
-            doc.AppendChild(parent);
+            doc.AppendChild(executionHistories);
 
             if (count == 0)
             {
