@@ -13,6 +13,6 @@ namespace Lithnet.Miiserver.Client
 
         public EncodedValue Anchor => this.GetObject<EncodedValue>("anchor");
 
-        public AttributeValueOperation Operation => this.GetValue<AttributeValueOperation>("operation");
+        public AttributeValueOperation Operation => this.GetValue<AttributeValueOperation>("@operation");
     }
 }
