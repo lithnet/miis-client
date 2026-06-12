@@ -16,7 +16,7 @@
 		<Authors>Lithnet</Authors>
 		<AutoIncrementPackageRevision>true</AutoIncrementPackageRevision>
 		<IsPackable>true</IsPackable>
-		<PackageId>Lithnet.Miisserver.Client</PackageId>
+		<PackageId>Lithnet.Miiserver.Client</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/lithnet/miis-client</RepositoryUrl>
 		<SupportUrl>https://github.com/lithnet/miis-client</SupportUrl>
