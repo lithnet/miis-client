@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Xml;
-using Newtonsoft.Json;
 
 namespace Lithnet.Miiserver.Client
 {
@@ -328,7 +327,7 @@ namespace Lithnet.Miiserver.Client
 
         public string ToJson()
         {
-            return JsonConvert.SerializeXmlNode(this.XmlNode);
+            return XmlNodeToJsonConverter.Convert(this.XmlNode);
         }
     }
 }

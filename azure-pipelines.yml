@@ -1,0 +1,151 @@
+# =========================================================================
+# Lithnet.Miiserver.Client build & publish pipeline
+# =========================================================================
+# Builds the NuGet library, signs the assembly and the package with the
+# Lithnet EV code-signing certificate, publishes to the internal Azure
+# Artifacts feed, and (after approval) to nuget.org.
+#
+# All signing and NuGet publishing is delegated to the shared release-tools
+# repo. No signing-vault or feed details live in this file.
+# =========================================================================
+
+pool:
+  vmImage: 'windows-latest'
+
+# The package version is supplied by the pipeline (not the csproj). The
+# revision auto-increments per major.minor via an Azure DevOps counter.
+variables:
+  - name: buildConfiguration
+    value: 'Release'
+  - name: build.version.major
+    value: 2
+  - name: build.version.minor
+    value: 0
+  - name: build.version.revision
+    value: $[counter(format('{0}.{1}', variables['build.version.major'], variables['build.version.minor']), 0)]
+  - name: build.version
+    value: $(build.version.major).$(build.version.minor).$(build.version.revision)
+  - name: build.date
+    value: $[format('{0:yyyy}-{0:MM}-{0:dd}T{0:HH}:{0:mm}:{0:ss}', pipeline.startTime)]
+
+  # Azure service connection with access to kv-lithnet-codesigning (used for signing).
+  - name: azureSubscription
+    value: 'ProductionServices'
+
+  # NuGet service connection for the public nuget.org feed.
+  # TODO: confirm/create this service connection name in the Azure DevOps project.
+  - name: nugetServiceConnection
+    value: 'MiisClientNuget'
+
+  # Paths (self is pinned under s/miis-client because multi-repo checkout
+  # places it in a repo-named subfolder; see release-tools README §3).
+  - name: projectPath
+    value: '$(Build.SourcesDirectory)/miis-client/src/Lithnet.Miiserver.Client/Lithnet.Miiserver.Client.csproj'
+  - name: buildOutputDir
+    value: '$(Build.SourcesDirectory)/miis-client/src/Lithnet.Miiserver.Client/bin/$(buildConfiguration)/net48'
+  - name: packDir
+    value: '$(Build.ArtifactStagingDirectory)/nuget'
+
+name: $(build.version)
+trigger: none
+
+resources:
+  repositories:
+  - repository: release_tools
+    type: git
+    name: release-tools/release-tools
+    ref: main
+
+stages:
+- stage: build
+  displayName: Build, sign and package
+  dependsOn: []
+  jobs:
+    - job: build_job
+      displayName: Build and package
+      steps:
+        - checkout: self
+          path: s/miis-client
+        - checkout: release_tools
+          path: release-tools
+
+        # Authenticate the build identity to the LithnetPrivatePackages feed so the
+        # restore can pull Lithnet.MIM.PropertySheetBase (see src/nuget.config).
+        - task: NuGetAuthenticate@1
+          displayName: 'Authenticate with NuGet'
+
+        - task: DotNetCoreCLI@2
+          displayName: dotnet build
+          inputs:
+            command: build
+            projects: '$(projectPath)'
+            arguments: '-c $(buildConfiguration) -p:Version=$(build.version) -p:GeneratePackageOnBuild=false'
+
+        # Sign the compiled assembly BEFORE packing so the package carries the signed DLL.
+        - template: templates/codesign.yaml@release_tools
+          parameters:
+            path:
+              - '$(buildOutputDir)/Lithnet.Miiserver.Client.dll'
+            environment: 'prod'
+            azureSubscription: '$(azureSubscription)'
+            description: 'Lithnet MIM Sync Client Library'
+
+        - task: DotNetCoreCLI@2
+          displayName: dotnet pack
+          inputs:
+            command: 'pack'
+            packagesToPack: '$(projectPath)'
+            packDirectory: '$(packDir)'
+            nobuild: true
+            includesymbols: true
+            versioningScheme: 'byEnvVar'
+            versionEnvVar: 'build.version'
+
+        # Sign the NuGet package and symbol package.
+        - template: templates/codesign.yaml@release_tools
+          parameters:
+            path:
+              - '$(packDir)/*.nupkg'
+              - '$(packDir)/*.snupkg'
+            environment: 'prod'
+            azureSubscription: '$(azureSubscription)'
+
+        # Publish to the internal Azure Artifacts feed.
+        - template: templates/publish-nuget.yaml@release_tools
+          parameters:
+            nugetPackagePath: '$(packDir)/*.nupkg'
+            symbolPackagePath: '$(packDir)/*.snupkg'
+            publishInternal: true
+            publishExternal: false
+
+        - task: PublishPipelineArtifact@1
+          displayName: Publish nuget artifact
+          inputs:
+            targetPath: '$(packDir)'
+            publishLocation: 'pipeline'
+            artifact: nuget
+
+- stage: publish_nuget
+  displayName: Publish to nuget.org
+  dependsOn: build
+  jobs:
+    - deployment: publish_packages
+      displayName: Publish packages to public NuGet feed
+      environment: 'Public nuget feed'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: none
+
+              - download: current
+                artifact: nuget
+
+              # Package is already signed in the build stage; just push it.
+              - template: templates/publish-nuget.yaml@release_tools
+                parameters:
+                  nugetPackagePath: '$(Pipeline.Workspace)/nuget/*.nupkg'
+                  symbolPackagePath: '$(Pipeline.Workspace)/nuget/*.snupkg'
+                  publishInternal: false
+                  publishExternal: true
+                  externalFeedCredentials: '$(nugetServiceConnection)'

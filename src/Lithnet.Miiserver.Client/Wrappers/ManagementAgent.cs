@@ -560,7 +560,7 @@ namespace Lithnet.Miiserver.Client
                 throw new ArgumentOutOfRangeException(nameof(count), "Run history count must be greater than zero");
             }
 
-            string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>{count}</num-req></execution-history-req>";
+            string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>{count}</num-req><errors-summary>true</errors-summary></execution-history-req>";
 
             string result = this.WebService.GetExecutionHistory(query);
             SyncServer.ThrowExceptionOnReturnError(result);
@@ -577,8 +577,8 @@ namespace Lithnet.Miiserver.Client
 
         public RunDetails GetLastRun()
         {
-            string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>1</num-req></execution-history-req>";
-
+            string query = $"<execution-history-req ma=\"{this.ID.ToMmsGuid()}\"><num-req>1</num-req><errors-summary>true</errors-summary></execution-history-req>";
+            
             string result = this.WebService.GetExecutionHistory(query);
             SyncServer.ThrowExceptionOnReturnError(result);
 

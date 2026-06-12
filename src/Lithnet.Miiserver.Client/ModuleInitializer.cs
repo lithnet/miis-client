@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 /// <summary>
-/// Used by Fody ModuleInit. All code inside the Initialize method is run as soon as the assembly is loaded.
+/// All code inside the Initialize method is run as soon as the assembly's module is loaded, via a
+/// C# module initializer (see <see cref="ModuleInitializerAttribute"/>).
 /// </summary>
 public static class ModuleInitializer
 {
     /// <summary>
     /// Initializes the module.
     /// </summary>
+    [ModuleInitializer]
     public static void Initialize()
     {
         AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
