@@ -46,7 +46,7 @@ variables:
   - name: packDir
     value: '$(Build.ArtifactStagingDirectory)/nuget'
 
-name: $(build.version.major).$(build.version.minor).$(build.version.revision)$(build.version.suffix)
+name: $(build.version.major).$(build.version.minor).$(build.version.revision)
 trigger: none
 
 resources:
