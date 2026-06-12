@@ -54,7 +54,7 @@ resources:
   - repository: release_tools
     type: git
     name: release-tools/release-tools
-    ref: main
+    ref: master
 
 stages:
 - stage: build
