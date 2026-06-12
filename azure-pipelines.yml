@@ -35,7 +35,7 @@ variables:
   # NuGet service connection for the public nuget.org feed.
   # TODO: confirm/create this service connection name in the Azure DevOps project.
   - name: nugetServiceConnection
-    value: 'MiisClientNuget'
+    value: 'MimManagementAgentsNuget'
 
   # Paths (self is pinned under s/miis-client because multi-repo checkout
   # places it in a repo-named subfolder; see release-tools README §3).
